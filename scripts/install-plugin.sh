@@ -5,12 +5,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
 FORCE=0
+SCOPE="local"
+WORKSPACE_WAS_OMITTED=0
 
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/install-plugin.sh <target[,target...]> [workspace]
-  ./scripts/install-plugin.sh all [workspace]
+  ./scripts/install-plugin.sh [--scope local|global] <target[,target...]> [workspace]
+  ./scripts/install-plugin.sh [--scope local|global] all [workspace]
 
 Targets:
   copilot
@@ -23,10 +25,12 @@ Targets:
 
 Examples:
   ./scripts/install-plugin.sh cursor ~/code/my-app
+  ./scripts/install-plugin.sh --scope global gemini
   ./scripts/install-plugin.sh copilot,opencode ~/code/my-app
   ./scripts/install-plugin.sh all .
 
 Options:
+  --scope   Install into a project (`local`) or a home-level tool directory (`global`)
   --force   Overwrite files that already exist
   -h, --help  Show this help message
 EOF
@@ -41,16 +45,116 @@ fail() {
   exit 1
 }
 
+infer_target_from_path() {
+  local path="$1"
+  case "$path" in
+    */.config/opencode/*)
+      printf '%s\n' "OpenCode"
+      ;;
+    *)
+      printf '%s\n' "the target tool"
+      ;;
+  esac
+}
+
+fail_existing_file_conflict() {
+  local src="$1"
+  local dest="$2"
+
+  if [[ "$(basename "$dest")" == "AGENTS.md" ]]; then
+    local target_tool
+    target_tool="$(infer_target_from_path "$dest")"
+    log "Error: Refusing to overwrite existing file: $dest (rerun with --force)"
+    log "The installed AGENTS.md differs from the source copy."
+    log "Update it with $target_tool so it matches:"
+    log "  $src"
+    log '```'
+    log "update your \`$dest\`"
+    log "all details that must be updated:"
+    cat "$src" >&2
+    log '```'
+    log "Or rerun with --force to replace it automatically."
+    exit 1
+  fi
+
+  fail "Refusing to overwrite existing file: $dest (rerun with --force)"
+}
+
+confirm() {
+  local prompt="$1"
+  local reply
+  read -r -p "$prompt [y/N] " reply
+  case "$reply" in
+    y|Y|yes|YES)
+      return 0
+      ;;
+    *)
+      fail "Aborted"
+      ;;
+  esac
+}
+
+require_local_scope() {
+  local target="$1"
+  if [[ "$SCOPE" != "local" ]]; then
+    fail "Target '$target' only supports --scope local"
+  fi
+}
+
+scope_root() {
+  local local_root="$1"
+  local global_root="$2"
+  if [[ "$SCOPE" == "global" ]]; then
+    printf '%s\n' "$global_root"
+  else
+    printf '%s\n' "$local_root"
+  fi
+}
+
+same_file_content() {
+  local src="$1"
+  local dest="$2"
+  [[ -f "$dest" ]] && cmp -s "$src" "$dest"
+}
+
 copy_file() {
   local src="$1"
   local dest="$2"
   mkdir -p "$(dirname "$dest")"
 
+  if same_file_content "$src" "$dest"; then
+    return 0
+  fi
+
   if [[ -e "$dest" && "$FORCE" -ne 1 ]]; then
-    fail "Refusing to overwrite existing file: $dest (rerun with --force)"
+    fail_existing_file_conflict "$src" "$dest"
   fi
 
   cp "$src" "$dest"
+}
+
+copy_path() {
+  local src="$1"
+  local dest="$2"
+
+  if [[ -d "$src" ]]; then
+    if [[ -e "$dest" && ! -d "$dest" ]]; then
+      if [[ "$FORCE" -ne 1 ]]; then
+        fail "Refusing to overwrite existing file with directory: $dest (rerun with --force)"
+      fi
+      rm -f "$dest"
+    fi
+
+    mkdir -p "$dest"
+
+    local entry
+    for entry in "$src"/*; do
+      copy_path "$entry" "$dest/$(basename "$entry")"
+    done
+    return 0
+  fi
+
+  copy_file "$src" "$dest"
 }
 
 copy_dir_contents() {
@@ -64,12 +168,7 @@ copy_dir_contents() {
     local name
     name="$(basename "$entry")"
     local dest="$dest_dir/$name"
-
-    if [[ -e "$dest" && "$FORCE" -ne 1 ]]; then
-      fail "Refusing to overwrite existing path: $dest (rerun with --force)"
-    fi
-
-    cp -R "$entry" "$dest"
+    copy_path "$entry" "$dest"
   done
 }
 
@@ -78,6 +177,10 @@ write_file() {
   local content="$2"
 
   mkdir -p "$(dirname "$dest")"
+
+  if [[ -f "$dest" ]] && printf '%s' "$content" | cmp -s - "$dest"; then
+    return 0
+  fi
 
   if [[ -e "$dest" && "$FORCE" -ne 1 ]]; then
     fail "Refusing to overwrite existing file: $dest (rerun with --force)"
@@ -88,6 +191,7 @@ write_file() {
 
 install_copilot() {
   local workspace="$1"
+  require_local_scope "copilot"
   log "Installing for GitHub Copilot in $workspace"
 
   copy_file \
@@ -109,6 +213,7 @@ install_copilot() {
 
 install_cursor() {
   local workspace="$1"
+  require_local_scope "cursor"
   log "Installing for Cursor in $workspace"
 
   copy_file \
@@ -124,51 +229,51 @@ install_cursor() {
 
 install_gemini() {
   local workspace="$1"
-  log "Installing for Gemini CLI in $workspace"
+  local dest_dir
+  dest_dir="$(scope_root "$workspace/.gemini/skills" "$HOME/.gemini/skills")"
+  log "Installing for Gemini CLI in $dest_dir"
 
-  copy_dir_contents "$REPO_ROOT/skills" "$workspace/.gemini/skills"
+  copy_dir_contents "$REPO_ROOT/skills" "$dest_dir"
 }
 
 install_getting_started() {
   local workspace="$1"
-  log "Installing a generic agent-skills workspace in $workspace"
+  local base_dir
+  base_dir="$(scope_root "$workspace/.agents" "$HOME/.agents")"
+  log "Installing a generic agent-skills workspace in $base_dir"
 
-  copy_dir_contents "$REPO_ROOT/skills" "$workspace/.agents/skills"
-  copy_dir_contents "$REPO_ROOT/agents" "$workspace/.agents/agents"
-  copy_dir_contents "$REPO_ROOT/references" "$workspace/.agents/references"
+  copy_dir_contents "$REPO_ROOT/skills" "$base_dir/skills"
+  copy_dir_contents "$REPO_ROOT/agents" "$base_dir/agents"
+  copy_dir_contents "$REPO_ROOT/references" "$base_dir/references"
 }
 
 install_windsurf() {
   local workspace="$1"
-  log "Installing for Windsurf in $workspace"
+  require_local_scope "windsurf"
+  local rules_dir="$workspace/.windsurf/rules"
+  log "Installing for Windsurf in $rules_dir"
 
-  local td
-  td="$(cat "$REPO_ROOT/skills/test-driven-development/SKILL.md")"
-  local ii
-  ii="$(cat "$REPO_ROOT/skills/incremental-implementation/SKILL.md")"
-  local cr
-  cr="$(cat "$REPO_ROOT/skills/code-review-and-quality/SKILL.md")"
-
-  write_file "$workspace/.windsurfrules" "# Essential agent-skills for this project
-
-$td
-
----
-
-$ii
-
----
-
-$cr
-"
+  copy_file \
+    "$REPO_ROOT/skills/test-driven-development/SKILL.md" \
+    "$rules_dir/test-driven-development.md"
+  copy_file \
+    "$REPO_ROOT/skills/incremental-implementation/SKILL.md" \
+    "$rules_dir/incremental-implementation.md"
+  copy_file \
+    "$REPO_ROOT/skills/code-review-and-quality/SKILL.md" \
+    "$rules_dir/code-review-and-quality.md"
 }
 
 install_opencode() {
   local workspace="$1"
-  log "Installing for OpenCode in $workspace"
+  local agents_dest
+  local skills_dest
+  agents_dest="$(scope_root "$workspace/AGENTS.md" "$HOME/.config/opencode/AGENTS.md")"
+  skills_dest="$(scope_root "$workspace/.opencode/skills" "$HOME/.config/opencode/skills")"
+  log "Installing for OpenCode in $(dirname "$agents_dest")"
 
-  copy_file "$REPO_ROOT/AGENTS.md" "$workspace/AGENTS.md"
-  copy_dir_contents "$REPO_ROOT/skills" "$workspace/skills"
+  copy_file "$REPO_ROOT/AGENTS.md" "$agents_dest"
+  copy_dir_contents "$REPO_ROOT/skills" "$skills_dest"
 }
 
 run_target() {
@@ -193,6 +298,19 @@ WORKSPACE=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --scope)
+      shift
+      [[ $# -gt 0 ]] || fail "Missing value for --scope"
+      case "$1" in
+        local|global)
+          SCOPE="$1"
+          ;;
+        *)
+          fail "Invalid scope: $1 (expected local or global)"
+          ;;
+      esac
+      shift
+      ;;
     --force)
       FORCE=1
       shift
@@ -219,12 +337,29 @@ if [[ ${#TARGETS[@]} -eq 0 ]]; then
   exit 1
 fi
 
-if [[ -z "$WORKSPACE" ]]; then
+if [[ "$SCOPE" == "global" && -n "$WORKSPACE" ]]; then
+  fail "Do not pass a workspace when using --scope global"
+fi
+
+if [[ "$SCOPE" == "local" && -z "$WORKSPACE" ]]; then
+  WORKSPACE_WAS_OMITTED=1
   WORKSPACE="."
 fi
 
-mkdir -p "$WORKSPACE"
-WORKSPACE="$(cd "$WORKSPACE" && pwd)"
+if [[ "$SCOPE" == "local" ]]; then
+  mkdir -p "$WORKSPACE"
+  WORKSPACE="$(cd "$WORKSPACE" && pwd)"
+
+  if [[ "$WORKSPACE_WAS_OMITTED" -eq 1 ]]; then
+    confirm "No workspace was provided. Install into the current directory: $WORKSPACE?"
+  fi
+
+  if [[ "$WORKSPACE" == "$REPO_ROOT" ]]; then
+    fail "Refusing to install into the source repository itself. Pass a target project root, for example: ./scripts/install-plugin.sh opencode ~/code/my-app"
+  fi
+else
+  WORKSPACE=""
+fi
 
 if [[ "${TARGETS[0]}" == "all" && ${#TARGETS[@]} -eq 1 ]]; then
   TARGETS=(copilot cursor gemini getting-started windsurf opencode)
