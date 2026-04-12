@@ -30,16 +30,18 @@ This more closely matches how Claude Code behaves in practice, where skills are 
 
 ```bash
 git clone https://github.com/addyosmani/agent-skills.git
+cd agent-skills
+./scripts/install-plugin.sh opencode /path/to/your-project
 ```
 
-2. Open the project in OpenCode.
+2. Open the target project in OpenCode.
 
 3. Ensure the following files are present in your workspace:
 
 - `AGENTS.md` (root)
 - `skills/` directory
 
-No additional installation is required.
+The installer above copies both into the target project. No additional installation is required.
 
 ---
 

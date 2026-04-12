@@ -14,7 +14,15 @@ Each skill is a Markdown file (`SKILL.md`) that describes a specific engineering
 
 ```bash
 git clone https://github.com/addyosmani/agent-skills.git
+cd agent-skills
+./scripts/install-plugin.sh getting-started /path/to/your-project
 ```
+
+This installs a generic local copy of the pack into `.agents/` inside your target project:
+
+- `.agents/skills/`
+- `.agents/agents/`
+- `.agents/references/`
 
 ### 2. Choose a skill
 
@@ -27,7 +35,7 @@ Browse the `skills/` directory. Each subdirectory contains a `SKILL.md` with:
 
 ### 3. Load the skill into your agent
 
-Copy the relevant `SKILL.md` content into your agent's system prompt, rules file, or conversation. The most common approaches:
+Copy the relevant `SKILL.md` content from `.agents/skills/` into your agent's system prompt, rules file, or conversation. The most common approaches:
 
 **System prompt:** Paste the skill content at the start of the session.
 
@@ -112,6 +120,14 @@ The `.claude/commands/` directory contains slash commands for Claude Code:
 | `/review` | code-review-and-quality |
 | `/ship` | shipping-and-launch |
 
+For DEFINE and PLAN, the canonical workflow now uses OpenSpec:
+
+```bash
+openspec change create <change-id>
+openspec artifact add <change-id> execution.md
+openspec artifact add <change-id> handoff.md
+```
+
 ## Using References
 
 The `references/` directory contains supplementary checklists:
@@ -127,11 +143,29 @@ Load a reference when you need detailed patterns beyond what the skill covers.
 
 ## Spec and task artifacts
 
-The `/spec` and `/plan` commands create working artifacts (`SPEC.md`, `tasks/plan.md`, `tasks/todo.md`). Treat them as **living documents** while the work is in progress:
+The `/spec` and `/plan` commands use OpenSpec as the default shared workflow. Treat these artifacts as **living documents** while the work is in progress:
 
-- Keep them in version control during development so the human and the agent have a shared source of truth.
-- Update them when scope or decisions change.
-- If your repo doesn’t want these files long‑term, delete them before merge or add the folder to `.gitignore` — the workflow doesn’t require them to be permanent.
+- `openspec/specs/` — current project truth tracked in git
+- `openspec/changes/<change-id>/proposal.md` — objective, scope, success criteria, boundaries
+- `openspec/changes/<change-id>/design.md` — architecture, constraints, commands, testing approach
+- `openspec/changes/<change-id>/tasks.md` — shared story-level breakdown
+- `openspec/changes/<change-id>/execution.md` — shared sequencing, dependencies, blockers
+- `openspec/changes/<change-id>/handoff.md` — QA guidance and validation steps
+- `.devlocal/<user>/<story-id>/scratchpad.md` — private technical breakdown, ignored by git
+
+Operational rules:
+
+- Keep shared coordination and design truth in `openspec/`
+- Promote team-impacting discoveries from `.devlocal/` into `tasks.md`, `execution.md`, or `design.md`
+- Treat anything left in `.devlocal/` after the story is merged as disposable
+
+Legacy note: root-level `SPEC.md` and `tasks/plan.md` / `tasks/todo.md` are no longer the default workflow. Use them only for migration or compatibility with older repos.
+
+Working rules:
+
+- Keep `openspec/` artifacts in version control during development so the human and the agent have a shared source of truth.
+- Update them when scope, sequencing, or technical decisions change.
+- Keep `.devlocal/` ignored. It is personal workspace, not shared truth.
 
 ## Tips
 

@@ -4,13 +4,14 @@ description: Break work into small verifiable tasks with acceptance criteria and
 
 Invoke the agent-skills:planning-and-task-breakdown skill.
 
-Read the existing spec (SPEC.md or equivalent) and the relevant codebase sections. Then:
+Read the active OpenSpec change's `proposal.md` and `design.md`, plus the relevant codebase sections. Then:
 
 1. Enter plan mode — read only, no code changes
 2. Identify the dependency graph between components
-3. Slice work vertically (one complete path per task, not horizontal layers)
-4. Write tasks with acceptance criteria and verification steps
-5. Add checkpoints between phases
-6. Present the plan for human review
+3. Slice work into shared story-level items, not code-level subtasks
+4. Write shared stories with acceptance criteria and verification steps into `tasks.md`
+5. Record cross-story ordering, blockers, and coordination notes in `execution.md`
+6. Keep private technical breakdown in `.devlocal/<user>/<story-id>/scratchpad.md`
+7. Present the plan for human review
 
-Save the plan to tasks/plan.md and task list to tasks/todo.md.
+Do not write `tasks/plan.md` or `tasks/todo.md`. The tracked outputs are `openspec/changes/<change-id>/tasks.md` and `openspec/changes/<change-id>/execution.md`.

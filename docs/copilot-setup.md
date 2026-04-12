@@ -2,16 +2,18 @@
 
 ## Setup
 
+From this repository, install the recommended Copilot files into your project with:
+
+```bash
+./scripts/install-plugin.sh copilot /path/to/your-project
+```
+
 ### Copilot Instructions
 
 Copilot supports creating agent skills using a `.github/skills`, `.claude/skills`, or `.agents/skills` directory in your repository.
 
 ```bash
-mkdir -p .github
-
-# Create files for essential skills
-cat /path/to/agent-skills/skills/test-driven-development/SKILL.md > .github/skills/test-driven-development/SKILL.md
-cat /path/to/agent-skills/skills/code-review-and-quality/SKILL.md > .github/skills/code-review-and-quality/SKILL.md
+./scripts/install-plugin.sh copilot /path/to/your-project
 ```
 
 For more details, refer [Creating agent skills for GitHub Copilot](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-skills).
@@ -21,10 +23,7 @@ For more details, refer [Creating agent skills for GitHub Copilot](https://docs.
 Copilot supports specialized agent personas. Use the agent-skills agents:
 
 ```bash
-# Copy agent definitions
-cp /path/to/agent-skills/agents/code-reviewer.md .github/agents/code-reviewer.md
-cp /path/to/agent-skills/agents/test-engineer.md .github/agents/test-engineer.md
-cp /path/to/agent-skills/agents/security-auditor.md .github/agents/security-auditor.md
+./scripts/install-plugin.sh copilot /path/to/your-project
 ```
 
 Invoke agents in Copilot Chat:

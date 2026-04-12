@@ -2,18 +2,18 @@
 
 ## Setup
 
+From this repository, install the recommended Cursor rules into your project with:
+
+```bash
+./scripts/install-plugin.sh cursor /path/to/your-project
+```
+
 ### Option 1: Rules Directory (Recommended)
 
 Cursor supports a `.cursor/rules/` directory for project-specific rules:
 
 ```bash
-# Create the rules directory
-mkdir -p .cursor/rules
-
-# Copy skills you want as rules
-cp /path/to/agent-skills/skills/test-driven-development/SKILL.md .cursor/rules/test-driven-development.md
-cp /path/to/agent-skills/skills/code-review-and-quality/SKILL.md .cursor/rules/code-review-and-quality.md
-cp /path/to/agent-skills/skills/incremental-implementation/SKILL.md .cursor/rules/incremental-implementation.md
+./scripts/install-plugin.sh cursor /path/to/your-project
 ```
 
 Rules in this directory are automatically loaded into Cursor's context.
@@ -23,9 +23,8 @@ Rules in this directory are automatically loaded into Cursor's context.
 Create a `.cursorrules` file in your project root with the essential skills inlined:
 
 ```bash
-# Generate a combined rules file
 cat /path/to/agent-skills/skills/test-driven-development/SKILL.md > .cursorrules
-echo "\n---\n" >> .cursorrules
+printf '\n---\n' >> .cursorrules
 cat /path/to/agent-skills/skills/code-review-and-quality/SKILL.md >> .cursorrules
 ```
 

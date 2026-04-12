@@ -5,12 +5,12 @@
 Skills encode the workflows, quality gates, and best practices that senior engineers use when building software. These ones are packaged so AI agents follow them consistently across every phase of development.
 
 ```
-  DEFINE          PLAN           BUILD          VERIFY         REVIEW          SHIP
- ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐
- │ Idea │ ───▶ │ Spec │ ───▶ │ Code │ ───▶ │ Test │ ───▶ │  QA  │ ───▶ │  Go  │
- │Refine│      │  PRD │      │ Impl │      │Debug │      │ Gate │      │ Live │
- └──────┘      └──────┘      └──────┘      └──────┘      └──────┘      └──────┘
-  /spec          /plan          /build        /test         /review       /ship
+  DEFINE            PLAN           BUILD          VERIFY         REVIEW          SHIP
+ ┌──────┐      ┌──────────┐     ┌──────┐      ┌──────┐      ┌──────┐      ┌──────┐
+ │ Idea │ ───▶ │ OpenSpec │ ───▶ │ Code │ ───▶ │ Test │ ───▶ │  QA  │ ───▶ │  Go  │
+ │Refine│      │  Change  │     │ Impl │      │Debug │      │ Gate │      │ Live │
+ └──────┘      └──────────┘     └──────┘      └──────┘      └──────┘      └──────┘
+   /spec           /plan          /build        /test         /review       /ship
 ```
 
 ---
@@ -21,8 +21,8 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 | What you're doing | Command | Key principle |
 |-------------------|---------|---------------|
-| Define what to build | `/spec` | Spec before code |
-| Plan how to build it | `/plan` | Small, atomic tasks |
+| Define what to build | `/spec` | OpenSpec change before code |
+| Plan how to build it | `/plan` | Shared stories, private scratchpads |
 | Build incrementally | `/build` | One slice at a time |
 | Prove it works | `/test` | Tests are proof |
 | Review before merge | `/review` | Improve code health |
@@ -30,6 +30,8 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 | Ship to production | `/ship` | Faster is safer |
 
 Skills also activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, and so on.
+
+DEFINE and PLAN use OpenSpec as the default shared workflow: `openspec/specs/` holds current project truth, `openspec/changes/<change-id>/` holds shared change truth, and `.devlocal/` is the disposable personal workspace.
 
 ---
 
@@ -126,13 +128,13 @@ The commands above are the entry points. Under the hood, they activate these 20 
 | Skill | What It Does | Use When |
 |-------|-------------|----------|
 | [idea-refine](skills/idea-refine/SKILL.md) | Structured divergent/convergent thinking to turn vague ideas into concrete proposals | You have a rough concept that needs exploration |
-| [spec-driven-development](skills/spec-driven-development/SKILL.md) | Write a PRD covering objectives, commands, structure, code style, testing, and boundaries before any code | Starting a new project, feature, or significant change |
+| [spec-driven-development](skills/spec-driven-development/SKILL.md) | Create tracked OpenSpec change artifacts (`proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`) before any code | Starting a new project, feature, or significant change |
 
 ### Plan - Break it down
 
 | Skill | What It Does | Use When |
 |-------|-------------|----------|
-| [planning-and-task-breakdown](skills/planning-and-task-breakdown/SKILL.md) | Decompose specs into small, verifiable tasks with acceptance criteria and dependency ordering | You have a spec and need implementable units |
+| [planning-and-task-breakdown](skills/planning-and-task-breakdown/SKILL.md) | Decompose an OpenSpec change into shared story-level tasks plus shared execution coordination | You have an approved change and need implementable shared stories |
 
 ### Build - Write the code
 

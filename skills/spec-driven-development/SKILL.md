@@ -1,13 +1,13 @@
 ---
 name: spec-driven-development
-description: Creates specs before coding. Use when starting a new project, feature, or significant change and no specification exists yet. Use when requirements are unclear, ambiguous, or only exist as a vague idea.
+description: Creates tracked OpenSpec change artifacts before coding. Use when starting a new project, feature, or significant change and no specification exists yet. Use when requirements are unclear, ambiguous, or only exist as a vague idea.
 ---
 
 # Spec-Driven Development
 
 ## Overview
 
-Write a structured specification before writing any code. The spec is the shared source of truth between you and the human engineer — it defines what we're building, why, and how we'll know it's done. Code without a spec is guessing.
+Define tracked OpenSpec change artifacts before writing any code. Shared project truth lives in `openspec/specs/`. Shared change truth lives in `openspec/changes/<change-id>/`. Personal execution notes live in `.devlocal/` and are ignored by git. Code without tracked change artifacts is guessing.
 
 ## When to Use
 
@@ -21,180 +21,188 @@ Write a structured specification before writing any code. The spec is the shared
 
 ## The Gated Workflow
 
-Spec-driven development has four phases. Do not advance to the next phase until the current one is validated.
+Spec-driven development has five phases. Do not advance to the next phase until the current one is validated.
 
 ```
-SPECIFY ──→ PLAN ──→ TASKS ──→ IMPLEMENT
-   │          │        │          │
-   ▼          ▼        ▼          ▼
- Human      Human    Human      Human
- reviews    reviews  reviews    reviews
+BASELINE ──→ SCAFFOLD ──→ SPECIFY ──→ PLAN ──→ IMPLEMENT
+    │            │           │         │         │
+    ▼            ▼           ▼         ▼         ▼
+  Human        Human       Human     Human     Human
+ reviews      reviews     reviews   reviews   reviews
 ```
 
-### Phase 1: Specify
+### Phase 1: Read Current Truth
 
-Start with a high-level vision. Ask the human clarifying questions until requirements are concrete.
+Start by inspecting the current system truth before drafting a new change:
 
-**Surface assumptions immediately.** Before writing any spec content, list what you're assuming:
+- Read the relevant files in `openspec/specs/`
+- Check whether there are related open changes in `openspec/changes/`
+- Note assumptions, conflicts, and missing context before proposing anything new
+
+**Surface assumptions immediately.** Before writing any change content, list what you're assuming:
 
 ```
 ASSUMPTIONS I'M MAKING:
-1. This is a web application (not native mobile)
-2. Authentication uses session-based cookies (not JWT)
-3. The database is PostgreSQL (based on existing Prisma schema)
-4. We're targeting modern browsers only (no IE11)
+1. This service already uses OpenSpec as the tracked source of truth
+2. The requested work belongs in a new change, not an update to an existing one
+3. This change affects the billing domain and not adjacent auth flows
+4. The team wants shared coordination in tracked artifacts, not private notes
 → Correct me now or I'll proceed with these.
 ```
 
-Don't silently fill in ambiguous requirements. The spec's entire purpose is to surface misunderstandings *before* code gets written — assumptions are the most dangerous form of misunderstanding.
+Do not silently draft a change against stale or missing baseline context. The point of the baseline read is to keep the new change aligned with the repository's current truth.
 
-**Write a spec document covering these six core areas:**
+### Phase 2: Scaffold the Change
 
-1. **Objective** — What are we building and why? Who is the user? What does success look like?
+Every non-trivial change needs a tracked OpenSpec change id. If the human did not provide one, ask for it or propose one for approval before scaffolding.
 
-2. **Commands** — Full executable commands with flags, not just tool names.
-   ```
-   Build: npm run build
-   Test: npm test -- --coverage
-   Lint: npm run lint --fix
-   Dev: npm run dev
-   ```
+Use the OpenSpec CLI as the standard workflow:
 
-3. **Project Structure** — Where source code lives, where tests go, where docs belong.
-   ```
-   src/           → Application source code
-   src/components → React components
-   src/lib        → Shared utilities
-   tests/         → Unit and integration tests
-   e2e/           → End-to-end tests
-   docs/          → Documentation
-   ```
+```bash
+openspec change create <change-id>
+openspec artifact add <change-id> execution.md
+openspec artifact add <change-id> handoff.md
+```
 
-4. **Code Style** — One real code snippet showing your style beats three paragraphs describing it. Include naming conventions, formatting rules, and examples of good output.
+After scaffolding, ensure the active change folder exists at:
 
-5. **Testing Strategy** — What framework, where tests live, coverage expectations, which test levels for which concerns.
+```text
+openspec/changes/<change-id>/
+```
 
-6. **Boundaries** — Three-tier system:
-   - **Always do:** Run tests before commits, follow naming conventions, validate inputs
-   - **Ask first:** Database schema changes, adding dependencies, changing CI config
-   - **Never do:** Commit secrets, edit vendor directories, remove failing tests without approval
+And ensure it contains:
 
-**Spec template:**
+- `proposal.md`
+- `design.md`
+- `tasks.md`
+- `execution.md`
+- `handoff.md`
 
-```markdown
-# Spec: [Project/Feature Name]
+These tracked files replace the old `SPEC.md` and `tasks/` workflow as the default shared source of truth.
+
+### Phase 3: Specify Shared Change Truth
+
+Start with a high-level vision. Ask the human clarifying questions until requirements are concrete, then distribute that truth across the change artifacts.
+
+**Artifact responsibilities:**
+
+1. **`proposal.md`** — Objective, user/problem framing, success criteria, scope, and boundaries
+2. **`design.md`** — Architecture, constraints, project structure, testing approach, commands, and technical decisions
+3. **`tasks.md`** — Shared story-level breakdown only
+4. **`execution.md`** — Shared sequencing, cross-story dependencies, blockers, and promoted coordination notes
+5. **`handoff.md`** — QA guidance, validation steps, and rollout/checklist notes
+
+Do not push technical micro-steps or private scratch work into tracked shared artifacts. Those belong in `.devlocal/`.
+
+**Proposal template:**
+
+```md
+# Proposal: [Change Name]
 
 ## Objective
-[What we're building and why. User stories or acceptance criteria.]
+[What we're building and why]
 
-## Tech Stack
-[Framework, language, key dependencies with versions]
+## Problem / User Impact
+[Who is affected and what improves]
 
-## Commands
-[Build, test, lint, dev — full commands]
+## Success Criteria
+[Specific, testable conditions]
 
-## Project Structure
-[Directory layout with descriptions]
-
-## Code Style
-[Example snippet + key conventions]
-
-## Testing Strategy
-[Framework, test locations, coverage requirements, test levels]
+## Scope
+[What is in and out]
 
 ## Boundaries
 - Always: [...]
 - Ask first: [...]
 - Never: [...]
-
-## Success Criteria
-[How we'll know this is done — specific, testable conditions]
-
-## Open Questions
-[Anything unresolved that needs human input]
 ```
 
-**Reframe instructions as success criteria.** When receiving vague requirements, translate them into concrete conditions:
+**Design template:**
 
-```
-REQUIREMENT: "Make the dashboard faster"
+```md
+# Design: [Change Name]
 
-REFRAMED SUCCESS CRITERIA:
-- Dashboard LCP < 2.5s on 4G connection
-- Initial data load completes in < 500ms
-- No layout shift during load (CLS < 0.1)
-→ Are these the right targets?
-```
+## Architecture
+[Systems, components, and boundaries]
 
-This lets you loop, retry, and problem-solve toward a clear goal rather than guessing what "faster" means.
+## Constraints
+[Technical or delivery constraints]
 
-### Phase 2: Plan
+## Project Structure
+[Relevant paths and ownership]
 
-With the validated spec, generate a technical implementation plan:
+## Commands
+[Build, test, lint, validation commands]
 
-1. Identify the major components and their dependencies
-2. Determine the implementation order (what must be built first)
-3. Note risks and mitigation strategies
-4. Identify what can be built in parallel vs. what must be sequential
-5. Define verification checkpoints between phases
+## Testing Approach
+[How this change will be verified]
 
-The plan should be reviewable: the human should be able to read it and say "yes, that's the right approach" or "no, change X."
-
-### Phase 3: Tasks
-
-Break the plan into discrete, implementable tasks:
-
-- Each task should be completable in a single focused session
-- Each task has explicit acceptance criteria
-- Each task includes a verification step (test, build, manual check)
-- Tasks are ordered by dependency, not by perceived importance
-- No task should require changing more than ~5 files
-
-**Task template:**
-```markdown
-- [ ] Task: [Description]
-  - Acceptance: [What must be true when done]
-  - Verify: [How to confirm — test command, build, manual check]
-  - Files: [Which files will be touched]
+## Technical Decisions
+[Chosen approach and tradeoffs]
 ```
 
-### Phase 4: Implement
+**Reframe instructions as success criteria.** When receiving vague requirements, translate them into concrete conditions and store them in `proposal.md` rather than keeping them in chat-only form.
 
-Execute tasks one at a time following `incremental-implementation` and `test-driven-development` skills. Use `context-engineering` to load the right spec sections and source files at each step rather than flooding the agent with the entire spec.
+### Phase 4: Plan Shared Work
+
+With the validated proposal and design, generate a shared story-level plan:
+
+1. Break work into stories in `tasks.md`
+2. Keep `tasks.md` at shared coordination level, not code-level subtasks
+3. Record sequencing, blockers, and cross-story dependencies in `execution.md`
+4. Use `.devlocal/<user>/<story-id>/scratchpad.md` for personal technical breakdown
+5. Treat `handoff.md` as the shared QA and validation guide for the change
+
+The output should be reviewable: the human should be able to read the change folder and say "yes, this is the right change definition" or "no, update X."
+
+### Phase 5: Implement With Promotion Rules
+
+Execute stories one at a time following `incremental-implementation` and `test-driven-development`. Keep the shared/personal boundary intact while you work.
+
+**Promotion protocol:**
+
+- **Coordination:** If personal breakdown reveals a dependency or team-impacting change, promote it to `tasks.md` or `execution.md`
+- **Evolution:** If an experiment changes scope, design, or constraints, promote it to `design.md`
+- **Disposability:** Anything left in `.devlocal/` after the story is merged is disposable
+
+Never allow `.devlocal/` to become the only place where a teammate or future agent would need to look for shared truth.
 
 ## Keeping the Spec Alive
 
-The spec is a living document, not a one-time artifact:
+The change folder is a living source of truth, not a one-time artifact:
 
-- **Update when decisions change** — If you discover the data model needs to change, update the spec first, then implement.
-- **Update when scope changes** — Features added or cut should be reflected in the spec.
-- **Commit the spec** — The spec belongs in version control alongside the code.
-- **Reference the spec in PRs** — Link back to the spec section that each PR implements.
+- **Update tracked artifacts when decisions change** — Change `proposal.md`, `design.md`, `tasks.md`, `execution.md`, or `handoff.md` before or alongside the code that depends on them
+- **Commit the change artifacts** — Shared truth belongs in version control alongside the code
+- **Reference the change in PRs** — Link back to the relevant artifact or section
+- **Reconcile approved truth back into `openspec/specs/`** — Once a change is accepted, the project truth should eventually reflect it
 
 ## Common Rationalizations
 
 | Rationalization | Reality |
 |---|---|
-| "This is simple, I don't need a spec" | Simple tasks don't need *long* specs, but they still need acceptance criteria. A two-line spec is fine. |
-| "I'll write the spec after I code it" | That's documentation, not specification. The spec's value is in forcing clarity *before* code. |
-| "The spec will slow us down" | A 15-minute spec prevents hours of rework. Waterfall in 15 minutes beats debugging in 15 hours. |
-| "Requirements will change anyway" | That's why the spec is a living document. An outdated spec is still better than no spec. |
-| "The user knows what they want" | Even clear requests have implicit assumptions. The spec surfaces those assumptions. |
+| "This is simple, I don't need a change folder" | Simple tasks don't need a huge change, but they still need tracked shared truth. A small OpenSpec change is fine. |
+| "I'll write the change after I code it" | That's documentation, not specification. The change folder exists to force clarity before code. |
+| "Private notes are enough" | Private notes help one developer. Shared truth has to live in tracked OpenSpec artifacts. |
+| "Requirements will change anyway" | That's why the change folder is living documentation. An updated tracked change beats chat-only context. |
+| "I'll just keep the blockers in my scratchpad" | If it affects another person or story, it belongs in `execution.md` or `tasks.md`. |
 
 ## Red Flags
 
-- Starting to write code without any written requirements
+- Starting to write code without an active OpenSpec change
+- Drafting a change without reading `openspec/specs/`
 - Asking "should I just start building?" before clarifying what "done" means
-- Implementing features not mentioned in any spec or task list
-- Making architectural decisions without documenting them
-- Skipping the spec because "it's obvious what to build"
+- Implementing features not mentioned in the change folder
+- Keeping cross-story dependencies only in `.devlocal/`
+- Letting `tasks.md` turn into a personal code-level checklist
 
 ## Verification
 
 Before proceeding to implementation, confirm:
 
-- [ ] The spec covers all six core areas
-- [ ] The human has reviewed and approved the spec
-- [ ] Success criteria are specific and testable
-- [ ] Boundaries (Always/Ask First/Never) are defined
-- [ ] The spec is saved to a file in the repository
+- [ ] The active change exists under `openspec/changes/<change-id>/`
+- [ ] `proposal.md`, `design.md`, `tasks.md`, `execution.md`, and `handoff.md` exist
+- [ ] `proposal.md` defines objective, scope, success criteria, and boundaries
+- [ ] `design.md` defines architecture, constraints, commands, and testing approach
+- [ ] `tasks.md` contains shared story-level work only
+- [ ] `execution.md` captures cross-story sequencing and blockers
+- [ ] The human has reviewed and approved the shared change truth

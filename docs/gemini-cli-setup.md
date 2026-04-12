@@ -2,6 +2,12 @@
 
 ## Setup
 
+From this repository, install the skill pack into your project with:
+
+```bash
+./scripts/install-plugin.sh gemini /path/to/your-project
+```
+
 ### Option 1: Install as Skills (Recommended)
 
 Gemini CLI has a native skills system that auto-discovers `SKILL.md` files in `.gemini/skills/` or `.agents/skills/` directories. Each skill activates on demand when it matches your task.
@@ -16,16 +22,17 @@ gemini skills install https://github.com/addyosmani/agent-skills.git --path skil
 
 ```bash
 git clone https://github.com/addyosmani/agent-skills.git
-gemini skills install /path/to/agent-skills/skills/
+cd agent-skills
+./scripts/install-plugin.sh gemini /path/to/your-project
 ```
 
 **Install for a specific workspace only:**
 
 ```bash
-gemini skills install /path/to/agent-skills/skills/ --scope workspace
+./scripts/install-plugin.sh gemini /path/to/your-project
 ```
 
-Skills installed at workspace scope go into `.gemini/skills/` (or `.agents/skills/`). User-level skills go into `~/.gemini/skills/`.
+The installer copies all skills into `.gemini/skills/`, which Gemini CLI auto-discovers for that workspace. If you prefer user-level installation, point the script at your home directory instead.
 
 Once installed, verify with:
 
