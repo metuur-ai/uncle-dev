@@ -6,11 +6,16 @@ Invoke the agent-skills:spec-driven-development skill.
 
 Begin by understanding what the user wants to build. First inspect `openspec/specs/` and any relevant open changes so the new change starts from current tracked truth.
 
-Require a `<change-id>` for the work. If the user did not provide one, ask for it or propose one for approval.
+Require a `<change-id>` for the work. Derive the next sequential ID as follows:
+
+1. Scan `openspec/changes/` for directories matching `NNN-*` (three-digit prefix)
+2. Extract the highest `NNN` found; next number = highest + 1 (use `001` if none exist)
+3. Propose the next ID to the user: `"Next change ID: 003-<descriptive-slug> — enter a slug or accept"`
+4. Validate any user-provided ID against the pattern `^\d{3}-.+`; reject and re-prompt if it does not match (e.g., reject `my-feature`, accept `003-my-feature`)
 
 Then use the OpenSpec CLI:
 
-1. `openspec change create <change-id>`
+1. `openspec change create <validated-change-id>`
 2. `openspec artifact add <change-id> execution.md`
 3. `openspec artifact add <change-id> handoff.md`
 

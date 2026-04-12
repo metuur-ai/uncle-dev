@@ -57,24 +57,21 @@ infer_target_from_path() {
   esac
 }
 
-fail_existing_file_conflict() {
+handle_existing_file_conflict() {
   local src="$1"
   local dest="$2"
 
   if [[ "$(basename "$dest")" == "AGENTS.md" ]]; then
     local target_tool
     target_tool="$(infer_target_from_path "$dest")"
-    log "Error: Refusing to overwrite existing file: $dest (rerun with --force)"
+    log "Conflict: existing file differs: $dest"
     log "The installed AGENTS.md differs from the source copy."
-    log "Update it with $target_tool so it matches:"
-    log "  $src"
-    log '```'
-    log "update your \`$dest\`"
-    log "all details that must be updated:"
-    cat "$src" >&2
-    log '```'
-    log "Or rerun with --force to replace it automatically."
-    exit 1
+    log "Replace it with the version from $target_tool?"
+    log "  source: $src"
+    if confirm "Replace $dest?"; then
+      cp "$src" "$dest"
+      return 0
+    fi
   fi
 
   fail "Refusing to overwrite existing file: $dest (rerun with --force)"
@@ -127,7 +124,8 @@ copy_file() {
   fi
 
   if [[ -e "$dest" && "$FORCE" -ne 1 ]]; then
-    fail_existing_file_conflict "$src" "$dest"
+    handle_existing_file_conflict "$src" "$dest"
+    return 0
   fi
 
   cp "$src" "$dest"

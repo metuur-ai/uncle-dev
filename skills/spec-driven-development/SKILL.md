@@ -54,7 +54,18 @@ Do not silently draft a change against stale or missing baseline context. The po
 
 ### Phase 2: Scaffold the Change
 
-Every non-trivial change needs a tracked OpenSpec change id. If the human did not provide one, ask for it or propose one for approval before scaffolding.
+Every non-trivial change needs a tracked OpenSpec change id. If the human did not provide one, derive and propose the next sequential ID before scaffolding.
+
+#### Change ID Convention
+
+Change IDs must follow the format `NNN-descriptive-slug`, where `NNN` is a zero-padded three-digit counter:
+
+- **Format:** `^\d{3}-.+` — e.g., `001-favorites-feature`, `002-auth-fix`, `015-dark-mode-toggle`
+- **Derive the counter:** scan `openspec/changes/` for directories matching `NNN-*`, extract the highest `NNN`, and use `highest + 1` as the next number (default `001` if no changes exist)
+- **Propose to the user:** `"Next change ID: 003-<descriptive-slug> — enter a slug or accept"`
+- **Validate:** if the user provides a custom ID, reject any value that does not match `^\d{3}-.+` and re-prompt
+
+**Red flag:** Never accept a plain slug like `my-feature` as a change ID — always require the numeric prefix.
 
 Use the OpenSpec CLI as the standard workflow:
 

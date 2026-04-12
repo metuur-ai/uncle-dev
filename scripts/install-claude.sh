@@ -141,6 +141,23 @@ jq \
   "${INSTALLED_FILE}" > "${INSTALLED_FILE}.tmp"
 mv "${INSTALLED_FILE}.tmp" "${INSTALLED_FILE}"
 
+# ── copy commands to ~/.claude/commands/ for bare /cmd access ─────────────────
+
+USER_COMMANDS_DIR="${HOME}/.claude/commands"
+mkdir -p "${USER_COMMANDS_DIR}"
+
+log "Copying commands to ${USER_COMMANDS_DIR} for bare slash-command access"
+
+for f in "${CACHE_PATH}/commands"/*.md; do
+  dest="${USER_COMMANDS_DIR}/$(basename "${f}")"
+  if [[ -f "${dest}" && "${FORCE}" -ne 1 ]]; then
+    log "  Skipping $(basename "${f}") (already exists, use --force to overwrite)"
+  else
+    cp "${f}" "${dest}"
+    log "  Copied $(basename "${f}")"
+  fi
+done
+
 # ── done ──────────────────────────────────────────────────────────────────────
 
 log ""

@@ -42,6 +42,10 @@ By default, the script:
 - skips identical files
 - refuses to overwrite different existing files
 
+Special case:
+
+- if `AGENTS.md` differs, the script asks for confirmation before replacing it
+
 Use `--force` to replace files during re-installation.
 
 ### Supported Targets
