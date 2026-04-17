@@ -2,6 +2,15 @@
 description: Implement the next task incrementally — build, test, verify, commit
 ---
 
+## Working Principles
+
+1. **Think Before Coding** — Read the acceptance criteria and existing code before writing a single line. If the story is ambiguous, stop and clarify.
+2. **Simplicity First** — Implement the minimum code to pass the test. Resist "while I'm here" improvements.
+3. **Surgical Changes** — Touch only what the story requires. Don't refactor adjacent code, fix unrelated issues, or clean up pre-existing style.
+4. **Goal-Driven Execution** — Write a failing test first. Success means: test passes, build succeeds, no regressions, story marked complete.
+
+---
+
 Invoke the agent-skills:incremental-implementation skill alongside agent-skills:test-driven-development.
 
 Pick the next pending shared story from the active change's `tasks.md`. For each story:

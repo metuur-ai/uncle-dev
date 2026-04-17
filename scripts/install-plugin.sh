@@ -242,7 +242,6 @@ install_getting_started() {
 
   copy_dir_contents "$REPO_ROOT/skills" "$base_dir/skills"
   copy_dir_contents "$REPO_ROOT/agents" "$base_dir/agents"
-  copy_dir_contents "$REPO_ROOT/references" "$base_dir/references"
 }
 
 install_windsurf() {
@@ -266,12 +265,15 @@ install_opencode() {
   local workspace="$1"
   local agents_dest
   local skills_dest
+  local agent_personas_dest
   agents_dest="$(scope_root "$workspace/AGENTS.md" "$HOME/.config/opencode/AGENTS.md")"
   skills_dest="$(scope_root "$workspace/.opencode/skills" "$HOME/.config/opencode/skills")"
+  agent_personas_dest="$(scope_root "$workspace/.opencode/agents" "$HOME/.config/opencode/agents")"
   log "Installing for OpenCode in $(dirname "$agents_dest")"
 
   copy_file "$REPO_ROOT/AGENTS.md" "$agents_dest"
   copy_dir_contents "$REPO_ROOT/skills" "$skills_dest"
+  copy_dir_contents "$REPO_ROOT/agents" "$agent_personas_dest"
 }
 
 run_target() {

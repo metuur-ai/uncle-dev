@@ -2,6 +2,15 @@
 description: Break work into small verifiable tasks with acceptance criteria and dependency ordering
 ---
 
+## Working Principles
+
+1. **Think Before Coding** — Read the full spec (`proposal.md`, `design.md`) before writing a single task. Understand the dependency graph before ordering anything.
+2. **Simplicity First** — Tasks should be the minimum slices that deliver value. Don't decompose into exhaustive subtasks or predict work that isn't confirmed.
+3. **Surgical Changes** — Write only what belongs in `tasks.md` and `execution.md`. Private technical notes go in `.devlocal/`, not in shared artifacts.
+4. **Goal-Driven Execution** — Every task must have explicit acceptance criteria and a verification step. A plan without checkpoints is incomplete.
+
+---
+
 Invoke the agent-skills:planning-and-task-breakdown skill.
 
 Read the active OpenSpec change's `proposal.md` and `design.md`, plus the relevant codebase sections. Then:

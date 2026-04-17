@@ -13,6 +13,7 @@ PLUGIN_NAME="uncle-dev-agent-skills"
 PLUGIN_KEY="${PLUGIN_NAME}@${MARKETPLACE_ID}"
 VERSION="1.0.0"
 CACHE_PATH="${PLUGINS_DIR}/cache/${MARKETPLACE_ID}/${PLUGIN_NAME}/${VERSION}"
+DIST_DIR="${REPO_ROOT}/dist"
 
 SCOPE="user"
 FORCE=0
@@ -23,8 +24,9 @@ Usage:
   ./scripts/install-claude.sh [--scope user|local] [--force]
 
 Installs this repository as a Claude Code plugin without requiring a GitHub
-SSH key. Copies commands into ~/.claude/plugins/cache/ and registers the
-plugin so Claude Code can load it on next startup.
+SSH key. Copies commands, skills, agents, and hooks into ~/.claude/plugins/cache/
+and registers the plugin so Claude Code can load it on next startup.
+Also generates dist/uncle-dev-claude.tar.gz for distribution.
 
 Options:
   --scope   Plugin scope: user (default) or local
@@ -97,6 +99,15 @@ mkdir -p "${CACHE_PATH}"
 # commands/ — Claude looks for this at the cache root
 cp -r "${REPO_ROOT}/.claude/commands" "${CACHE_PATH}/commands"
 
+# skills/ — all skill directories with SKILL.md and colocated reference files
+cp -r "${REPO_ROOT}/skills" "${CACHE_PATH}/skills"
+
+# agents/ — reusable agent personas
+cp -r "${REPO_ROOT}/agents" "${CACHE_PATH}/agents"
+
+# hooks/ — session lifecycle hooks
+cp -r "${REPO_ROOT}/hooks" "${CACHE_PATH}/hooks"
+
 # .claude-plugin/plugin.json — plugin metadata
 mkdir -p "${CACHE_PATH}/.claude-plugin"
 jq '{name, version, description, author, license}' \
@@ -158,6 +169,14 @@ for f in "${CACHE_PATH}/commands"/*.md; do
   fi
 done
 
+# ── generate distributable archive ───────────────────────────────────────────
+
+mkdir -p "${DIST_DIR}"
+ARCHIVE="${DIST_DIR}/uncle-dev-claude.tar.gz"
+
+log "Generating archive at ${ARCHIVE}"
+tar -czf "${ARCHIVE}" -C "$(dirname "${CACHE_PATH}")" "$(basename "${CACHE_PATH}")"
+
 # ── done ──────────────────────────────────────────────────────────────────────
 
 log ""
@@ -166,4 +185,5 @@ for f in "${CACHE_PATH}/commands"/*.md; do
   log "  /$(basename "${f%.md}")"
 done
 log ""
+log "Archive: ${ARCHIVE}"
 log "Restart Claude Code for the commands to become available."

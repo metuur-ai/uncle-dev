@@ -2,6 +2,15 @@
 description: Simplify code for clarity and maintainability — reduce complexity without changing behavior
 ---
 
+## Working Principles
+
+1. **Think Before Coding** — Understand the code's purpose, callers, and edge cases before touching it. Never simplify what you don't fully understand.
+2. **Simplicity First** — Simplify toward clarity, not cleverness. A longer readable function beats a terse cryptic one.
+3. **Surgical Changes** — Only simplify code in the specified scope. Don't fix adjacent issues you notice along the way.
+4. **Goal-Driven Execution** — Success means all tests still pass, the diff is smaller, and the code reads more easily than before.
+
+---
+
 Invoke the agent-skills:dev-code-simplification skill.
 
 Simplify recently changed code (or the specified scope) while preserving exact behavior:

@@ -2,6 +2,15 @@
 description: Run TDD workflow — write failing tests, implement, verify. For bugs, use the Prove-It pattern.
 ---
 
+## Working Principles
+
+1. **Think Before Coding** — Understand what the code does before writing tests. Read the spec and identify the right test level (unit, integration, E2E).
+2. **Simplicity First** — Test behavior, not implementation. Avoid testing internals that shouldn't be exposed to callers.
+3. **Surgical Changes** — Write tests for the feature at hand. Don't rewrite the existing test suite or improve unrelated coverage.
+4. **Goal-Driven Execution** — A test is only done when it fails for the right reason, then passes for the right reason. Green without first seeing red is not TDD.
+
+---
+
 Invoke the agent-skills:test-driven-development skill.
 
 For new features:

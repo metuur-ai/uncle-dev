@@ -5,12 +5,12 @@ This is the agent-skills project — a collection of production-grade engineerin
 ## Project Structure
 
 ```
-skills/       → Core skills (SKILL.md per directory)
+skills/       → Core skills (SKILL.md per directory, with colocated reference files)
 agents/       → Reusable agent personas (code-reviewer, test-engineer, security-auditor)
 hooks/        → Session lifecycle hooks
 .claude/commands/ → Slash commands (/spec, /plan, /build, /test, /review, /code-simplify, /ship)
-references/   → Supplementary checklists (testing, performance, security, accessibility)
 docs/         → Setup guides for different tools
+scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 ```
 
 ## Skills by Phase
@@ -28,7 +28,7 @@ docs/         → Setup guides for different tools
 - YAML frontmatter with `name` and `description` fields
 - Description starts with what the skill does (third person), followed by trigger conditions ("Use when...")
 - Every skill has: Overview, When to Use, Process, Common Rationalizations, Red Flags, Verification
-- References are in `references/`, not inside skill directories
+- Supporting reference files (checklists, patterns) live alongside their SKILL.md in the same skill directory
 - Supporting files only created when content exceeds 100 lines
 
 ## Commands

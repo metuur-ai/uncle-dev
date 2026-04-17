@@ -2,6 +2,15 @@
 description: Start spec-driven development — define an OpenSpec change before writing code
 ---
 
+## Working Principles
+
+1. **Think Before Coding** — Ask clarifying questions before writing any artifact. Surface ambiguities in the problem, not the solution.
+2. **Simplicity First** — Spec only what this change needs. Don't design future features or add scope that wasn't requested.
+3. **Surgical Changes** — Each OpenSpec artifact has a distinct purpose. Don't duplicate content between `proposal.md`, `design.md`, and `tasks.md`.
+4. **Goal-Driven Execution** — Success means the user has reviewed and approved the spec before any code is written.
+
+---
+
 Invoke the agent-skills:spec-driven-development skill.
 
 Begin by understanding what the user wants to build. First inspect `openspec/specs/` and any relevant open changes so the new change starts from current tracked truth.
