@@ -77,6 +77,8 @@ Create a rules file that persists across sessions. This is the highest-leverage 
 - `.github/copilot-instructions.md` (GitHub Copilot)
 - `AGENTS.md` (OpenAI Codex)
 
+To enforce that `AGENTS.md` files are read before every edit and kept current after structural changes, apply the `code-context` skill. It is the operational enforcement layer for the context hierarchy described here.
+
 ### Level 2: Specs and Architecture
 
 Load the relevant spec section when starting a feature. Don't load the entire spec if only one section applies.

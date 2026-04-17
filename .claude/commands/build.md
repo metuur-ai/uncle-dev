@@ -15,6 +15,7 @@ Invoke the agent-skills:incremental-implementation skill alongside agent-skills:
 
 Pick the next pending shared story from the active change's `tasks.md`. For each story:
 
+0. Apply agent-skills:code-context — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
 1. Read the story's acceptance criteria and dependencies
 2. Load relevant context (existing code, patterns, types)
 3. If useful, break the implementation into private technical steps in `.devlocal/<user>/<story-id>/scratchpad.md`

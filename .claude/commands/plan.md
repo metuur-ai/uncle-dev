@@ -13,7 +13,7 @@ description: Break work into small verifiable tasks with acceptance criteria and
 
 Invoke the agent-skills:planning-and-task-breakdown skill.
 
-Read the active OpenSpec change's `proposal.md` and `design.md`, plus the relevant codebase sections. Then:
+Read the active OpenSpec change's `proposal.md` and `design.md`, plus the relevant codebase sections. Apply agent-skills:code-context to read `AGENTS.md` files in all directories the plan will touch — this establishes architecture boundaries before task ordering begins. Then:
 
 1. Enter plan mode — read only, no code changes
 2. Identify the dependency graph between components
