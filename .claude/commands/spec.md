@@ -11,7 +11,7 @@ description: Start spec-driven development — define an OpenSpec change before 
 
 ---
 
-Invoke the agent-skills:spec-driven-development skill.
+Invoke the agent-skills:uncle-dev-spec-driven-development skill.
 
 Begin by understanding what the user wants to build. First inspect `openspec/specs/` and any relevant open changes so the new change starts from current tracked truth.
 

@@ -11,11 +11,11 @@ description: Implement the next task incrementally — build, test, verify, comm
 
 ---
 
-Invoke the agent-skills:incremental-implementation skill alongside agent-skills:test-driven-development.
+Invoke the agent-skills:uncle-dev-incremental-implementation skill alongside agent-skills:uncle-dev-test-driven-development.
 
 Pick the next pending shared story from the active change's `tasks.md`. For each story:
 
-0. Apply agent-skills:code-context — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
+0. Apply agent-skills:uncle-dev-code-context — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
 1. Read the story's acceptance criteria and dependencies
 2. Load relevant context (existing code, patterns, types)
 3. If useful, break the implementation into private technical steps in `.devlocal/<user>/<story-id>/scratchpad.md`
@@ -30,4 +30,4 @@ Pick the next pending shared story from the active change's `tasks.md`. For each
 9. Commit with a descriptive message
 10. Mark the story complete and move to the next one
 
-If any step fails, follow the agent-skills:debugging-and-error-recovery skill.
+If any step fails, follow the agent-skills:uncle-dev-debugging-and-error-recovery skill.

@@ -11,7 +11,7 @@ description: Simplify code for clarity and maintainability — reduce complexity
 
 ---
 
-Invoke the agent-skills:dev-code-simplification skill.
+Invoke the agent-skills:uncle-dev-dev-code-simplification skill.
 
 Simplify recently changed code (or the specified scope) while preserving exact behavior:
 

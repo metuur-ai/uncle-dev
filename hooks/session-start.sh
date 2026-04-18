@@ -4,7 +4,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILLS_DIR="$(dirname "$SCRIPT_DIR")/skills"
-META_SKILL="$SKILLS_DIR/using-agent-skills/SKILL.md"
+META_SKILL="$SKILLS_DIR/uncle-dev-using-agent-skills/SKILL.md"
 
 if [ -f "$META_SKILL" ]; then
   CONTENT=$(cat "$META_SKILL")

@@ -11,7 +11,7 @@ description: Run the pre-launch checklist and prepare for production deployment
 
 ---
 
-Invoke the agent-skills:shipping-and-launch skill.
+Invoke the agent-skills:uncle-dev-shipping-and-launch skill.
 
 Run through the complete pre-launch checklist:
 

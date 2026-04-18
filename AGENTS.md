@@ -6,6 +6,52 @@ This file provides guidance to AI coding agents (Claude Code, Cursor, Copilot, A
 
 A collection of skills for Claude.ai and Claude Code for senior software engineers. Skills are packaged instructions and scripts that extend Claude and your coding agents capabilities.
 
+## Uncle Dev Commands
+
+When the user types any `/uncle-dev-*` command, invoke the corresponding skill
+or agent immediately. Do not ask for clarification first.
+
+### Workflow Commands
+
+| Command | Invokes |
+|---------|---------|
+| /uncle-dev-spec | uncle-dev-spec-driven-development |
+| /uncle-dev-plan | uncle-dev-planning-and-task-breakdown |
+| /uncle-dev-build | uncle-dev-incremental-implementation + uncle-dev-test-driven-development |
+| /uncle-dev-test | uncle-dev-test-driven-development |
+| /uncle-dev-review | uncle-dev-code-review-and-quality |
+| /uncle-dev-code-simplify | uncle-dev-dev-code-simplification |
+| /uncle-dev-ship | uncle-dev-shipping-and-launch |
+
+### Skill Commands
+
+| Command | Invokes |
+|---------|---------|
+| /uncle-dev-idea-refine | uncle-dev-idea-refine |
+| /uncle-dev-context-engineering | uncle-dev-context-engineering |
+| /uncle-dev-source-driven-development | uncle-dev-source-driven-development |
+| /uncle-dev-frontend-ui-engineering | uncle-dev-frontend-ui-engineering |
+| /uncle-dev-api-and-interface-design | uncle-dev-api-and-interface-design |
+| /uncle-dev-security-and-hardening | uncle-dev-security-and-hardening |
+| /uncle-dev-performance-optimization | uncle-dev-performance-optimization |
+| /uncle-dev-debugging-and-error-recovery | uncle-dev-debugging-and-error-recovery |
+| /uncle-dev-browser-testing-with-devtools | uncle-dev-browser-testing-with-devtools |
+| /uncle-dev-git-workflow-and-versioning | uncle-dev-git-workflow-and-versioning |
+| /uncle-dev-ci-cd-and-automation | uncle-dev-ci-cd-and-automation |
+| /uncle-dev-documentation-and-adrs | uncle-dev-documentation-and-adrs |
+| /uncle-dev-deprecation-and-migration | uncle-dev-deprecation-and-migration |
+| /uncle-dev-code-context | uncle-dev-code-context |
+
+### Agent Commands
+
+| Command | Invokes |
+|---------|---------|
+| /uncle-dev-code-reviewer | code-reviewer agent persona (agents/code-reviewer.md) |
+| /uncle-dev-security-auditor | security-auditor agent persona (agents/security-auditor.md) |
+| /uncle-dev-test-engineer | test-engineer agent persona (agents/test-engineer.md) |
+
+---
+
 ## OpenCode Integration
 
 OpenCode uses a **skill-driven execution model** powered by the `skill` tool and this repository's `/skills` directory.
@@ -21,13 +67,13 @@ OpenCode uses a **skill-driven execution model** powered by the `skill` tool and
 
 The agent should automatically map user intent to skills:
 
-- Feature / new functionality → `spec-driven-development`, then `incremental-implementation`, `test-driven-development`
-- Planning / breakdown → `planning-and-task-breakdown`
-- Bug / failure / unexpected behavior → `debugging-and-error-recovery`
-- Code review → `code-review-and-quality`
-- Refactoring / simplification → `dev-code-simplification`
-- API or interface design → `api-and-interface-design`
-- UI work → `frontend-ui-engineering`
+- Feature / new functionality → `uncle-dev-spec-driven-development`, then `uncle-dev-incremental-implementation`, `uncle-dev-test-driven-development`
+- Planning / breakdown → `uncle-dev-planning-and-task-breakdown`
+- Bug / failure / unexpected behavior → `uncle-dev-debugging-and-error-recovery`
+- Code review → `uncle-dev-code-review-and-quality`
+- Refactoring / simplification → `uncle-dev-dev-code-simplification`
+- API or interface design → `uncle-dev-api-and-interface-design`
+- UI work → `uncle-dev-frontend-ui-engineering`
 
 ### Lifecycle Mapping (Implicit Commands)
 
@@ -35,12 +81,12 @@ OpenCode does not support slash commands like `/spec` or `/plan`.
 
 Instead, the agent must internally follow this lifecycle:
 
-- DEFINE → `spec-driven-development`
-- PLAN → `planning-and-task-breakdown`
-- BUILD → `incremental-implementation` + `test-driven-development`
-- VERIFY → `debugging-and-error-recovery`
-- REVIEW → `code-review-and-quality`
-- SHIP → `shipping-and-launch`
+- DEFINE → `uncle-dev-spec-driven-development`
+- PLAN → `uncle-dev-planning-and-task-breakdown`
+- BUILD → `uncle-dev-incremental-implementation` + `uncle-dev-test-driven-development`
+- VERIFY → `uncle-dev-debugging-and-error-recovery`
+- REVIEW → `uncle-dev-code-review-and-quality`
+- SHIP → `uncle-dev-shipping-and-launch`
 
 ### Execution Model
 
