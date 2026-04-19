@@ -15,7 +15,7 @@ AGENTS_MD="$DIR/AGENTS.md"
 if [ -f "$AGENTS_MD" ]; then
   cat <<EOF
 {
-  "priority": "IMPORTANT",
+  "priority": "INFO",
   "message": "code-context: AGENTS.md exists for the directory you are about to edit.\nRead it before making changes: $AGENTS_MD"
 }
 EOF

@@ -204,6 +204,99 @@ our project conventions. The spec says [X]. The change should [Y].
 Flag any issues as Critical, Important, or Suggestion.
 ```
 
+## Parallel Orchestration Mode
+
+For significant changes, run three specialized subagents in parallel then synthesize. Use this when the change is large (>300 lines), touches security-sensitive paths, or requires architectural judgment beyond a quick check.
+
+```
+         ┌──────────────────────┐
+         │ uncle-dev-ag-        │ ─┐
+         │ code-reviewer        │  │
+         └──────────────────────┘  │
+                                   │     ┌────────────────────────┐
+         ┌──────────────────────┐  ├────▶│ uncle-dev-ag-          │
+         │ plan-reviewer        │  │     │ review-synthesizer      │
+         │ (architecture)       │  │     └────────────────────────┘
+         └──────────────────────┘  │
+                                   │
+         ┌──────────────────────┐  │
+         │ plan-reviewer        │ ─┘
+         │ (change impact)      │
+         └──────────────────────┘
+
+         Parallel                        Sequential
+         (background)                    synthesis
+```
+
+### When to Use Parallel Mode
+
+- Change exceeds ~300 lines or touches multiple subsystems
+- Security-sensitive paths (auth, data access, payment flows)
+- Architectural decisions need a second opinion
+- PR review against a feature branch with a known implementation plan
+
+### Agent Roles
+
+| Agent | Focus | Five-Axis Coverage |
+|---|---|---|
+| `uncle-dev-ag-code-reviewer` | Code quality, correctness, readability | Correctness, Readability, Performance |
+| `plan-reviewer` (architecture) | Pattern adherence, system fit, module boundaries | Architecture |
+| `plan-reviewer` (change impact) | Risk, backward compatibility, regressions, security implications | Security, risk |
+
+For `--security` mode, add `uncle-dev-ag-security-auditor` to the parallel phase.
+
+### Phase 1: Parallel Reviews (run all in background)
+
+```
+Task(
+  subagent_type="uncle-dev-ag-code-reviewer",
+  prompt="Review code quality for: [SCOPE]. Evaluate correctness, readability, performance. Output: issues with severity (critical/major/minor).",
+  run_in_background=true
+)
+
+Task(
+  subagent_type="general-purpose",
+  prompt="Review architecture alignment for: [SCOPE]. Check: follows established patterns, consistent with system design, no architectural violations. Output: alignment assessment with concerns.",
+  run_in_background=true
+)
+
+Task(
+  subagent_type="general-purpose",
+  prompt="Review change impact for: [SCOPE]. Assess: risk level, affected systems, backward compatibility, potential regressions, security implications. Output: risk assessment.",
+  run_in_background=true
+)
+
+# Wait for all three before proceeding
+```
+
+### Phase 2: Synthesis
+
+Pass all three outputs to `uncle-dev-ag-review-synthesizer`:
+
+```
+Task(
+  subagent_type="uncle-dev-ag-review-synthesizer",
+  prompt="""
+  Synthesize reviews for: [SCOPE]
+
+  Code quality review: [output from agent 1]
+  Architecture review: [output from agent 2]
+  Change impact review: [output from agent 3]
+  """
+)
+```
+
+The synthesizer deduplicates overlapping findings, classifies each as blocking or non-blocking, issues a verdict (APPROVE / REQUEST_CHANGES / NEEDS_DISCUSSION), and writes a PR summary paragraph.
+
+### Review Modes
+
+| Mode | Signal | Agents Used |
+|---|---|---|
+| Full | `/uncle-dev-review` | All three parallel + synthesis |
+| Quick | `/uncle-dev-review --quick` | `uncle-dev-ag-code-reviewer` only |
+| Security | `/uncle-dev-review --security` | All three + `uncle-dev-ag-security-auditor` in parallel phase |
+| PR | `/uncle-dev-review PR #NNN` | Fetch diff first, then full mode |
+
 ## Dead Code Hygiene
 
 After any refactoring or implementation change, check for orphaned code:

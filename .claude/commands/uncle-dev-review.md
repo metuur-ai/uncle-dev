@@ -13,7 +13,23 @@ description: Conduct a five-axis code review — correctness, readability, archi
 
 Invoke the agent-skills:uncle-dev-code-review-and-quality skill.
 
-Review the current changes (staged or recent commits) across all five axes:
+Detect the review mode from the user's input and dispatch accordingly:
+
+**`/uncle-dev-review`** (full) — Run three parallel agents (code quality, architecture, change impact), then synthesize with `uncle-dev-ag-review-synthesizer`. Use for significant changes (>300 lines, security-sensitive, or architectural decisions).
+
+**`/uncle-dev-review --quick`** — Run `uncle-dev-ag-code-reviewer` only. Use for small, focused changes.
+
+**`/uncle-dev-review --security`** — Full parallel mode plus `uncle-dev-ag-security-auditor` added to the parallel phase.
+
+**`/uncle-dev-review PR #NNN`** — Fetch the PR diff first with `gh pr diff NNN`, then run full mode on the diff.
+
+For full and security modes, use the Parallel Orchestration Mode from the skill:
+1. Spawn all agents in background concurrently
+2. Wait for all to complete
+3. Pass all outputs to `uncle-dev-ag-review-synthesizer`
+4. Present the synthesized verdict (APPROVE / REQUEST_CHANGES / NEEDS_DISCUSSION), blocking issues, non-blocking issues, and PR summary
+
+For quick mode, review across all five axes directly:
 
 1. **Correctness** — Does it match the spec? Edge cases handled? Tests adequate?
 2. **Readability** — Clear names? Straightforward logic? Well-organized?

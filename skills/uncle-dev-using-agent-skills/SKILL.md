@@ -16,8 +16,9 @@ When a task arrives, identify the development phase and apply the corresponding 
 ```
 Task arrives
     │
-    ├── Vague idea/need refinement? ──→ idea-refine
-    ├── New project/feature/change? ──→ spec-driven-development
+    ├── Need to understand codebase first? ──→ uncle-dev-research
+    ├── Vague idea/need refinement? ──────────→ idea-refine
+    ├── New project/feature/change? ──────────→ spec-driven-development
     ├── Have a spec, need tasks? ──────→ planning-and-task-breakdown
     ├── Implementing code? ────────────→ incremental-implementation
     │   ├── UI work? ─────────────────→ frontend-ui-engineering
@@ -163,6 +164,7 @@ knowledge-maintenance → Triggered after refactors, migrations, or when docs fe
 
 | Phase | Skill | One-Line Summary |
 |-------|-------|-----------------|
+| Define | uncle-dev-research | Document what exists before speccing what to build |
 | Define | idea-refine | Refine ideas through structured divergent and convergent thinking |
 | Define | spec-driven-development | Requirements and acceptance criteria before code |
 | Plan | planning-and-task-breakdown | Decompose into small, verifiable tasks |
