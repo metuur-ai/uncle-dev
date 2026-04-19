@@ -34,24 +34,26 @@ Installs the full plugin bundle into Claude Code's plugin cache and registers it
 
 ### `install-codex.sh` — OpenAI Codex CLI
 
-Installs AGENTS.md, skills, and agent personas for Codex. Codex reads AGENTS.md automatically from `~/.codex/` (global) or the project root (local).
+Installs Uncle Dev as a native Codex plugin assembled at install time from shared repo sources.
 
 **Bundle contents:**
-- `AGENTS.md` — agent instructions and skill routing rules
-- `skills/` — all 20 skill directories with SKILL.md and colocated reference files
-- `agents/` — agent personas
+- `plugins/uncle-dev/.codex-plugin/plugin.json` — Codex plugin manifest
+- `plugins/uncle-dev/commands/` — Codex command entrypoints (`uncle-dev-spec`, `uncle-dev-plan`, etc.)
+- `plugins/uncle-dev/skills/` — copied from the shared root `skills/` directory at install time
+- `plugins/uncle-dev/agents/` — copied from the shared root `agents/` directory at install time
+- `.agents/plugins/marketplace.json` — marketplace metadata for Codex plugin discovery
 
 **Usage:**
 ```bash
-./scripts/install-codex.sh                              # global user scope (default)
+./scripts/install-codex.sh                              # user scope (default)
 ./scripts/install-codex.sh --scope local ~/code/my-app  # project scope
 ./scripts/install-codex.sh --scope local .              # current directory
 ./scripts/install-codex.sh --force                      # re-install
 ```
 
 **Scope destinations:**
-- `--scope user` → `~/.codex/`
-- `--scope local` → `<workspace>/`
+- `--scope user` → `~/plugins/uncle-dev` plus `~/.agents/plugins/marketplace.json`
+- `--scope local` → `<workspace>/plugins/uncle-dev` plus `<workspace>/.agents/plugins/marketplace.json`
 
 **Output:** `dist/uncle-dev-codex.tar.gz`
 
@@ -105,7 +107,7 @@ Each tool's install script generates a `.tar.gz` archive suitable for distributi
 | Archive | Contents |
 |---------|----------|
 | `dist/uncle-dev-claude.tar.gz` | commands, skills, agents, hooks, plugin.json |
-| `dist/uncle-dev-codex.tar.gz` | AGENTS.md, skills, agents |
+| `dist/uncle-dev-codex.tar.gz` | Codex plugin wrapper, copied shared skills, copied shared agents, marketplace.json |
 | `dist/uncle-dev-opencode.tar.gz` | AGENTS.md, skills, agents |
 
 Archives are regenerated on every install run. The `dist/` directory is not committed to the repository.

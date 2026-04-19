@@ -1,0 +1,42 @@
+{
+  "name": "uncle-dev",
+  "version": "1.0.0",
+  "description": "Production-grade engineering skills for AI coding agents.",
+  "author": {
+    "name": "Javier Benavides",
+    "url": "https://github.com/javierhbr"
+  },
+  "homepage": "https://github.com/javierhbr/production-grade-agent-skills",
+  "repository": "https://github.com/javierhbr/production-grade-agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "skills",
+    "engineering",
+    "spec-driven-development",
+    "testing",
+    "code-review"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Uncle Dev",
+    "shortDescription": "Senior engineering workflows for Codex",
+    "longDescription": "Bring Uncle Dev's production-grade engineering workflows into Codex with native commands plus shared skills and agent personas assembled from this repository's canonical sources.",
+    "developerName": "Javier Benavides",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/javierhbr/production-grade-agent-skills",
+    "privacyPolicyURL": "https://github.com/javierhbr/production-grade-agent-skills",
+    "termsOfServiceURL": "https://github.com/javierhbr/production-grade-agent-skills",
+    "defaultPrompt": [
+      "Create an OpenSpec change for this feature",
+      "Plan the next slice with acceptance criteria",
+      "Review this change with staff-level rigor"
+    ],
+    "brandColor": "#0F172A",
+    "screenshots": []
+  }
+}

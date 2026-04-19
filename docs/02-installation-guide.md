@@ -16,6 +16,21 @@ git clone https://github.com/addyosmani/agent-skills.git
 claude --plugin-dir /path/to/agent-skills
 ```
 
+## Codex
+Codex can install Uncle Dev as a native local plugin assembled from the shared source directories in this repository.
+
+**User Installation:**
+```bash
+./scripts/install-codex.sh
+```
+
+**Local Project Installation:**
+```bash
+./scripts/install-codex.sh --scope local .
+```
+
+This assembles `plugins/uncle-dev/` from the repo's shared `skills/` and `agents/` directories and registers it via `.agents/plugins/marketplace.json` in the selected install root.
+
 ## Cursor
 Cursor IDE reads instruction rules from the `.cursor/rules/` directory.
 

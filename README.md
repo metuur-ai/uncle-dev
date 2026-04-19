@@ -112,7 +112,28 @@ Use agent definitions from `agents/` as Copilot personas and skill content in `.
 </details>
 
 <details>
-<summary><b>Codex / Other Agents</b></summary>
+<summary><b>Codex</b></summary>
+
+Install Uncle Dev as a native local plugin assembled from the shared `skills/` and `agents/` directories at install time.
+
+**User install:**
+
+```bash
+./scripts/install-codex.sh
+```
+
+**Project install:**
+
+```bash
+./scripts/install-codex.sh --scope local /path/to/your-project
+```
+
+This creates `plugins/uncle-dev/` and `.agents/plugins/marketplace.json` in the selected install root. Shared skills and agent personas are copied into the assembled plugin bundle by the installer, not duplicated in source control.
+
+</details>
+
+<details>
+<summary><b>Other Agents</b></summary>
 
 Skills are plain Markdown - they work with any agent that accepts system prompts or instruction files. See [docs/getting-started.md](docs/getting-started.md).
 
