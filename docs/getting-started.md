@@ -113,12 +113,12 @@ The `.claude/commands/` directory contains slash commands for Claude Code:
 
 | Command | Skill Invoked |
 |---------|---------------|
-| `/spec` | spec-driven-development |
-| `/plan` | planning-and-task-breakdown |
-| `/build` | incremental-implementation + test-driven-development |
-| `/test` | test-driven-development |
-| `/review` | code-review-and-quality |
-| `/ship` | shipping-and-launch |
+| `/uncle-dev-spec` | spec-driven-development |
+| `/uncle-dev-plan` | planning-and-task-breakdown |
+| `/uncle-dev-build` | incremental-implementation + test-driven-development |
+| `/uncle-dev-test` | test-driven-development |
+| `/uncle-dev-review` | code-review-and-quality |
+| `/uncle-dev-ship` | shipping-and-launch |
 
 For DEFINE and PLAN, the canonical workflow now uses OpenSpec:
 
@@ -143,7 +143,7 @@ Load a reference when you need detailed patterns beyond what the skill covers.
 
 ## Spec and task artifacts
 
-The `/spec` and `/plan` commands use OpenSpec as the default shared workflow. Treat these artifacts as **living documents** while the work is in progress:
+The `/uncle-dev-spec` and `/uncle-dev-plan` commands use OpenSpec as the default shared workflow. Treat these artifacts as **living documents** while the work is in progress:
 
 - `openspec/specs/` — current project truth tracked in git
 - `openspec/changes/<change-id>/proposal.md` — objective, scope, success criteria, boundaries
@@ -159,7 +159,7 @@ Operational rules:
 - Promote team-impacting discoveries from `.devlocal/` into `tasks.md`, `execution.md`, or `design.md`
 - Treat anything left in `.devlocal/` after the story is merged as disposable
 
-Legacy note: root-level `SPEC.md` and `tasks/plan.md` / `tasks/todo.md` are no longer the default workflow. Use them only for migration or compatibility with older repos.
+Legacy note: root-level `SPEC.md` and `tasks/uncle-dev-plan.md` / `tasks/todo.md` are no longer the default workflow. Use them only for migration or compatibility with older repos.
 
 Working rules:
 

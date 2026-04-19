@@ -23,9 +23,9 @@ Rules in this directory are automatically loaded into Cursor's context.
 Create a `.cursorrules` file in your project root with the essential skills inlined:
 
 ```bash
-cat /path/to/agent-skills/skills/test-driven-development/SKILL.md > .cursorrules
+cat /path/to/agent-skills/skills/uncle-dev-test-driven-development/SKILL.md > .cursorrules
 printf '\n---\n' >> .cursorrules
-cat /path/to/agent-skills/skills/code-review-and-quality/SKILL.md >> .cursorrules
+cat /path/to/agent-skills/skills/uncle-dev-code-review-and-quality/SKILL.md >> .cursorrules
 ```
 
 ### Option 3: Notepads
@@ -34,7 +34,7 @@ Cursor's Notepads feature lets you store reusable context. Create a notepad for 
 
 1. Open Cursor → Settings → Notepads
 2. Create a new notepad named "swe: Test-Driven Development"
-3. Paste the content of `skills/test-driven-development/SKILL.md`
+3. Paste the content of `skills/uncle-dev-test-driven-development/SKILL.md`
 4. Reference it in chat with `@notepad swe: Test-Driven Development`
 
 ## Recommended Configuration
@@ -62,5 +62,5 @@ Reference them with `@notepad` when working on relevant tasks.
 
 1. **Don't load all skills at once** — Cursor has context limits. Load 2-3 skills as rules and keep others as notepads.
 2. **Reference skills explicitly** — Tell Cursor "Follow the test-driven-development rules for this change" to ensure it reads the loaded rules.
-3. **Use agents for review** — Copy `agents/code-reviewer.md` content and tell Cursor to "review this diff using this code review framework."
+3. **Use agents for review** — Copy `agents/uncle-dev-ag-code-reviewer.md` content and tell Cursor to "review this diff using this code review framework."
 4. **Load references on demand** — When working on performance, reference `@notepad performance-checklist` or paste the checklist content.

@@ -31,13 +31,13 @@ Copy-paste templates for every phase of the `uncle-dev-agent-skills` plugin. Fil
   - [Review](#review)
   - [Ship](#ship)
 - [Part 3 — Execute](#part-3--execute)
-  - [/spec — Define](#spec--define)
-  - [/plan — Plan](#plan--plan)
-  - [/build — Build](#build--build)
-  - [/test — Verify](#test--verify)
-  - [/review — Review](#review--review)
-  - [/code-simplify — Cleanup](#code-simplify--cleanup)
-  - [/ship — Ship](#ship--ship)
+  - [/uncle-dev-spec — Define](#spec--define)
+  - [/uncle-dev-plan — Plan](#plan--plan)
+  - [/uncle-dev-build — Build](#build--build)
+  - [/uncle-dev-test — Verify](#test--verify)
+  - [/uncle-dev-review — Review](#review--review)
+  - [/uncle-dev-code-simplify — Cleanup](#code-simplify--cleanup)
+  - [/uncle-dev-ship — Ship](#ship--ship)
 
 ---
 
@@ -247,7 +247,7 @@ Your job:
 
 ## Grill Me — Implementation Plan
 
-> Use after `/plan` runs. Stress-test the task breakdown before writing code.
+> Use after `/uncle-dev-plan` runs. Stress-test the task breakdown before writing code.
 
 ```
 Grill me on this implementation plan.
@@ -813,10 +813,10 @@ Use these once your idea is validated and a spec is approved. Run the commands i
 
 ---
 
-## `/spec` — Define
+## `/uncle-dev-spec` — Define
 
 ```
-/spec
+/uncle-dev-spec
 
 I want to [build/fix/refactor] [FEATURE/BUG].
 
@@ -833,10 +833,10 @@ Constraints:
 
 ---
 
-## `/plan` — Plan
+## `/uncle-dev-plan` — Plan
 
 ```
-/plan
+/uncle-dev-plan
 
 The spec for [CHANGE-ID] is approved. Break it into story-level tasks.
 
@@ -850,10 +850,10 @@ Priority: [what must ship first and why]
 
 ---
 
-## `/build` — Build
+## `/uncle-dev-build` — Build
 
 ```
-/build
+/uncle-dev-build
 
 Implement the next pending story from [CHANGE-ID]/tasks.md.
 
@@ -867,10 +867,10 @@ Rules:
 
 ---
 
-## `/test` — Verify
+## `/uncle-dev-test` — Verify
 
 ```
-/test
+/uncle-dev-test
 
 Write the test suite for [FEATURE/MODULE].
 
@@ -886,10 +886,10 @@ Bug to prove (if applicable):
 
 ---
 
-## `/review` — Review
+## `/uncle-dev-review` — Review
 
 ```
-/review
+/uncle-dev-review
 
 Review the changes for [FEATURE/PR].
 
@@ -905,10 +905,10 @@ Flag (don't auto-fix): [DECISIONS THAT NEED MY INPUT]
 
 ---
 
-## `/code-simplify` — Cleanup
+## `/uncle-dev-code-simplify` — Cleanup
 
 ```
-/code-simplify
+/uncle-dev-code-simplify
 
 Simplify [FILE/MODULE].
 
@@ -921,10 +921,10 @@ Rules:
 
 ---
 
-## `/ship` — Ship
+## `/uncle-dev-ship` — Ship
 
 ```
-/ship
+/uncle-dev-ship
 
 Ship [CHANGE-ID / FEATURE NAME].
 

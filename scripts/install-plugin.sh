@@ -193,20 +193,20 @@ install_copilot() {
   log "Installing for GitHub Copilot in $workspace"
 
   copy_file \
-    "$REPO_ROOT/skills/test-driven-development/SKILL.md" \
-    "$workspace/.github/skills/test-driven-development/SKILL.md"
+    "$REPO_ROOT/skills/uncle-dev-test-driven-development/SKILL.md" \
+    "$workspace/.github/skills/uncle-dev-test-driven-development/SKILL.md"
   copy_file \
-    "$REPO_ROOT/skills/code-review-and-quality/SKILL.md" \
-    "$workspace/.github/skills/code-review-and-quality/SKILL.md"
+    "$REPO_ROOT/skills/uncle-dev-code-review-and-quality/SKILL.md" \
+    "$workspace/.github/skills/uncle-dev-code-review-and-quality/SKILL.md"
   copy_file \
-    "$REPO_ROOT/agents/code-reviewer.md" \
-    "$workspace/.github/agents/code-reviewer.md"
+    "$REPO_ROOT/agents/uncle-dev-ag-code-reviewer.md" \
+    "$workspace/.github/agents/uncle-dev-ag-code-reviewer.md"
   copy_file \
-    "$REPO_ROOT/agents/test-engineer.md" \
-    "$workspace/.github/agents/test-engineer.md"
+    "$REPO_ROOT/agents/uncle-dev-ag-test-engineer.md" \
+    "$workspace/.github/agents/uncle-dev-ag-test-engineer.md"
   copy_file \
-    "$REPO_ROOT/agents/security-auditor.md" \
-    "$workspace/.github/agents/security-auditor.md"
+    "$REPO_ROOT/agents/uncle-dev-ag-security-auditor.md" \
+    "$workspace/.github/agents/uncle-dev-ag-security-auditor.md"
 }
 
 install_cursor() {
@@ -215,14 +215,14 @@ install_cursor() {
   log "Installing for Cursor in $workspace"
 
   copy_file \
-    "$REPO_ROOT/skills/test-driven-development/SKILL.md" \
-    "$workspace/.cursor/rules/test-driven-development.md"
+    "$REPO_ROOT/skills/uncle-dev-test-driven-development/SKILL.md" \
+    "$workspace/.cursor/rules/uncle-dev-test-driven-development.md"
   copy_file \
-    "$REPO_ROOT/skills/code-review-and-quality/SKILL.md" \
-    "$workspace/.cursor/rules/code-review-and-quality.md"
+    "$REPO_ROOT/skills/uncle-dev-code-review-and-quality/SKILL.md" \
+    "$workspace/.cursor/rules/uncle-dev-code-review-and-quality.md"
   copy_file \
-    "$REPO_ROOT/skills/incremental-implementation/SKILL.md" \
-    "$workspace/.cursor/rules/incremental-implementation.md"
+    "$REPO_ROOT/skills/uncle-dev-incremental-implementation/SKILL.md" \
+    "$workspace/.cursor/rules/uncle-dev-incremental-implementation.md"
 }
 
 install_gemini() {
@@ -251,14 +251,14 @@ install_windsurf() {
   log "Installing for Windsurf in $rules_dir"
 
   copy_file \
-    "$REPO_ROOT/skills/test-driven-development/SKILL.md" \
-    "$rules_dir/test-driven-development.md"
+    "$REPO_ROOT/skills/uncle-dev-test-driven-development/SKILL.md" \
+    "$rules_dir/uncle-dev-test-driven-development.md"
   copy_file \
-    "$REPO_ROOT/skills/incremental-implementation/SKILL.md" \
-    "$rules_dir/incremental-implementation.md"
+    "$REPO_ROOT/skills/uncle-dev-incremental-implementation/SKILL.md" \
+    "$rules_dir/uncle-dev-incremental-implementation.md"
   copy_file \
-    "$REPO_ROOT/skills/code-review-and-quality/SKILL.md" \
-    "$rules_dir/code-review-and-quality.md"
+    "$REPO_ROOT/skills/uncle-dev-code-review-and-quality/SKILL.md" \
+    "$rules_dir/uncle-dev-code-review-and-quality.md"
 }
 
 install_opencode() {

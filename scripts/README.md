@@ -13,7 +13,7 @@ Each script installs the bundle in-place into the target tool's config directory
 Installs the full plugin bundle into Claude Code's plugin cache and registers it so commands are available immediately.
 
 **Bundle contents:**
-- `commands/` — slash commands (`/spec`, `/plan`, `/build`, `/test`, `/review`, `/code-simplify`, `/ship`)
+- `commands/` — slash commands (`/uncle-dev-spec`, `/uncle-dev-plan`, `/uncle-dev-build`, `/uncle-dev-test`, `/uncle-dev-review`, `/uncle-dev-code-simplify`, `/uncle-dev-ship`)
 - `skills/` — all 20 skill directories with SKILL.md and colocated reference files
 - `agents/` — agent personas (code-reviewer, test-engineer, security-auditor)
 - `hooks/` — session lifecycle hooks

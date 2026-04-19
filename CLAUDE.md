@@ -6,23 +6,23 @@ This is the agent-skills project — a collection of production-grade engineerin
 
 ```
 skills/       → Core skills (SKILL.md per directory, with colocated reference files)
-agents/       → Reusable agent personas (code-reviewer, test-engineer, security-auditor)
+agents/       → Reusable agent personas (uncle-dev-ag-code-reviewer, uncle-dev-ag-test-engineer, uncle-dev-ag-security-auditor)
 hooks/        → Session lifecycle hooks
-.claude/commands/ → Slash commands (/spec, /plan, /build, /test, /review, /code-simplify, /ship)
+.claude/commands/ → Slash commands (/uncle-dev-spec, /uncle-dev-plan, /uncle-dev-build, /uncle-dev-test, /uncle-dev-review, /uncle-dev-code-simplify, /uncle-dev-ship)
 docs/         → Setup guides for different tools
 scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 ```
 
 ## Skills by Phase
 
-**Define:** spec-driven-development
-**Plan:** planning-and-task-breakdown
-**Build:** incremental-implementation, test-driven-development, context-engineering, source-driven-development, frontend-ui-engineering, api-and-interface-design
-**Verify:** browser-testing-with-devtools, debugging-and-error-recovery
-**Review:** code-review-and-quality, dev-code-simplification, security-and-hardening, performance-optimization
-**Ship:** git-workflow-and-versioning, ci-cd-and-automation, deprecation-and-migration, documentation-and-adrs, shipping-and-launch
-**Capture:** knowledge-capture
-**Maintain:** knowledge-maintenance
+**Define:** uncle-dev-spec-driven-development
+**Plan:** uncle-dev-planning-and-task-breakdown
+**Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-context-engineering, uncle-dev-source-driven-development, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
+**Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debugging-and-error-recovery
+**Review:** uncle-dev-code-review-and-quality, uncle-dev-dev-code-simplification, uncle-dev-security-and-hardening, uncle-dev-performance-optimization
+**Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-ci-cd-and-automation, uncle-dev-deprecation-and-migration, uncle-dev-documentation-and-adrs, uncle-dev-shipping-and-launch
+**Capture:** uncle-dev-knowledge-capture
+**Maintain:** uncle-dev-knowledge-maintenance
 
 ## Conventions
 

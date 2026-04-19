@@ -48,9 +48,9 @@ For skills you want always loaded as persistent project context (rather than on-
 
 ```bash
 # Create GEMINI.md with core skills as persistent context
-cat /path/to/agent-skills/skills/incremental-implementation/SKILL.md > GEMINI.md
+cat /path/to/agent-skills/skills/uncle-dev-incremental-implementation/SKILL.md > GEMINI.md
 echo -e "\n---\n" >> GEMINI.md
-cat /path/to/agent-skills/skills/code-review-and-quality/SKILL.md >> GEMINI.md
+cat /path/to/agent-skills/skills/uncle-dev-code-review-and-quality/SKILL.md >> GEMINI.md
 ```
 
 You can also modularize by importing from separate files:
@@ -58,8 +58,8 @@ You can also modularize by importing from separate files:
 ```markdown
 # Project Instructions
 
-@skills/test-driven-development/SKILL.md
-@skills/incremental-implementation/SKILL.md
+@skills/uncle-dev-test-driven-development/SKILL.md
+@skills/uncle-dev-incremental-implementation/SKILL.md
 ```
 
 Use `/memory show` to verify loaded context, and `/memory reload` to refresh after changes.
@@ -107,7 +107,7 @@ To replicate the `agent-skills` experience from other tools, you can configure a
 You can explicitly load any skill into your current session by referencing it with the `@` symbol in your prompt:
 
 ```markdown
-Use the @skills/test-driven-development/SKILL.md skill to implement this fix.
+Use the @skills/uncle-dev-test-driven-development/SKILL.md skill to implement this fix.
 ```
 
 This is useful when you want to ensure a specific workflow is followed without waiting for auto-discovery.
@@ -116,5 +116,5 @@ This is useful when you want to ensure a specific workflow is followed without w
 
 1. **Prefer skills over GEMINI.md** — Skills activate on demand and keep your context window focused. Only put skills in GEMINI.md if you want them always loaded.
 2. **Skill descriptions matter** — Each SKILL.md has a `description` field in its frontmatter that tells agents when to activate it. The descriptions in this repo are optimized for auto-discovery across all supported tools (Claude Code, Gemini CLI, etc.) by clearly stating both *what* the skill does and *when* it should be triggered.
-3. **Use agents for review** — Copy `agents/code-reviewer.md` content when requesting structured code reviews.
+3. **Use agents for review** — Copy `agents/uncle-dev-ag-code-reviewer.md` content when requesting structured code reviews.
 4. **Combine with references** — Reference checklists from `references/` when working on specific quality areas like testing or performance.

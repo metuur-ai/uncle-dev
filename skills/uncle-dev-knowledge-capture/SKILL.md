@@ -1,6 +1,6 @@
 ---
 name: uncle-dev-knowledge-capture
-description: Captures recently solved problems as searchable documentation in docs/solutions/, compounding team knowledge over time. Coordinates parallel subagents to research context, extract solutions, find related docs, and assemble one structured file. Use when a problem has just been solved, when you hear "that worked", "it's fixed", "working now", or "problem solved", or when the user runs /knowledge-capture or wants to document a recent debugging session.
+description: Captures recently solved problems as searchable documentation in docs/solutions/, compounding team knowledge over time. Coordinates parallel subagents to research context, extract solutions, find related docs, and assemble one structured file. Use when a problem has just been solved, when you hear "that worked", "it's fixed", "working now", or "problem solved", or when the user runs /uncle-dev-knowledge-capture or wants to document a recent debugging session.
 ---
 
 # Knowledge Capture
@@ -16,7 +16,7 @@ capture the solution while context is fresh, then writes one structured file int
 **Use when:**
 - A problem has just been solved and verified working
 - You hear "that worked", "it's fixed", "working now", or "problem solved"
-- The user runs `/knowledge-capture`
+- The user runs `/uncle-dev-knowledge-capture`
 - A debugging session concluded with a working fix
 
 **NOT for:**
@@ -153,12 +153,12 @@ After writing, decide whether to invoke `uncle-dev-knowledge-maintenance`:
 **Skip when:**
 - No related docs were found
 - Related docs remain consistent with the new learning
-- Context is tight (recommend `/knowledge-maintenance <scope>` as the next step instead)
+- Context is tight (recommend `/uncle-dev-knowledge-maintenance <scope>` as the next step instead)
 
 When invoking, pass the narrowest useful scope argument:
-- `/knowledge-maintenance plugin-versioning` — specific file or topic
-- `/knowledge-maintenance payments` — module name
-- `/knowledge-maintenance performance-issues` — category directory
+- `/uncle-dev-knowledge-maintenance plugin-versioning` — specific file or topic
+- `/uncle-dev-knowledge-maintenance payments` — module name
+- `/uncle-dev-knowledge-maintenance performance-issues` — category directory
 
 ### Step 5: Discoverability Check
 

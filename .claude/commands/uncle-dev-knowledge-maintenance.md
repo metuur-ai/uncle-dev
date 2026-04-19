@@ -16,10 +16,10 @@ Invoke the agent-skills:uncle-dev-knowledge-maintenance skill.
 Pass a scope argument when possible to narrow the review:
 
 ```
-/knowledge-maintenance payments          # review docs related to the payments module
-/knowledge-maintenance performance-issues  # review docs in the performance-issues category
-/knowledge-maintenance auth-token-expiry   # review a specific learning by filename
-/knowledge-maintenance mode:autofix        # unattended run — applies all unambiguous actions
+/uncle-dev-knowledge-maintenance payments          # review docs related to the payments module
+/uncle-dev-knowledge-maintenance performance-issues  # review docs in the performance-issues category
+/uncle-dev-knowledge-maintenance auth-token-expiry   # review a specific learning by filename
+/uncle-dev-knowledge-maintenance mode:autofix        # unattended run — applies all unambiguous actions
 ```
 
 Without a scope argument, the skill reviews all of `docs/solutions/`. For large knowledge stores,

@@ -1,5 +1,5 @@
 {
-  "name": "uncle-dev-agent-skills",
+  "name": "uncle-dev-skills",
   "owner": {
     "name": "Uncle Dev"
   },
@@ -8,11 +8,7 @@
   },
   "plugins": [
     {
-      "name": "uncle-dev-agent-skills",
-      "source": {
-        "source": "github",
-        "repo": "uncle-dev/agent-skills"
-      },
+      "name": "uncle-dev",
       "description": "Production-grade engineering skills covering every phase of software development: spec, plan, build, verify, review, and ship."
     }
   ]

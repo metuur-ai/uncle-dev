@@ -23,4 +23,4 @@ Read the active OpenSpec change's `proposal.md` and `design.md`, plus the releva
 6. Keep private technical breakdown in `.devlocal/<user>/<story-id>/scratchpad.md`
 7. Present the plan for human review
 
-Do not write `tasks/plan.md` or `tasks/todo.md`. The tracked outputs are `openspec/changes/<change-id>/tasks.md` and `openspec/changes/<change-id>/execution.md`.
+Do not write `tasks/uncle-dev-plan.md` or `tasks/todo.md`. The tracked outputs are `openspec/changes/<change-id>/tasks.md` and `openspec/changes/<change-id>/execution.md`.

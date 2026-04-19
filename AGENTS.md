@@ -48,9 +48,9 @@ or agent immediately. Do not ask for clarification first.
 
 | Command | Invokes |
 |---------|---------|
-| /uncle-dev-code-reviewer | code-reviewer agent persona (agents/code-reviewer.md) |
-| /uncle-dev-security-auditor | security-auditor agent persona (agents/security-auditor.md) |
-| /uncle-dev-test-engineer | test-engineer agent persona (agents/test-engineer.md) |
+| /uncle-dev-code-reviewer | code-reviewer agent persona (agents/uncle-dev-ag-code-reviewer.md) |
+| /uncle-dev-security-auditor | security-auditor agent persona (agents/uncle-dev-ag-security-auditor.md) |
+| /uncle-dev-test-engineer | test-engineer agent persona (agents/uncle-dev-ag-test-engineer.md) |
 
 ---
 
@@ -81,7 +81,7 @@ The agent should automatically map user intent to skills:
 
 ### Lifecycle Mapping (Implicit Commands)
 
-OpenCode does not support slash commands like `/spec` or `/plan`.
+OpenCode does not support slash commands like `/uncle-dev-spec` or `/uncle-dev-plan`.
 
 Instead, the agent must internally follow this lifecycle:
 
