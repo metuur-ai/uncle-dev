@@ -81,6 +81,24 @@ if [ -z "$MATCHED" ]; then
   fi
 fi
 
+# ── DESTRUCTIVE MONGODB ────────────────────────────────────────────────────────
+if [ -z "$MATCHED" ]; then
+  case "$COMMAND" in
+    # Database / collection destruction
+    *"dropDatabase()"*|*"dropDatabase ()"*) MATCHED="db.dropDatabase() (destroys entire MongoDB database)" ;;
+    *".drop()"*|*".drop ()"*)               MATCHED="collection.drop() (permanently destroys MongoDB collection)" ;;
+    # deleteMany without a filter object — {} means all documents
+    *"deleteMany({})"*|*"deleteMany( {})"*|*"deleteMany({ })"*) MATCHED="deleteMany({}) (deletes all documents in collection)" ;;
+    # remove() without filter — legacy but still used
+    *".remove({})"*|*".remove( {})"*|*".remove({ })"*)          MATCHED="collection.remove({}) (deletes all documents)" ;;
+    # findOneAndDelete can be destructive at scale in scripts
+    *"findOneAndDelete({})"*)               MATCHED="findOneAndDelete({}) (deletes documents — no filter)" ;;
+    # mongosh / mongo CLI eval with destructive ops
+    *"mongosh"*"dropDatabase"*|*"mongo"*"dropDatabase"*) MATCHED="mongosh dropDatabase() (destroys MongoDB database via CLI)" ;;
+    *"mongosh"*".drop()"*|*"mongo"*".drop()"*)           MATCHED="mongosh collection.drop() (destroys MongoDB collection via CLI)" ;;
+  esac
+fi
+
 if [ -n "$MATCHED" ]; then
   jq -n --arg cmd "$COMMAND" --arg matched "$MATCHED" \
     '{"priority": "IMPORTANT", "message": ("destructive-command-guard: \($matched) requires explicit confirmation.\n\nExplain to the user what this will do and wait for a clear \"yes\" before running:\n  " + $cmd)}'

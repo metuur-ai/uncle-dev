@@ -19,6 +19,24 @@ if [ -f "$META_SKILL" ]; then
   CONTENT="$CONTENT
 
 Full skill: $META_SKILL"
+
+  # Append recent learnings if .uncle-dev/learns/ exists in the project
+  PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+  LEARNS_DIR="$PROJECT_DIR/.uncle-dev/learns"
+  if [ -d "$LEARNS_DIR" ]; then
+    RECENT=$(find "$LEARNS_DIR" -name "*.md" -type f 2>/dev/null \
+      | xargs ls -t 2>/dev/null \
+      | head -3 \
+      | xargs -I{} basename {} 2>/dev/null \
+      | tr '\n' ', ' \
+      | sed 's/, $//')
+    if [ -n "$RECENT" ]; then
+      CONTENT="$CONTENT
+
+Recent learnings (.uncle-dev/learns/): $RECENT"
+    fi
+  fi
+
   # Use jq to produce valid JSON (handles escaping of newlines and special chars)
   MSG="agent-skills loaded. Use the skill discovery flowchart to find the right skill for your task.
 
