@@ -1,5 +1,5 @@
 ---
-description: Review and refresh docs/solutions/ for accuracy — update stale references, consolidate overlapping docs, replace outdated guidance, delete obsolete learnings
+description: Review and refresh .uncle-dev/learns/ for accuracy — update stale references, consolidate overlapping docs, replace outdated guidance, delete obsolete learnings
 ---
 
 ## Working Principles
@@ -22,7 +22,7 @@ Pass a scope argument when possible to narrow the review:
 /uncle-dev-knowledge-maintenance mode:autofix        # unattended run — applies all unambiguous actions
 ```
 
-Without a scope argument, the skill reviews all of `docs/solutions/`. For large knowledge stores,
+Without a scope argument, the skill reviews all of `.uncle-dev/learns/`. For large knowledge stores,
 a scope argument is strongly recommended to keep the session focused.
 
 After execution, a full report is printed classifying every artifact reviewed. Run the discoverability

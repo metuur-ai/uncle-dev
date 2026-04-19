@@ -30,7 +30,7 @@ In the Uncle Dev plugin pack, skills can be explicitly invoked when you run into
 ## Knowledge Capture (`uncle-dev-knowledge-capture`)
 **Use after an excruciating debugging session to secure the win.**
 > `We finally fixed the bug! Trigger uncle-dev-knowledge-capture.`
-> Document the exact root cause of the [Bug description: caching race-condition we faced in Redis] and lay out the solution as a formal learning in `docs/solutions/`.
+> Document the exact root cause of the [Bug description: caching race-condition we faced in Redis] and lay out the solution as a formal learning in `.uncle-dev/learns/`.
 
 ## Performance Optimization (`uncle-dev-performance-optimization`)
 **Use when the application performs sluggishly.**

@@ -1,7 +1,7 @@
 # Discoverability Check
 
 After writing or refreshing a learning, check whether the project's instruction files would lead
-an agent to discover and search `docs/solutions/` before starting work in a documented area.
+an agent to discover and search `.uncle-dev/learns/` before starting work in a documented area.
 This check runs every time — the knowledge store only compounds value when agents can find it.
 
 ## Steps
@@ -19,7 +19,7 @@ This check runs every time — the knowledge store only compounds value when age
 
    This is a semantic assessment, not a string match. The information could be in an architecture
    section, a gotchas block, a directory listing, or spread across multiple places — and may not use
-   the exact path `docs/solutions/`. Use judgment: if an agent would reasonably discover and use the
+   the exact path `.uncle-dev/learns/`. Use judgment: if an agent would reasonably discover and use the
    knowledge store after reading the file, the check passes.
 
 3. **If the spirit is already met,** no action needed — move on.
@@ -45,14 +45,14 @@ This check runs every time — the knowledge store only compounds value when age
 
       When there's an existing directory listing or architecture section — add a line:
       ```
-      docs/solutions/  # documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (module, tags, problem_type)
+      .uncle-dev/learns/  # documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (module, tags, problem_type)
       ```
 
       When nothing in the file is a natural fit — a small headed section is appropriate:
       ```markdown
       ## Documented Solutions
 
-      `docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow
+      `.uncle-dev/learns/` — documented solutions to past problems (bugs, best practices, workflow
       patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`).
       Relevant when implementing or debugging in documented areas.
       ```
@@ -75,7 +75,7 @@ This check runs every time — the knowledge store only compounds value when age
    or create a small follow-up commit:
 
    ```
-   docs: add docs/solutions/ discoverability to AGENTS.md
+   docs: add .uncle-dev/learns/ discoverability to AGENTS.md
    ```
 
    If the branch was already pushed, push the follow-up commit so the open PR includes the

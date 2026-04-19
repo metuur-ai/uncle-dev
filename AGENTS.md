@@ -77,7 +77,7 @@ The agent should automatically map user intent to skills:
 - API or interface design → `uncle-dev-api-and-interface-design`
 - UI work → `uncle-dev-frontend-ui-engineering`
 - Problem just solved, want to document it → `uncle-dev-knowledge-capture`
-- docs/solutions/ may be stale or drifting → `uncle-dev-knowledge-maintenance`
+- .uncle-dev/learns/ may be stale or drifting → `uncle-dev-knowledge-maintenance`
 
 ### Lifecycle Mapping (Implicit Commands)
 

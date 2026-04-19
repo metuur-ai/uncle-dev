@@ -28,6 +28,7 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 | Review before merge | `/uncle-dev-review` | Improve code health |
 | Simplify the code | `/uncle-dev-code-simplify` | Clarity over cleverness |
 | Ship to production | `/uncle-dev-ship` | Faster is safer |
+| Surface past learnings | `/uncle-dev-proactive-memory` | Context injection |
 
 Skills also activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, and so on.
 

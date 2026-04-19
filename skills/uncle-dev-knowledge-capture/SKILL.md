@@ -1,6 +1,6 @@
 ---
 name: uncle-dev-knowledge-capture
-description: Captures recently solved problems as searchable documentation in docs/solutions/, compounding team knowledge over time. Coordinates parallel subagents to research context, extract solutions, find related docs, and assemble one structured file. Use when a problem has just been solved, when you hear "that worked", "it's fixed", "working now", or "problem solved", or when the user runs /uncle-dev-knowledge-capture or wants to document a recent debugging session.
+description: Captures recently solved problems as searchable documentation in .uncle-dev/learns/, compounding team knowledge over time. Coordinates parallel subagents to research context, extract solutions, find related docs, and assemble one structured file. Use when a problem has just been solved, when you hear "that worked", "it's fixed", "working now", or "problem solved", or when the user runs /uncle-dev-knowledge-capture or wants to document a recent debugging session.
 ---
 
 # Knowledge Capture
@@ -9,7 +9,7 @@ description: Captures recently solved problems as searchable documentation in do
 
 Each documented solution compounds team knowledge. The first time you solve a problem takes research.
 Document it, and the next occurrence takes minutes. This skill coordinates parallel subagents to
-capture the solution while context is fresh, then writes one structured file into `docs/solutions/`.
+capture the solution while context is fresh, then writes one structured file into `.uncle-dev/learns/`.
 
 ## When to Use
 
@@ -72,7 +72,7 @@ content that ends up in the final doc with "(auto memory [claude])".
 - Reads `solution-schema.yaml` in this skill directory for enum validation and track classification
 - Determines the track (bug or knowledge) from the `problem_type`
 - Uses the Category Mapping table in the **Specific Techniques** section to map `problem_type` to a
-  `docs/solutions/` subdirectory
+  `.uncle-dev/learns/` subdirectory
 - Suggests a filename: `[sanitized-problem-slug]-[date].md`
 - Incorporates auto memory excerpts if provided by the orchestrator
 - Returns: YAML frontmatter skeleton (with `category:` field), category directory path, filename, track
@@ -87,7 +87,7 @@ content that ends up in the final doc with "(auto memory [claude])".
 - Returns: structured content sections with code examples
 
 #### Related Docs Finder
-- Searches `docs/solutions/` for related documentation using grep-first filtering (see Specific Techniques)
+- Searches `.uncle-dev/learns/` for related documentation using grep-first filtering (see Specific Techniques)
 - Assesses overlap with the new doc across five dimensions: problem statement, root cause, solution
   approach, referenced files, prevention rules
 - Scores overlap: **High** (4-5 dimensions), **Moderate** (2-3), **Low** (0-1)
@@ -108,7 +108,7 @@ Include in the dispatch prompt:
 **Lightweight mode:** The orchestrator performs all research in a single sequential pass (no
 subagents). Reads `solution-schema.yaml`, classifies the problem using the Category Mapping table,
 extracts solution from conversation history. Incorporates any relevant auto memory as supplementary
-context. Does not search `docs/solutions/` for duplicates.
+context. Does not search `.uncle-dev/learns/` for duplicates.
 
 ### Step 3: Assembly
 
@@ -135,9 +135,9 @@ The orchestrator performs all steps below. Subagents return text data only — t
 4. **Validate** YAML frontmatter against `solution-schema.yaml` — all required fields present, enum
    values match exactly.
 
-5. **Create directory** if needed: `mkdir -p docs/solutions/[category]/`
+5. **Create directory** if needed: `mkdir -p .uncle-dev/learns/[category]/`
 
-6. **Write one file:** `docs/solutions/[category]/[filename].md` (new) or the existing doc (update).
+6. **Write one file:** `.uncle-dev/learns/[category]/[filename].md` (new) or the existing doc (update).
 
 ### Step 4: Selective Maintenance Check
 
@@ -180,7 +180,7 @@ Skip in lightweight mode.
 
 ### Category Mapping
 
-Map `problem_type` to the target `docs/solutions/` subdirectory:
+Map `problem_type` to the target `.uncle-dev/learns/` subdirectory:
 
 | `problem_type` | Directory |
 |---|---|
@@ -208,7 +208,7 @@ Use the template matching the track when assembling the final doc.
 ---
 title: [Clear problem title]
 date: [YYYY-MM-DD]
-category: [docs/solutions subdirectory]
+category: [.uncle-dev/learns subdirectory]
 module: [Module or area]
 problem_type: [schema enum]
 component: [schema enum]
@@ -250,7 +250,7 @@ tags: [keyword-one, keyword-two]
 ---
 title: [Clear, descriptive title]
 date: [YYYY-MM-DD]
-category: [docs/solutions subdirectory]
+category: [.uncle-dev/learns subdirectory]
 module: [Module or area]
 problem_type: [schema enum]
 component: [schema enum]
@@ -286,7 +286,7 @@ tags: [keyword-one, keyword-two]
 Use grep-first filtering to avoid reading files unnecessarily:
 
 1. Extract keywords from problem context (module names, technical terms, error messages)
-2. If category is clear, narrow search to `docs/solutions/<category>/`
+2. If category is clear, narrow search to `.uncle-dev/learns/<category>/`
 3. Run parallel grep searches, case-insensitive, targeting frontmatter fields:
    - `title:.*<keyword>`
    - `tags:.*(<keyword1>|<keyword2>)`
@@ -306,7 +306,7 @@ Use grep-first filtering to avoid reading files unnecessarily:
 | "I'll use lightweight to save time" | Lightweight is for context exhaustion, not preference. Full mode finds duplicates and prevents creating a second doc that covers the same problem. |
 | "Subagents should write intermediate files for me to review" | Subagents return text to the orchestrator. One final file is written. Intermediate files are noise. |
 | "I should run knowledge-maintenance first" | Capture the new learning first. Maintenance is a targeted follow-up, not a prerequisite. |
-| "Agents will find docs/solutions/ on their own" | Agents in fresh sessions only discover knowledge stores that instruction files surface. The discoverability check takes seconds. |
+| "Agents will find .uncle-dev/learns/ on their own" | Agents in fresh sessions only discover knowledge stores that instruction files surface. The discoverability check takes seconds. |
 
 ## Red Flags
 
@@ -319,7 +319,7 @@ Use grep-first filtering to avoid reading files unnecessarily:
 
 ## Verification
 
-- [ ] One file at `docs/solutions/[category]/[filename].md` — or one existing file updated with `last_updated`
+- [ ] One file at `.uncle-dev/learns/[category]/[filename].md` — or one existing file updated with `last_updated`
 - [ ] YAML frontmatter validates against `solution-schema.yaml` — all required fields present, enum values correct
 - [ ] If overlap was High: existing doc was updated, not a new file created
 - [ ] If overlap was Moderate: `uncle-dev-knowledge-maintenance` was invoked or recommended with a specific scope hint

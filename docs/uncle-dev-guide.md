@@ -142,7 +142,7 @@ Uncle Dev contains specific skills that can be triggered dynamically. Here is ho
 > **Prompt:** `Run uncle-dev-security-and-hardening over the 'payments.ts' module. Check for OWASP Top 10 vulnerabilities, ensure secrets are properly scoped, and perform a three-tier boundary audit on the inputs.`
 
 ### Knowledge Capture (`uncle-dev-knowledge-capture`)
-> **Prompt:** `That fix finally worked! Run uncle-dev-knowledge-capture to document the exact root cause of the caching race condition and save it to docs/solutions so the team remembers it.`
+> **Prompt:** `That fix finally worked! Run uncle-dev-knowledge-capture to document the exact root cause of the caching race condition and save it to .uncle-dev/learns so the team remembers it.`
 
 ### Performance Optimization (`uncle-dev-performance-optimization`)
 > **Prompt:** `Use uncle-dev-performance-optimization. The initial page load on the dashboard is taking over 3 seconds. Apply the measure-first approach, check the bundle size, and look for any React re-render anti-patterns.`

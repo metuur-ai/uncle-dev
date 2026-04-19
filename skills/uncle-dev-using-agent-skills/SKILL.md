@@ -181,5 +181,5 @@ knowledge-maintenance → Triggered after refactors, migrations, or when docs fe
 | Ship | ci-cd-and-automation | Automated quality gates on every change |
 | Ship | documentation-and-adrs | Document the why, not just the what |
 | Ship | shipping-and-launch | Pre-launch checklist, monitoring, rollback plan |
-| Capture | knowledge-capture | Document freshly solved problems into docs/solutions/ |
-| Maintain | knowledge-maintenance | Review and refresh docs/solutions/ for accuracy |
+| Capture | knowledge-capture | Document freshly solved problems into .uncle-dev/learns/ |
+| Maintain | knowledge-maintenance | Review and refresh .uncle-dev/learns/ for accuracy |

@@ -1,13 +1,13 @@
 ---
 name: uncle-dev-knowledge-maintenance
-description: Maintains accuracy of docs/solutions/ over time by reviewing, updating, consolidating, replacing, or deleting learning docs against the current codebase. Use after refactors, migrations, dependency upgrades, when a retrieved learning feels wrong, when a recently solved problem contradicts existing docs, when pattern docs no longer reflect current code, or when multiple docs seem to cover the same topic.
+description: Maintains accuracy of .uncle-dev/learns/ over time by reviewing, updating, consolidating, replacing, or deleting learning docs against the current codebase. Use after refactors, migrations, dependency upgrades, when a retrieved learning feels wrong, when a recently solved problem contradicts existing docs, when pattern docs no longer reflect current code, or when multiple docs seem to cover the same topic.
 ---
 
 # Knowledge Maintenance
 
 ## Overview
 
-`docs/solutions/` accumulates learnings over time. As code evolves, those learnings drift —
+`.uncle-dev/learns/` accumulates learnings over time. As code evolves, those learnings drift —
 referenced files move, approaches change, two docs grow to cover the same problem. This skill
 reviews existing learnings against the current codebase and either keeps, updates, consolidates,
 replaces, or deletes them to maintain a trustworthy knowledge store.
@@ -44,14 +44,14 @@ In autofix mode: skip all user questions; mark ambiguous cases with `status: sta
 
 ### Step 0: Scope Selection
 
-Find all `.md` files under `docs/solutions/`, excluding `README.md` files and anything under
+Find all `.md` files under `.uncle-dev/learns/`, excluding `README.md` files and anything under
 `_archived/`. If an `_archived/` directory exists, note it in the report as a legacy artifact
 (files should be either restored or deleted).
 
 If `$ARGUMENTS` is provided (after stripping `mode:autofix`), narrow scope using these strategies
 in order, stopping at the first that produces results:
 
-1. **Directory match** — check if the argument matches a subdirectory name under `docs/solutions/`
+1. **Directory match** — check if the argument matches a subdirectory name under `.uncle-dev/learns/`
 2. **Frontmatter match** — search `module`, `component`, or `tags` fields for the argument
 3. **Filename match** — match against filenames (partial matches are fine)
 4. **Content search** — search file contents for the argument as a keyword
@@ -100,7 +100,7 @@ recommends, stop. That is Replace, not Update.
 
 ### Step 2.5: Investigate Pattern Docs
 
-After reviewing individual learnings, investigate relevant pattern docs under `docs/solutions/patterns/`.
+After reviewing individual learnings, investigate relevant pattern docs under `.uncle-dev/learns/patterns/`.
 
 Pattern docs are high-leverage — a stale pattern is more dangerous than a stale individual learning
 because future work may treat it as broadly applicable guidance. A pattern doc with no clear
