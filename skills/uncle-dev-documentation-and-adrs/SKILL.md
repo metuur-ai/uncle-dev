@@ -20,6 +20,8 @@ Document decisions, not just code. The most valuable documentation captures the 
 
 **When NOT to use:** Don't document obvious code. Don't add comments that restate what the code already says. Don't write docs for throwaway prototypes.
 
+For documenting engineering solutions to bugs and problems (not architectural decisions), use `knowledge-capture` instead.
+
 ## Architecture Decision Records (ADRs)
 
 ADRs capture the reasoning behind significant technical decisions. They're the highest-value documentation you can write.

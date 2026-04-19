@@ -21,6 +21,8 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 **Verify:** browser-testing-with-devtools, debugging-and-error-recovery
 **Review:** code-review-and-quality, dev-code-simplification, security-and-hardening, performance-optimization
 **Ship:** git-workflow-and-versioning, ci-cd-and-automation, deprecation-and-migration, documentation-and-adrs, shipping-and-launch
+**Capture:** knowledge-capture
+**Maintain:** knowledge-maintenance
 
 ## Conventions
 

@@ -41,6 +41,8 @@ or agent immediately. Do not ask for clarification first.
 | /uncle-dev-documentation-and-adrs | uncle-dev-documentation-and-adrs |
 | /uncle-dev-deprecation-and-migration | uncle-dev-deprecation-and-migration |
 | /uncle-dev-code-context | uncle-dev-code-context |
+| /uncle-dev-knowledge-capture | uncle-dev-knowledge-capture |
+| /uncle-dev-knowledge-maintenance | uncle-dev-knowledge-maintenance |
 
 ### Agent Commands
 
@@ -74,6 +76,8 @@ The agent should automatically map user intent to skills:
 - Refactoring / simplification → `uncle-dev-dev-code-simplification`
 - API or interface design → `uncle-dev-api-and-interface-design`
 - UI work → `uncle-dev-frontend-ui-engineering`
+- Problem just solved, want to document it → `uncle-dev-knowledge-capture`
+- docs/solutions/ may be stale or drifting → `uncle-dev-knowledge-maintenance`
 
 ### Lifecycle Mapping (Implicit Commands)
 
