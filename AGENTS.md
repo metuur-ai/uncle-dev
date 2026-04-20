@@ -213,6 +213,12 @@ Document these two installation methods for users:
 cp -r skills/{skill-name} ~/.claude/skills/
 ```
 
+**Antigravity:**
+```bash
+# Antigravity uses the identical skill package format as Claude Code.
+cp -r skills/{skill-name} ~/.gemini/antigravity/skills/
+```
+
 **claude.ai:**
 Add the skill to project knowledge or paste SKILL.md contents into the conversation.
 
