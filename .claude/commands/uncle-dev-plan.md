@@ -13,6 +13,15 @@ description: Break work into small verifiable tasks with acceptance criteria and
 
 Invoke the agent-skills:uncle-dev-planning-and-task-breakdown skill.
 
+Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to read the active change:
+
+- `openspec list` to find active changes
+- `openspec show <change-id>` to read the change's proposal and design
+- `openspec status <change-id>` to check current artifact completion
+- `openspec instructions tasks.md` to get enriched guidance for writing task breakdowns
+
+If not installed, recommend `npm install -g openspec` and read `proposal.md` and `design.md` directly.
+
 Read the active OpenSpec change's `proposal.md` and `design.md`, plus the relevant codebase sections. Apply agent-skills:uncle-dev-code-context to read `AGENTS.md` files in all directories the plan will touch — this establishes architecture boundaries before task ordering begins. Then:
 
 1. Enter plan mode — read only, no code changes
@@ -21,6 +30,7 @@ Read the active OpenSpec change's `proposal.md` and `design.md`, plus the releva
 4. Write shared stories with acceptance criteria and verification steps into `tasks.md`
 5. Record cross-story ordering, blockers, and coordination notes in `execution.md`
 6. Keep private technical breakdown in `.devlocal/<user>/<story-id>/scratchpad.md`
-7. Present the plan for human review
+7. When CLI is available, run `openspec validate <change-id>` to verify artifacts
+8. Present the plan for human review
 
 Do not write `tasks/uncle-dev-plan.md` or `tasks/todo.md`. The tracked outputs are `openspec/changes/<change-id>/tasks.md` and `openspec/changes/<change-id>/execution.md`.

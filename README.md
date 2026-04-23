@@ -174,7 +174,7 @@ The commands above are the entry points. Under the hood, they activate these 20 
 | Skill | What It Does | Use When |
 |-------|-------------|----------|
 | [browser-testing-with-devtools](skills/uncle-dev-browser-testing-with-devtools/SKILL.md) | Chrome DevTools MCP for live runtime data - DOM inspection, console logs, network traces, performance profiling | Building or debugging anything that runs in a browser |
-| [debugging-and-error-recovery](skills/uncle-dev-debugging-and-error-recovery/SKILL.md) | Five-step triage: reproduce, localize, reduce, fix, guard. Stop-the-line rule, safe fallbacks | Tests fail, builds break, or behavior is unexpected |
+| [debug-error](skills/uncle-dev-debug-error/SKILL.md) | Five-step triage: reproduce, localize, reduce, fix, guard. Stop-the-line rule, safe fallbacks | Tests fail, builds break, or behavior is unexpected |
 
 ### Review - Quality gates before merge
 

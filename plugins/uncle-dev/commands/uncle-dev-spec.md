@@ -13,7 +13,15 @@ description: Start spec-driven development — define an OpenSpec change before 
 
 Invoke the `uncle-dev-spec-driven-development` skill.
 
-Begin by understanding what the user wants to build. First inspect `openspec/specs/` and any relevant open changes so the new change starts from current tracked truth.
+Begin by checking if the OpenSpec CLI is available (`openspec --version`). If installed:
+
+- If `openspec/` does not exist, run `openspec init` to scaffold the project
+- Use `openspec list --specs` and `openspec list` to read current specs and open changes
+- Use `openspec schemas` to discover available workflow schemas
+
+If not installed, recommend `npm install -g openspec` and proceed manually.
+
+Inspect `openspec/specs/` and any relevant open changes so the new change starts from current tracked truth.
 
 Require a `<change-id>` for the work. Derive the next sequential ID as follows:
 
@@ -22,13 +30,22 @@ Require a `<change-id>` for the work. Derive the next sequential ID as follows:
 3. Propose the next ID to the user: `"Next change ID: 003-<descriptive-slug> — enter a slug or accept"`
 4. Validate any user-provided ID against the pattern `^\d{3}-.+`; reject and re-prompt if it does not match (for example reject `my-feature`, accept `003-my-feature`)
 
-Then use the OpenSpec CLI:
+Then scaffold the change. First check if the OpenSpec CLI is available (`openspec --version`):
+
+**If installed**, use the CLI:
 
 1. `openspec change create <validated-change-id>`
 2. `openspec artifact add <change-id> execution.md`
 3. `openspec artifact add <change-id> handoff.md`
 
+**If not installed**, recommend installation (`npm install -g openspec`) and fall back to manually creating `openspec/changes/<change-id>/` with the required files.
+
 Ensure the active change contains `proposal.md`, `design.md`, `tasks.md`, `execution.md`, and `handoff.md`.
+
+When the CLI is available, also use:
+- `openspec instructions <artifact>` to get enriched guidance before writing each artifact
+- `openspec validate <change-id>` after populating artifacts
+- `openspec status <change-id>` to verify completeness
 
 Ask clarifying questions about:
 1. The objective and target users

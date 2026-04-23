@@ -13,6 +13,13 @@ description: Conduct a five-axis code review — correctness, readability, archi
 
 Invoke the agent-skills:uncle-dev-code-review-and-quality skill.
 
+Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to load change context before reviewing:
+
+- `openspec show <change-id>` to read the change's proposal and design for intent verification
+- `openspec validate <change-id>` to check artifact consistency alongside the code review
+
+If not installed, recommend `npm install -g openspec` and read change artifacts directly.
+
 Detect the review mode from the user's input and dispatch accordingly:
 
 **`/uncle-dev-review`** (full) — Run three parallel agents (code quality, architecture, change impact), then synthesize with `uncle-dev-ag-review-synthesizer`. Use for significant changes (>300 lines, security-sensitive, or architectural decisions).

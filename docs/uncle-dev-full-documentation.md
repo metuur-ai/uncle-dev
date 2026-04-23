@@ -143,7 +143,7 @@ The `openspec/` folders hold shared, canonical truth intended for the entire eng
 When you execute `/uncle-dev-plan`, the AI agent will break down the macroscopic user-story tasks into extremely granular steps. These checklists are often placed in `.devlocal/scratchpads/` or `.devlocal/executions.md`. As the AI works, it ticks off checkboxes here. Once the task is complete, this temporary checklist becomes obsolete and can be safely ignored or deleted.
 
 ### 3. Debugging and Logs
-During the **Verify** phase (`/uncle-dev-test` and `/uncle-dev-debugging-and-error-recovery`), the AI agent might output massive command line logs, performance profiles, temporary JSON data dumps, or error tracebacks. Storing these inside `.devlocal/` keeps the root directory of your app perfectly clean.
+During the **Verify** phase (`/uncle-dev-test` and `/uncle-dev-debug-error`), the AI agent might output massive command line logs, performance profiles, temporary JSON data dumps, or error tracebacks. Storing these inside `.devlocal/` keeps the root directory of your app perfectly clean.
 
 ### 4. Bypassing CI/CD Triggers
 Many automated tooling environments watch the file system for changes. If the AI agent is saving temporary tracking documents continuously during its build phase, it might invoke thousands of unnecessary hot-reloads or CI test runs. Keeping these in a dedicated `.devlocal/` folder allows you to tell file-watchers to ignore them entirely.
@@ -178,7 +178,7 @@ The agent takes the approved spec and decomposes it into shared story-level task
 The agent executes code implementation one vertical slice at a time. This phase automatically kicks off skills like `uncle-dev-incremental-implementation`, `uncle-dev-frontend-ui-engineering`, and `uncle-dev-api-and-interface-design` depending on what part of the stack is being touched.
 
 ### Phase 5: Verify (`/uncle-dev-test` & Debugging)
-The AI writes unit, integration, and end-to-end tests to verify its build slice. If the tests break, it pivots to the `uncle-dev-debugging-and-error-recovery` skill. It uses a scientific method to reproduce, localize, reduce, and fix bugs rather than blindly guessing syntax updates.
+The AI writes unit, integration, and end-to-end tests to verify its build slice. If the tests break, it pivots to the `uncle-dev-debug-error` skill. It uses a scientific method to reproduce, localize, reduce, and fix bugs rather than blindly guessing syntax updates.
 
 ### Phase 6: Review (`/uncle-dev-review`)
 Before committing, the agent dons the persona of a Senior Staff Engineer. It scans the diff using the `uncle-dev-code-review-and-quality` and `uncle-dev-security-and-hardening` frameworks, assigning NIT, Optional, or Block tags to its own code and refactoring appropriately. (This is also the phase to invoke `/uncle-dev-code-simplify`).

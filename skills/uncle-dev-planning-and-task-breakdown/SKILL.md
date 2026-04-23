@@ -23,7 +23,14 @@ Decompose an approved OpenSpec change into shared story-level work and shared ex
 
 ### Step 1: Enter Plan Mode
 
-Before writing any code, operate in read-only mode:
+Before writing any code, operate in read-only mode. Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to gather context:
+
+- `openspec list` to see all active changes
+- `openspec show <change-id>` to read the change's proposal and design
+- `openspec status <change-id>` to check current artifact completion
+- `openspec instructions tasks.md` to get enriched guidance for writing task breakdowns
+
+If the CLI is not installed, recommend `npm install -g openspec` and read files directly:
 
 - Read the relevant files in `openspec/specs/`
 - Read the active change's `proposal.md` and `design.md`

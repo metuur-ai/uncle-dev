@@ -31,9 +31,25 @@ BASELINE ──→ SCAFFOLD ──→ SPECIFY ──→ PLAN ──→ IMPLEMENT
  reviews      reviews     reviews   reviews   reviews
 ```
 
+### Phase 0: Ensure OpenSpec Is Initialized
+
+Check if the OpenSpec CLI is available (`openspec --version`). If installed:
+
+- If `openspec/` does not exist, run `openspec init` to scaffold the project structure
+- Run `openspec schemas` to see available workflow schemas and select one if needed
+- Run `openspec templates` to discover artifact templates for the active schema
+
+If the CLI is **not** installed, recommend: `npm install -g openspec` and proceed with manual setup.
+
 ### Phase 1: Read Current Truth
 
-Start by inspecting the current system truth before drafting a new change:
+Start by inspecting the current system truth before drafting a new change. When the CLI is available, use:
+
+- `openspec list --specs` to see existing specs
+- `openspec list` to see open changes
+- `openspec show <item>` to read specific specs or changes
+
+Otherwise, read the files directly:
 
 - Read the relevant files in `openspec/specs/`
 - Check whether there are related open changes in `openspec/changes/`
@@ -67,7 +83,9 @@ Change IDs must follow the format `NNN-descriptive-slug`, where `NNN` is a zero-
 
 **Red flag:** Never accept a plain slug like `my-feature` as a change ID — always require the numeric prefix.
 
-Use the OpenSpec CLI as the standard workflow:
+#### Scaffolding with the OpenSpec CLI
+
+Check if the OpenSpec CLI is available by running `openspec --version`. If it is installed, use it as the standard workflow:
 
 ```bash
 openspec change create <change-id>
@@ -75,7 +93,19 @@ openspec artifact add <change-id> execution.md
 openspec artifact add <change-id> handoff.md
 ```
 
-After scaffolding, ensure the active change folder exists at:
+If the CLI is **not** installed, recommend the user install it:
+
+```
+The OpenSpec CLI is not installed. Install it with:
+  npm install -g openspec
+
+The CLI automates change scaffolding, validation, and status tracking.
+Proceeding with manual file creation for now.
+```
+
+Then fall back to manually creating the directory and files.
+
+After scaffolding (via CLI or manually), ensure the active change folder exists at:
 
 ```text
 openspec/changes/<change-id>/
@@ -91,7 +121,22 @@ And ensure it contains:
 
 These tracked files replace the old `SPEC.md` and `tasks/` workflow as the default shared source of truth.
 
+#### Using the CLI throughout the workflow
+
+When the OpenSpec CLI is available, prefer it over manual file operations:
+
+| Task | CLI command |
+|------|------------|
+| List changes | `openspec list` |
+| View dashboard | `openspec view` |
+| Check artifact status | `openspec status <change-id>` |
+| Validate a change | `openspec validate <change-id>` |
+| Show change details | `openspec show <change-id>` |
+| Archive completed change | `openspec archive <change-id>` |
+
 ### Phase 3: Specify Shared Change Truth
+
+When the CLI is available, use `openspec instructions <artifact>` to get enriched guidance for writing each artifact (e.g., `openspec instructions proposal.md`). This provides schema-aware templates and requirements.
 
 Start with a high-level vision. Ask the human clarifying questions until requirements are concrete, then distribute that truth across the change artifacts.
 

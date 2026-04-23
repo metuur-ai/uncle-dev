@@ -13,6 +13,14 @@ description: Implement the next task incrementally — build, test, verify, comm
 
 Invoke the agent-skills:uncle-dev-incremental-implementation skill alongside agent-skills:uncle-dev-test-driven-development.
 
+Check if the OpenSpec CLI is available (`openspec --version`). When available:
+
+- `openspec list` to find the active change
+- `openspec show <change-id>` to read the change and its tasks
+- `openspec status <change-id>` to check which artifacts are complete
+
+If not installed, recommend `npm install -g openspec` and read files directly.
+
 Pick the next pending shared story from the active change's `tasks.md`. For each story:
 
 0. Apply agent-skills:uncle-dev-code-context — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
@@ -30,4 +38,4 @@ Pick the next pending shared story from the active change's `tasks.md`. For each
 9. Commit with a descriptive message
 10. Mark the story complete and move to the next one
 
-If any step fails, follow the agent-skills:uncle-dev-debugging-and-error-recovery skill.
+If any step fails, follow the agent-skills:uncle-dev-debug-error skill.

@@ -34,7 +34,7 @@ or agent immediately. Do not ask for clarification first.
 | /uncle-dev-api-and-interface-design | uncle-dev-api-and-interface-design |
 | /uncle-dev-security-and-hardening | uncle-dev-security-and-hardening |
 | /uncle-dev-performance-optimization | uncle-dev-performance-optimization |
-| /uncle-dev-debugging-and-error-recovery | uncle-dev-debugging-and-error-recovery |
+| /uncle-dev-debug-error | uncle-dev-debug-error |
 | /uncle-dev-browser-testing-with-devtools | uncle-dev-browser-testing-with-devtools |
 | /uncle-dev-git-workflow-and-versioning | uncle-dev-git-workflow-and-versioning |
 | /uncle-dev-ci-cd-and-automation | uncle-dev-ci-cd-and-automation |
@@ -71,7 +71,7 @@ The agent should automatically map user intent to skills:
 
 - Feature / new functionality → `uncle-dev-spec-driven-development`, then `uncle-dev-incremental-implementation`, `uncle-dev-test-driven-development`
 - Planning / breakdown → `uncle-dev-planning-and-task-breakdown`
-- Bug / failure / unexpected behavior → `uncle-dev-debugging-and-error-recovery`
+- Bug / failure / unexpected behavior → `uncle-dev-debug-error`
 - Code review → `uncle-dev-code-review-and-quality`
 - Refactoring / simplification → `uncle-dev-dev-code-simplification`
 - API or interface design → `uncle-dev-api-and-interface-design`
@@ -88,7 +88,7 @@ Instead, the agent must internally follow this lifecycle:
 - DEFINE → `uncle-dev-spec-driven-development`
 - PLAN → `uncle-dev-planning-and-task-breakdown`
 - BUILD → `uncle-dev-incremental-implementation` + `uncle-dev-test-driven-development`
-- VERIFY → `uncle-dev-debugging-and-error-recovery`
+- VERIFY → `uncle-dev-debug-error`
 - REVIEW → `uncle-dev-code-review-and-quality`
 - SHIP → `uncle-dev-shipping-and-launch`
 

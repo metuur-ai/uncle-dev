@@ -13,6 +13,13 @@ description: Conduct a five-axis code review — correctness, readability, archi
 
 Invoke `uncle-dev-code-review-and-quality`.
 
+Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to load change context before reviewing:
+
+- `openspec show <change-id>` to read the change's proposal and design for intent verification
+- `openspec validate <change-id>` to check artifact consistency alongside the code review
+
+If not installed, recommend `npm install -g openspec` and read change artifacts directly.
+
 Detect the review mode from the user's input and dispatch accordingly:
 
 **`uncle-dev-review`** — Run the full five-axis review. Use for significant changes, security-sensitive work, or architecture changes.

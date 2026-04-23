@@ -16,7 +16,7 @@ The `openspec/` folders hold shared, canonical truth intended for the entire eng
 When you execute `/uncle-dev-plan`, the AI agent will break down the macroscopic user-story tasks into extremely granular steps. These checklists are often placed in `.devlocal/scratchpads/` or `.devlocal/executions.md`. As the AI works, it ticks off checkboxes here. Once the task is complete, this temporary checklist becomes obsolete and can be safely ignored or deleted.
 
 ### 3. Debugging and Logs
-During the **Verify** phase (`/uncle-dev-test` and `/uncle-dev-debugging-and-error-recovery`), the AI agent might output massive command line logs, performance profiles, temporary JSON data dumps, or error tracebacks. Storing these inside `.devlocal/` keeps the root directory of your app perfectly clean.
+During the **Verify** phase (`/uncle-dev-test` and `/uncle-dev-debug-error`), the AI agent might output massive command line logs, performance profiles, temporary JSON data dumps, or error tracebacks. Storing these inside `.devlocal/` keeps the root directory of your app perfectly clean.
 
 ### 4. Bypassing CI/CD Triggers
 Many automated tooling environments watch the file system for changes. If the AI agent is saving temporary tracking documents continuously during its build phase, it might invoke thousands of unnecessary hot-reloads or CI test runs. Keeping these in a dedicated `.devlocal/` folder allows you to tell file-watchers to ignore them entirely.

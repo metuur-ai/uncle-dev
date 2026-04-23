@@ -24,7 +24,7 @@ The agent takes the approved spec and decomposes it into shared story-level task
 The agent executes code implementation one vertical slice at a time. This phase automatically kicks off skills like `uncle-dev-incremental-implementation`, `uncle-dev-frontend-ui-engineering`, and `uncle-dev-api-and-interface-design` depending on what part of the stack is being touched.
 
 ### Phase 5: Verify (`/uncle-dev-test` & Debugging)
-The AI writes unit, integration, and end-to-end tests to verify its build slice. If the tests break, it pivots to the `uncle-dev-debugging-and-error-recovery` skill. It uses a scientific method to reproduce, localize, reduce, and fix bugs rather than blindly guessing syntax updates.
+The AI writes unit, integration, and end-to-end tests to verify its build slice. If the tests break, it pivots to the `uncle-dev-debug-error` skill. It uses a scientific method to reproduce, localize, reduce, and fix bugs rather than blindly guessing syntax updates.
 
 ### Phase 6: Review (`/uncle-dev-review`)
 Before committing, the agent dons the persona of a Senior Staff Engineer. It scans the diff using the `uncle-dev-code-review-and-quality` and `uncle-dev-security-and-hardening` frameworks, assigning NIT, Optional, or Block tags to its own code and refactoring appropriately. (This is also the phase to invoke `/uncle-dev-code-simplify`).

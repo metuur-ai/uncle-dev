@@ -17,6 +17,17 @@ Ship with confidence. The goal is not just to deploy — it's to deploy safely, 
 - Opening a beta or early access program
 - Any deployment that carries risk (all of them)
 
+## OpenSpec CLI Integration
+
+Check if the OpenSpec CLI is available (`openspec --version`). When available, use it during the ship workflow:
+
+- `openspec validate <change-id>` — Confirm all change artifacts are well-formed before launch
+- `openspec status <change-id>` — Verify all artifacts are complete
+- `openspec archive <change-id>` — After successful launch, finalize the change and reconcile into main specs
+- `openspec list --specs` — Verify specs were updated after archiving
+
+If the CLI is not installed, recommend `npm install -g openspec` and proceed with manual verification.
+
 ## The Pre-Launch Checklist
 
 ### Code Quality

@@ -13,6 +13,15 @@ description: Run the pre-launch checklist and prepare for production deployment
 
 Invoke `uncle-dev-shipping-and-launch`.
 
+Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to verify the change is ready to ship:
+
+- `openspec validate <change-id>` to confirm all artifacts are well-formed
+- `openspec status <change-id>` to verify all artifacts are complete
+- After successful launch, `openspec archive <change-id>` to finalize the change and reconcile into main specs
+- `openspec list --specs` to verify specs were updated after archiving
+
+If not installed, recommend `npm install -g openspec` and proceed with manual checks.
+
 Run through the complete pre-launch checklist:
 
 1. **Code Quality** — Tests pass, build is clean, lint is clean, no obvious debug artifacts remain
