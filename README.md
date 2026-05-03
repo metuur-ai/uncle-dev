@@ -141,9 +141,9 @@ Skills are plain Markdown - they work with any agent that accepts system prompts
 
 ---
 
-## All 20 Skills
+## All 21 Skills
 
-The commands above are the entry points. Under the hood, they activate these 20 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
+The commands above are the entry points. Under the hood, they activate these 21 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
 
 ### Define - Clarify what to build
 
@@ -185,6 +185,12 @@ The commands above are the entry points. Under the hood, they activate these 20 
 | [security-and-hardening](skills/uncle-dev-security-and-hardening/SKILL.md) | OWASP Top 10 prevention, auth patterns, secrets management, dependency auditing, three-tier boundary system | Handling user input, auth, data storage, or external integrations |
 | [performance-optimization](skills/uncle-dev-performance-optimization/SKILL.md) | Measure-first approach - Core Web Vitals targets, profiling workflows, bundle analysis, anti-pattern detection | Performance requirements exist or you suspect regressions |
 
+### Protocol - Cross-cutting infrastructure
+
+| Skill | What It Does | Use When |
+|-------|-------------|----------|
+| [graphify-aware-analysis](skills/uncle-dev-graphify-aware-analysis/SKILL.md) | Shared protocol for querying the graphify semantic knowledge graph — availability check, command patterns (`explain`/`path`/`query`), confidence interpretation, hyperedge decision rules | Referenced automatically by research, spec, planning, debug, and review skills when `graphify-out/graph.json` exists. Not invoked directly. |
+
 ### Ship - Deploy with confidence
 
 | Skill | What It Does | Use When |
@@ -206,6 +212,8 @@ Pre-configured specialist personas for targeted reviews:
 | [code-reviewer](agents/uncle-dev-ag-code-reviewer.md) | Senior Staff Engineer | Five-axis code review with "would a staff engineer approve this?" standard |
 | [test-engineer](agents/uncle-dev-ag-test-engineer.md) | QA Specialist | Test strategy, coverage analysis, and the Prove-It pattern |
 | [security-auditor](agents/uncle-dev-ag-security-auditor.md) | Security Engineer | Vulnerability detection, threat modeling, OWASP assessment |
+| [graph-analyst](agents/uncle-dev-ag-graph-analyst.md) | Graph Traversal Specialist | Multi-hop semantic graph analysis — spawned by research and review skills when `graphify-out/graph.json` exists |
+| [repo-research-analyst](agents/uncle-dev-ag-repo-research-analyst.md) | Repository Analyst | Structured repo exploration producing a handoff document — spawned by the research skill |
 
 ---
 
@@ -257,7 +265,7 @@ Every skill follows a consistent anatomy:
 
 ```
 agent-skills/
-├── skills/                            # 20 core skills (SKILL.md per directory)
+├── skills/                            # 21 core skills (SKILL.md per directory)
 │   ├── idea-refine/                   #   Define
 │   ├── spec-driven-development/       #   Define
 │   ├── planning-and-task-breakdown/   #   Plan
@@ -270,7 +278,7 @@ agent-skills/
 │   ├── browser-testing-with-devtools/ #   Verify
 │   ├── debugging-and-error-recovery/  #   Verify
 │   ├── code-review-and-quality/       #   Review
-│   ├── dev-code-simplification/      #   Review
+│   ├── dev-code-simplification/       #   Review
 │   ├── security-and-hardening/        #   Review
 │   ├── performance-optimization/      #   Review
 │   ├── git-workflow-and-versioning/   #   Ship
@@ -278,8 +286,14 @@ agent-skills/
 │   ├── deprecation-and-migration/     #   Ship
 │   ├── documentation-and-adrs/        #   Ship
 │   ├── shipping-and-launch/           #   Ship
+│   ├── graphify-aware-analysis/       #   Protocol: semantic graph search
 │   └── using-agent-skills/            #   Meta: how to use this pack
-├── agents/                            # 3 specialist personas
+├── agents/                            # 5 specialist personas
+│   ├── uncle-dev-ag-code-reviewer.md
+│   ├── uncle-dev-ag-test-engineer.md
+│   ├── uncle-dev-ag-security-auditor.md
+│   ├── uncle-dev-ag-graph-analyst.md  #   Graph traversal (spawned when graph exists)
+│   └── uncle-dev-ag-repo-research-analyst.md
 ├── references/                        # 4 supplementary checklists
 ├── hooks/                             # Session lifecycle hooks
 ├── .claude/commands/                  # 7 slash commands

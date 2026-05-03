@@ -84,6 +84,24 @@ gemini skills install https://github.com/addyosmani/agent-skills.git --path skil
 ## Manual / Other LLMs
 Because Uncle Dev skills are just well-structured Markdown (`.md`) files, you can copy the contents of any `SKILL.md` and paste it directly into your chat with ChatGPT, Claude Web, or any other agent to force them to adopt the specified workflow!
 
+## Graphify (Optional — Semantic Graph Search)
+
+If you want uncle-dev skills to use semantic graph traversal instead of grep for architecture research, dependency mapping, and impact analysis, install graphify and build a graph for your project:
+
+```bash
+# Install graphify CLI
+pip install graphifyy
+
+# Build the knowledge graph (run from your project root)
+graphify .
+# Creates graphify-out/graph.json, GRAPH_REPORT.md, graph.html
+
+# Keep it current after code changes (no LLM cost)
+graphify update src/
+```
+
+Once `graphify-out/graph.json` exists, all uncle-dev skills activate graph-first search automatically at startup. No other configuration is needed.
+
 ---
 
 # 3. Why Use Spec-Driven Development (SDD) & OpenSpec
@@ -263,6 +281,11 @@ In the Uncle Dev plugin pack, skills can be explicitly invoked when you run into
 **Use after an excruciating debugging session to secure the win.**
 > `We finally fixed the bug! Trigger uncle-dev-knowledge-capture.`
 > Document the exact root cause of the [Bug description: caching race-condition we faced in Redis] and lay out the solution as a formal learning in `.uncle-dev/learns/`.
+
+## Graphify-Aware Analysis (`uncle-dev-graphify-aware-analysis`)
+**Use to query the semantic knowledge graph for architecture research, impact analysis, and story boundary detection. Requires `graphify-out/graph.json` to exist.**
+> `Use uncle-dev-graphify-aware-analysis to orient the investigation.`
+> Before we spec the [Feature] change, check `graphify-out/GRAPH_REPORT.md` for god nodes, then run `graphify explain "[PrimaryModule]"` and `graphify query "[change area]"` to map the structural scope.
 
 ## Performance Optimization (`uncle-dev-performance-optimization`)
 **Use when the application performs sluggishly.**

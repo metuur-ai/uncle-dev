@@ -36,3 +36,18 @@ In the Uncle Dev plugin pack, skills can be explicitly invoked when you run into
 **Use when the application performs sluggishly.**
 > `Use uncle-dev-performance-optimization.`
 > The [Page Name: Product Listing] page is reporting bad Core Web Vitals, specifically LCP and CLS. Suggest a measurement strategy, help me profile the component's bundle, and identify React re-render anti-patterns or blocking scripts.
+
+## Graphify-Aware Analysis (`uncle-dev-graphify-aware-analysis`)
+**Use to understand how semantic graph queries work, interpret confidence levels, or decide whether to use hyperedges. Requires `graphify-out/graph.json` to be built first.**
+
+> *(Enable graph-first search for any research task):*
+> I've just run `/graphify` on this project. Use `uncle-dev-graphify-aware-analysis` to check availability and run graph-first orientation before we start researching the [Module/Feature] area.
+
+> *(Architecture impact query):*
+> Before we spec the [Feature] change, run a graphify scope mapping. Use `graphify explain "[PrimaryModule]"` and read GRAPH_REPORT.md to identify god nodes and community boundaries the change might touch.
+
+> *(Debug with graph):*
+> The [Module] is failing intermittently and has few obvious pairwise callers. Check whether it belongs to a flow hyperedge in `graphify-out/graph.json` — that might explain the cross-cutting blast radius.
+
+> *(Story boundary detection):*
+> Before writing tasks.md, read the graphify hyperedges for the [Feature Area] to see if there are named flows that map naturally to stories.

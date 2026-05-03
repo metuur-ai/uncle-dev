@@ -101,11 +101,48 @@ The `agents/` directory contains pre-configured agent personas:
 
 | Agent | Purpose |
 |-------|---------|
-| `code-reviewer.md` | Five-axis code review |
-| `test-engineer.md` | Test strategy and writing |
-| `security-auditor.md` | Vulnerability detection |
+| `uncle-dev-ag-code-reviewer.md` | Five-axis code review |
+| `uncle-dev-ag-test-engineer.md` | Test strategy and writing |
+| `uncle-dev-ag-security-auditor.md` | Vulnerability detection |
+| `uncle-dev-ag-repo-research-analyst.md` | Structured repo exploration — spawned by the research skill |
+| `uncle-dev-ag-graph-analyst.md` | Multi-hop semantic graph traversal — spawned by research and review skills when `graphify-out/graph.json` exists |
 
-Load an agent definition when you need specialized review. For example, ask your coding agent to "review this change using the code-reviewer agent persona" and provide the agent definition.
+Load an agent definition when you need specialized review. The graph-analyst and repo-research-analyst are spawned automatically by orchestrating skills — you do not invoke them directly.
+
+## Graphify-Enhanced Search (optional but recommended)
+
+If you build a graphify knowledge graph for your project, uncle-dev skills automatically use semantic graph traversal instead of grep for architecture questions, impact analysis, and dependency mapping.
+
+### Enable it once per project
+
+```bash
+# Install graphify CLI (requires Python 3.10+)
+pip install graphifyy
+
+# Build the initial graph (run from project root)
+graphify .
+# This creates graphify-out/graph.json, GRAPH_REPORT.md, and graph.html
+```
+
+Once `graphify-out/graph.json` exists, every uncle-dev skill checks for it at startup and activates graph-first search automatically. No configuration needed.
+
+### Keep it current
+
+```bash
+# After significant code changes, rebuild incrementally (no LLM cost)
+graphify update src/
+```
+
+### What you get
+
+| Without graphify | With graphify |
+|---|---|
+| Grep finds text matches | `graphify explain` traverses semantic neighbors |
+| Manual dependency mapping | `graphify path` traces dependency chains |
+| Community guesswork | GRAPH_REPORT.md shows god nodes and clusters |
+| Trial-and-error story boundaries | Hyperedges map named flows to story scope |
+
+See `skills/uncle-dev-graphify-aware-analysis/SKILL.md` for the full protocol, confidence interpretation, and hyperedge decision rules.
 
 ## Using Commands
 

@@ -52,6 +52,19 @@ or agent immediately. Do not ask for clarification first.
 | /uncle-dev-security-auditor | security-auditor agent persona (agents/uncle-dev-ag-security-auditor.md) |
 | /uncle-dev-test-engineer | test-engineer agent persona (agents/uncle-dev-ag-test-engineer.md) |
 
+### Graphify Graph Commands
+
+These are not slash commands — they are CLI queries run inline by skills or by the graph-analyst subagent when `graphify-out/graph.json` exists.
+
+| CLI Command | What It Does |
+|-------------|-------------|
+| `graphify explain "<node>"` | Explain a concept and all its graph neighbors |
+| `graphify path "A" "B"` | Shortest path between two concepts |
+| `graphify query "<question>"` | BFS/DFS semantic traversal |
+| `graphify update <path>` | Incremental graph rebuild (no LLM cost) |
+
+See `skills/uncle-dev-graphify-aware-analysis/SKILL.md` for the full protocol and hyperedge decision rules.
+
 ---
 
 ## OpenCode Integration
@@ -78,6 +91,8 @@ The agent should automatically map user intent to skills:
 - UI work → `uncle-dev-frontend-ui-engineering`
 - Problem just solved, want to document it → `uncle-dev-knowledge-capture`
 - .uncle-dev/learns/ may be stale or drifting → `uncle-dev-knowledge-maintenance`
+- "How does X work?" / "What touches Y?" / architecture questions → `uncle-dev-research` (will use graphify automatically if graph exists)
+- Semantic codebase search, "what relates to X?" → check `graphify-out/graph.json`; if present, run `graphify query` or spawn `uncle-dev-ag-graph-analyst` before grepping
 
 ### Lifecycle Mapping (Implicit Commands)
 

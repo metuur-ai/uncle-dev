@@ -181,3 +181,23 @@ Task tool with:
 | Documentation lookup | claude-code-guide | Explore |
 
 If on Opus and need high accuracy, use tools directly (Grep, Glob, Read) instead of spawning agents.
+
+### Graphify-First Search (when graph exists)
+
+Before grepping or spawning scouts, check for a semantic knowledge graph:
+
+```bash
+[ -f graphify-out/graph.json ] && echo "graph available" || echo "no graph"
+```
+
+If available, graphify traverses semantic relationships that grep cannot find:
+
+| Task | Use |
+|------|-----|
+| "Where is X defined / how does X work?" | `graphify explain "X"` |
+| "How does X relate to Y?" | `graphify path "X" "Y"` |
+| "What touches the auth/order/billing flow?" | `graphify query "<question>"` |
+| Multi-hop / cross-community analysis | spawn `uncle-dev-ag-graph-analyst` |
+| Architecture overview | read `graphify-out/GRAPH_REPORT.md` |
+
+Only fall back to grep/scout if the graph does not exist or returns no signal for the question. See `skills/uncle-dev-graphify-aware-analysis/SKILL.md` for confidence interpretation and hyperedge rules.
