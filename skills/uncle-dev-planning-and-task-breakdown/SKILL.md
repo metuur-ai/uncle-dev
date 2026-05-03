@@ -21,6 +21,12 @@ Decompose an approved OpenSpec change into shared story-level work and shared ex
 
 ## The Planning Process
 
+**Graphify availability check** — run once before Step 1:
+```bash
+[ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
+```
+If OFF, skip all graphify sections below and proceed with the standard process.
+
 ### Step 1: Enter Plan Mode
 
 Before writing any code, operate in read-only mode. Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to gather context:
@@ -61,6 +67,50 @@ Database schema
 ```
 
 Implementation order follows the dependency graph bottom-up: build foundations first.
+
+#### Graph-Augmented Dependency Mapping
+
+> Skip if availability check returned OFF.
+
+Before finalizing the dependency tree, run graph queries to catch non-obvious dependencies:
+
+```bash
+# 1. Read architectural signals
+# Read graphify-out/GRAPH_REPORT.md — god nodes should be sequenced first (others depend on them)
+
+# 2. For each major story candidate, explain its structural neighborhood:
+graphify explain "<concept or module>"
+
+# 3. Find structural paths between story areas that may share data:
+graphify path "<story-A-module>" "<story-B-module>"
+
+# 4. Find what depends on the module being changed:
+graphify query "what depends on <module-being-changed>"
+```
+
+Add graph-discovered dependencies to the tree before slicing stories. Mark graph-sourced edges with `[graph]` so they can be verified if needed. Note any god nodes touched in the `## Shared Blockers` section of `execution.md`.
+
+**Confidence rule:** Only add `[graph]` dependencies with EXTRACTED or INFERRED (>0.7) confidence to the dependency tree. AMBIGUOUS edges go into an "Open Questions" note in `execution.md` for manual verification.
+
+**Also check hyperedges for story boundaries.** Hyperedges label named groups like "user onboarding flow" or "checkout pipeline" — these often map directly to story-sized units, more precisely than community clusters:
+
+```bash
+# Check density first — only useful if ≥ 5 hyperedges exist
+python3 -c "
+import json
+g = json.load(open('graphify-out/graph.json'))
+hs = g.get('hyperedges', [])
+print(f'hyperedges: {len(hs)}')
+for h in hs:
+    print(h['label'], '->', h['nodes'])
+"
+```
+
+- **≥ 5 hyperedges:** map each one that overlaps the change area to a candidate story; the hyperedge's `nodes` list is the story's module scope
+- **< 5 hyperedges:** skip; use community structure from GRAPH_REPORT.md instead
+- **Do NOT use hyperedges** to find call chains or dependency direction — use `graphify path` for that
+
+See `uncle-dev-graphify-aware-analysis` for the full hyperedge decision table.
 
 ### Step 3: Slice at Story Level
 

@@ -19,6 +19,12 @@ Define tracked OpenSpec change artifacts before writing any code. Shared project
 
 **When NOT to use:** Single-line fixes, typo corrections, or changes where requirements are unambiguous and self-contained.
 
+**Graphify availability check** — run once before Phase 0:
+```bash
+[ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
+```
+If OFF, skip all graphify sections below and proceed with the standard process.
+
 ## The Gated Workflow
 
 Spec-driven development has five phases. Do not advance to the next phase until the current one is validated.
@@ -54,6 +60,32 @@ Otherwise, read the files directly:
 - Read the relevant files in `openspec/specs/`
 - Check whether there are related open changes in `openspec/changes/`
 - Note assumptions, conflicts, and missing context before proposing anything new
+
+#### Graph-Augmented Baseline
+
+> Skip if availability check returned OFF.
+
+Before surfacing assumptions, run a graph orientation to understand the current system structure:
+
+```bash
+# Read architectural signals
+# Read graphify-out/GRAPH_REPORT.md — identify god nodes and community boundaries
+
+# Query the area of the proposed change:
+graphify query "<describe the change area in plain language>" --budget 1500
+
+# If the change touches a specific known module:
+graphify explain "<module or concept name>"
+```
+
+Add graph findings to the assumptions block. Flag in particular:
+- Any **god nodes** the change is adjacent to (high blast radius; may require broader spec scope)
+- **Community crossings** the change introduces (signals architectural layer violation worth noting in boundaries)
+- **Surprising connections** to systems you didn't expect to touch (add these to "ask first" in Boundaries)
+
+If the graph returns empty or only AMBIGUOUS edges, proceed as if this step was skipped.
+
+See `uncle-dev-graphify-aware-analysis` for command syntax and confidence interpretation.
 
 **Surface assumptions immediately.** Before writing any change content, list what you're assuming:
 
@@ -137,6 +169,44 @@ When the OpenSpec CLI is available, prefer it over manual file operations:
 ### Phase 3: Specify Shared Change Truth
 
 When the CLI is available, use `openspec instructions <artifact>` to get enriched guidance for writing each artifact (e.g., `openspec instructions proposal.md`). This provides schema-aware templates and requirements.
+
+#### Scope Mapping via Graph
+
+> Skip if availability check returned OFF.
+
+Before writing `proposal.md`, run a graph impact scan to find all concepts structurally connected to this change:
+
+```bash
+# Find all structural neighbors of the primary change concept:
+graphify explain "<primary module or concept>"
+
+# For each adjacent concept returned, decide: in-scope or out-of-scope?
+# Add out-of-scope but graph-connected items explicitly to proposal.md Boundaries
+
+# If the change bridges two subsystems:
+graphify path "<subsystem-A>" "<subsystem-B>"
+```
+
+Use graph findings to populate the **Scope → Out of scope** and **Boundaries → Never** sections of `proposal.md` with graph-evidenced reasons. Example: *"Out of scope: PaymentProcessor — graph shows `conceptually_related_to` relation (INFERRED, 0.7) but no direct `calls` edge to the billing domain."*
+
+**When to also use hyperedges here:** `graphify explain` gives a fuzzy BFS neighborhood. If you need the exact, named membership of a flow — not just adjacent nodes but "everything that officially participates in the checkout flow" — read hyperedges directly. This is especially useful for populating `proposal.md` **Scope → In scope** with a precise, graph-evidenced list:
+
+```bash
+python3 -c "
+import json
+g = json.load(open('graphify-out/graph.json'))
+hs = g.get('hyperedges', [])
+print(f'total hyperedges: {len(hs)}')
+# Show all hyperedges — scan for ones matching the feature area
+for h in hs:
+    print(h['label'], '->', h['nodes'])
+"
+```
+
+- **Use hyperedges** when you want exact flow membership to bound the spec scope
+- **Skip hyperedges** when < 5 exist (too sparse to be useful) or when you only need direction/dependency chains (use `graphify path` instead)
+
+See `uncle-dev-graphify-aware-analysis` for the full hyperedge decision table.
 
 Start with a high-level vision. Ask the human clarifying questions until requirements are concrete, then distribute that truth across the change artifacts.
 

@@ -49,6 +49,35 @@ When spawned, you will receive:
 
 ## Research Process
 
+### Step 0: Graph-First Check
+
+> Skip this entire step if the invoking skill's availability check returned OFF (i.e., `graphify-out/graph.json` does not exist in the repository). Proceed directly to Step 1.
+
+If the graph exists, run it before scanning files. The graph provides a semantic map that shapes which files to read in Steps 1–4.
+
+```bash
+# Read architectural signals first
+# Read graphify-out/GRAPH_REPORT.md — extract:
+#   - God nodes (high betweenness = architectural chokepoints)
+#   - Community structure (logical clusters = natural module groups)
+#   - Surprising connections (hidden coupling worth documenting)
+
+# If a research focus was provided, query it directly:
+graphify query "<research focus>" --budget 1500
+
+# For each major concept surfaced, explain its neighborhood:
+graphify explain "<key concept from research focus>"
+```
+
+Use graph findings to:
+- Pre-populate the `## Architecture & Structure` section of the handoff with graph-derived community structure
+- Narrow file reading in Steps 2–3 to modules in the relevant graph community
+- Add a `## Graph-Derived Architecture` section (see handoff template) when the graph surfaces non-obvious structure
+
+If the graph returns empty results for the research area, skip to Step 1 as normal.
+
+See `uncle-dev-graphify-aware-analysis` for command syntax, confidence interpretation, and fallback rules.
+
 ### Step 1: High-Level Scan
 
 Check for key documentation files and get the directory structure:
@@ -149,6 +178,21 @@ repository: [repo name or path]
 ### Patterns to Be Aware Of
 - [Non-obvious requirements or gotchas]
 - [Things that differ from common conventions]
+
+## Graph-Derived Architecture (include only if graphify-out/graph.json exists)
+
+### God Nodes
+- [Node name] — [betweenness role: what depends on this node]
+
+### Community Structure
+- [Cluster name] — [modules in cluster]
+
+### Surprising Connections
+- [Connection] — [what it implies for the codebase]
+
+### Graph Source
+- Graph built from: `graphify-out/graph.json`
+- GRAPH_REPORT.md read: [yes/no]
 
 ## Sources
 - [Files read with paths]

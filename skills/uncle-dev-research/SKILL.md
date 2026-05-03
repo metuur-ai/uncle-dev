@@ -34,9 +34,44 @@ Then wait for the user's research question before proceeding.
 
 ## Core Process
 
+**Graphify availability check** — run once before Step 1:
+```bash
+[ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
+```
+If OFF, skip all graphify sections below and proceed with the standard process.
+
 ### Step 1: Read directly mentioned files first
 
 If the user references specific files (tickets, configs, docs), read them **fully** before spawning any subagents. Use the Read tool without limit or offset. Do this in the main context — not in a subagent — so you have full context before decomposing the research.
+
+### Step 1.5: Graph-First Orientation
+
+> Skip if availability check returned OFF.
+
+Before decomposing the research question, run targeted graph queries to orient the investigation. This narrows Step 2 scope and pre-fills subagent prompts with relevant structural context.
+
+```bash
+# 1. Read architectural signals
+# Read graphify-out/GRAPH_REPORT.md — note god nodes and community clusters related to the topic
+
+# 2. If a specific concept name is known from Step 1 or the user's question:
+graphify explain "<concept>"
+
+# 3. If the question is open-ended:
+graphify query "<research question>" --budget 1500
+
+# 4. If two specific modules are mentioned:
+graphify path "<module-A>" "<module-B>"
+```
+
+Use findings to:
+- **Narrow Step 2 decomposition** — skip investigation areas the graph shows as unrelated to the topic
+- **Pre-fill subagent context** — pass relevant graph nodes and relationships into each scout's prompt so they read the right files first
+- **Detect god-node adjacency** — if the research topic touches a high-betweenness node, note it in the research plan (signals wider blast radius for a later spec or review)
+
+If the graph returns empty or only AMBIGUOUS edges, proceed to Step 2 as if this step was skipped.
+
+See `uncle-dev-graphify-aware-analysis` for command syntax, confidence interpretation, and fallback rules.
 
 ### Step 2: Decompose the research question
 
@@ -51,7 +86,7 @@ Create a brief research plan before spawning agents.
 
 Run multiple agents concurrently, each focused on a specific area. Two agent strategies:
 
-**For full repository or unfamiliar codebase:** Spawn `uncle-dev-ag-repo-research-analyst` to produce a structured repo handoff document first, then spawn targeted scouts for specific questions.
+**For full repository or unfamiliar codebase:** Spawn `uncle-dev-ag-repo-research-analyst` to produce a structured repo handoff document first, then spawn targeted scouts for specific questions. If the graph is ON, you may also spawn `uncle-dev-ag-graph-analyst` in background alongside the repo-research-analyst for multi-hop structural questions that would require many grep passes to answer manually.
 
 **For targeted questions:** Spawn inline scout agents — one per investigation area — each with a focused read-only prompt. Each scout uses Glob, Grep, and Read tools to find and document what exists.
 

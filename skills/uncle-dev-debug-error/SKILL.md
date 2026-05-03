@@ -35,6 +35,12 @@ When anything unexpected happens:
 
 ## The Triage Checklist
 
+**Graphify availability check** — run once before Step 1:
+```bash
+[ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
+```
+If OFF, skip all graphify sections below and proceed with the standard process.
+
 Work through these steps in order. Do not skip steps.
 
 ### Step 1: Reproduce
@@ -108,6 +114,44 @@ git bisect good <known-good-sha> # This commit worked
 git bisect run npm test -- --grep "failing test"
 ```
 
+#### Graph-Assisted Localization
+
+> Skip if availability check returned OFF.
+
+If the failing layer is identified but the root module is unclear, use the graph to enumerate all structurally related modules — including indirect callers that grep alone would miss:
+
+```bash
+# Enumerate the full neighborhood of the suspected failing concept:
+graphify explain "<suspected-module-or-concept>"
+
+# If the error crosses layers (e.g., UI error with suspected API root):
+graphify path "<failing-ui-component>" "<suspected-api-module>"
+
+# Find everything that calls the suspect:
+graphify query "what calls <suspect-module>"
+```
+
+**Confidence rule:** EXTRACTED edges are reliable for localization — treat them as confirmed callers. INFERRED edges are leads to investigate with grep/Read. AMBIGUOUS edges are noise during debugging — ignore them.
+
+**When to also check hyperedges:** If the suspected module has few pairwise neighbors but the bug feels cross-cutting (e.g. affects multiple unrelated callers, appears in an event pipeline, or spans layers), it may belong to a named flow hyperedge that `graphify explain` won't surface. Check only if pairwise traversal returned no useful signal:
+
+```bash
+python3 -c "
+import json
+g = json.load(open('graphify-out/graph.json'))
+module = '<suspected-module>'
+matches = [h for h in g.get('hyperedges', []) if module in h['nodes']]
+for h in matches:
+    print(h['label'], '->', h['nodes'])
+"
+```
+
+Each matching hyperedge names the flow the module participates in — all other nodes in that hyperedge are co-participants and likely implicated in the bug.
+
+**Do NOT use hyperedges** when you already have pairwise caller results — they add noise, not signal. Use them only as a fallback when `graphify explain` returns an unexpectedly sparse neighborhood.
+
+See `uncle-dev-graphify-aware-analysis` for the full hyperedge decision table.
+
 ### Step 3: Reduce
 
 Create the minimal failing case:
@@ -117,6 +161,21 @@ Create the minimal failing case:
 - Strip the test to the bare minimum that reproduces the issue
 
 A minimal reproduction makes the root cause obvious and prevents fixing symptoms instead of causes.
+
+#### Graph-Guided Reduction
+
+> Skip if availability check returned OFF.
+
+Before stripping code manually, use the graph to confirm which modules the bug truly requires:
+
+```bash
+# Find the minimal set of concepts directly connected to the bug's locus:
+graphify explain "<bug-locus-module>"
+```
+
+Modules with `calls` or `shares_data_with` edges to the locus are structurally required — keep them in the repro. Modules that appear only via `semantically_similar_to` or `conceptually_related_to` edges are typically safe to strip. This accelerates reduction by replacing trial-and-error removal with graph-evidenced structural dependency.
+
+See `uncle-dev-graphify-aware-analysis` for confidence interpretation.
 
 ### Step 4: Fix the Root Cause
 

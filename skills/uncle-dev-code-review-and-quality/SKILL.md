@@ -19,6 +19,12 @@ Multi-dimensional code review with quality gates. Every change gets reviewed bef
 - When refactoring existing code
 - After any bug fix (review both the fix and the regression test)
 
+**Graphify availability check** — run once before the review process:
+```bash
+[ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
+```
+If OFF, skip all graphify sections below and proceed with the standard process.
+
 ## The Five-Axis Review
 
 Every review evaluates code across these dimensions:
@@ -55,6 +61,21 @@ Does the change fit the system's design?
 - Is there code duplication that should be shared?
 - Are dependencies flowing in the right direction (no circular dependencies)?
 - Is the abstraction level appropriate (not over-engineered, not too coupled)?
+
+**Graph-informed architecture checks** (if graphify is ON):
+
+```bash
+# Detect boundary violations — find if changed module can reach a module it shouldn't:
+graphify path "<changed-module>" "<a-module-it-should-NOT-reach>"
+# A short path where none should exist = boundary violation
+
+# Detect abstraction duplication:
+graphify query "concepts similar to <new-abstraction-name>"
+```
+
+- Does the change affect a **god node**? (Check GRAPH_REPORT.md — high betweenness = unintended ripple risk)
+- Does the change create a new **cross-community edge**? (Graph cluster violation = wrong-layer coupling)
+- Does the new abstraction duplicate an already-graphed concept? (`semantically_similar_to` edges at EXTRACTED or high INFERRED confidence)
 
 ### 4. Security
 
@@ -126,6 +147,26 @@ Before looking at code, understand the intent:
 - What spec or task does it implement?
 - What is the expected behavior change?
 ```
+
+**Graph-augmented context** (if graphify is ON):
+
+```bash
+# Check GRAPH_REPORT.md for god nodes — if the change touches a god node, flag it early
+# Read graphify-out/GRAPH_REPORT.md
+
+# Understand the structural neighborhood of the primary changed module:
+graphify explain "<primary changed module>"
+
+# If the change touches multiple modules in different domains:
+graphify query "what is the relationship between <module-A> and <module-B>"
+```
+
+Surface before reviewing code:
+- Whether any changed module is a **god node** → if yes, use Full parallel review mode regardless of line count
+- Any **community crossings** the change introduces → feeds directly into Axis 3 (Architecture)
+- Surprising connections from GRAPH_REPORT.md → potential hidden blast radius the author may not know about
+
+See `uncle-dev-graphify-aware-analysis` for command syntax and confidence interpretation.
 
 ### Step 2: Review the Tests First
 
@@ -242,6 +283,9 @@ For significant changes, run three specialized subagents in parallel then synthe
 | `uncle-dev-ag-code-reviewer` | Code quality, correctness, readability | Correctness, Readability, Performance |
 | `plan-reviewer` (architecture) | Pattern adherence, system fit, module boundaries | Architecture |
 | `plan-reviewer` (change impact) | Risk, backward compatibility, regressions, security implications | Security, risk |
+| `uncle-dev-ag-graph-analyst` | Structural blast radius via semantic graph | Architecture (graph-layer) — conditional |
+
+**When to spawn `uncle-dev-ag-graph-analyst`:** Only when graphify is ON AND the change exceeds ~300 lines OR touches a god node identified in GRAPH_REPORT.md. Pass it: the primary changed module names and the question `"what is the structural blast radius of changes to [modules]?"`. Run it in background alongside the existing parallel agents; its findings feed the architecture reviewer.
 
 For `--security` mode, add `uncle-dev-ag-security-auditor` to the parallel phase.
 
