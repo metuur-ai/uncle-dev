@@ -13,15 +13,19 @@ description: Implement the next task incrementally — build, test, verify, comm
 
 Invoke the agent-skills:uncle-dev-incremental-implementation skill alongside agent-skills:uncle-dev-test-driven-development.
 
-Check if the OpenSpec CLI is available (`openspec --version`). When available:
+**Step 0: Resolve the next task.** Invoke agent-skills:uncle-dev-next-task with `--claim` to:
 
-- `openspec list` to find the active change
-- `openspec show <change-id>` to read the change and its tasks
-- `openspec status <change-id>` to check which artifacts are complete
+- Detect the environment (OpenSpec CLI, `openspec/` dir, `.devlocal/` scratchpads, locks)
+- Compute the parallel-safe ready set across all in-progress changes
+- Surface any scratchpad/`tasks.md` conflict for the user to resolve before any code is written
+- Recommend one story with a clear `why:` line, and acquire a lock for this agent
+- If the user has already named a story, pass `--story <id>` to skip recommendation
 
-If not installed, recommend `npm install -g openspec` and read files directly.
+If `uncle-dev-next-task` reports the ready set is empty (everything blocked) or there is no tracked work, stop and follow its guidance — do not invent work.
 
-Pick the next pending shared story from the active change's `tasks.md`. For each story:
+If `uncle-dev-next-task` reports `BLOCKED: pending acknowledgements`, do not proceed. Print the block message verbatim. The user must run `/uncle-dev-acknowledge ack <ids>` (or `reject` / `supersede` / hand-edit `openspec/acknowledge/<scope>.md`) and then re-invoke `/uncle-dev-build` before any code is written. This gate is **non-bypassable** — there is no flag to ignore pending acknowledgements.
+
+For the chosen story:
 
 0. Apply agent-skills:uncle-dev-code-context — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
 1. Read the story's acceptance criteria and dependencies

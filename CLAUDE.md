@@ -8,14 +8,14 @@ This is the agent-skills project — a collection of production-grade engineerin
 skills/       → Core skills (SKILL.md per directory, with colocated reference files)
 agents/       → Reusable agent personas (uncle-dev-ag-code-reviewer, uncle-dev-ag-test-engineer, uncle-dev-ag-security-auditor)
 hooks/        → Session lifecycle hooks
-.claude/commands/ → Slash commands (/uncle-dev-research, /uncle-dev-spec, /uncle-dev-plan, /uncle-dev-build, /uncle-dev-test, /uncle-dev-review, /uncle-dev-code-simplify, /uncle-dev-ship, /uncle-dev-proactive-memory)
+.claude/commands/ → Slash commands (/uncle-dev-research, /uncle-dev-spec, /uncle-dev-plan, /uncle-dev-build, /uncle-dev-test, /uncle-dev-review, /uncle-dev-code-simplify, /uncle-dev-ship, /uncle-dev-proactive-memory, /uncle-dev-acknowledge, /uncle-dev-next-task)
 docs/         → Setup guides for different tools
 scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 ```
 
 ## Skills by Phase
 
-**Define:** uncle-dev-research, uncle-dev-spec-driven-development
+**Define:** uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-acknowledge
 **Plan:** uncle-dev-planning-and-task-breakdown
 **Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-context-engineering, uncle-dev-source-driven-development, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
 **Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debug-error

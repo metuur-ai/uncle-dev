@@ -1,0 +1,143 @@
+# Acknowledge note schema — frontmatter and per-decision section contract.
+# Loaded by uncle-dev-acknowledge (capture + workflow) and by
+# uncle-dev-next-task/acknowledge-gate.md (when reading pending decisions).
+#
+# Format: each openspec/acknowledge/<scope>.md file has YAML frontmatter
+# describing the file, then a sequence of `### D<N>` sections — one per
+# decision. Each section's metadata lives as a bullet list immediately
+# under the heading; the prose body follows after a blank line.
+#
+# We deliberately do NOT use per-section YAML frontmatter blocks: many
+# markdown parsers reject multiple frontmatter blocks per file. Bullet
+# lists are robust and easy to grep.
+
+# --- File-level frontmatter -------------------------------------------------
+file_frontmatter:
+  required:
+    scope:
+      type: string
+      pattern: '^[a-z][a-z0-9_-]*$'
+      description: "Scope name; matches the filename without .md (general, api, web, share, …)"
+    schema_version:
+      type: integer
+      values: [1]
+      description: "Schema version. Bump when this contract changes."
+    last_updated:
+      type: string
+      pattern: '^\d{4}-\d{2}-\d{2}$'
+      description: "Date of the most recent capture or workflow operation in this file (YYYY-MM-DD)"
+
+# --- Section anchor ---------------------------------------------------------
+# Each decision is a level-3 heading immediately preceded by an HTML comment
+# carrying the canonical id. The comment is the parse anchor for tooling;
+# the heading is the human-readable label.
+section_anchor:
+  comment_pattern: '^<!-- decision-id: (D\d+) -->$'
+  heading_pattern: '^### (D\d+) — (.+)$'
+  rules:
+    - "Comment line MUST appear immediately before the heading line (no blank lines between)"
+    - "The id captured in the comment MUST equal the id captured in the heading"
+    - "Headings use an em-dash (—), not a hyphen-minus, between the id and the title"
+
+# --- Per-decision metadata --------------------------------------------------
+# Bullets appear in this order, immediately under the heading, with no blank
+# line between the heading and the first bullet. A blank line follows the
+# last bullet, then the prose body.
+decision_metadata:
+  required:
+    status:
+      type: enum
+      values: [pending, acknowledged, rejected, superseded]
+      description: "Lifecycle state. `pending` is the gate-blocking state."
+    date:
+      type: string
+      pattern: '^\d{4}-\d{2}-\d{2}$'
+      description: "Date this decision was first captured (UTC, YYYY-MM-DD)"
+    inferred_from:
+      type: array[string]
+      min_items: 0
+      description: "Signals from inference-rules.md that contributed scopes. Empty array allowed when the note hit the `general` fallback."
+    duplicated_in:
+      type: array[string]
+      description: "Other scope filenames (without .md) that contain a copy of this same D-id. Empty if this is the only copy."
+
+  conditional:
+    related_change:
+      type: string
+      pattern: '^[A-Za-z0-9._-]+$'
+      description: "OpenSpec change id if this decision was captured from /uncle-dev-spec Phase 3. Optional otherwise; use `null` literal."
+      required_when: "Decision was extracted from openspec/changes/<id>/design.md via the spec flow"
+    ack_by:
+      type: string
+      description: "git user.email of the human who acked. Required when status is `acknowledged`; `null` otherwise."
+      required_when: "status == acknowledged"
+    ack_at:
+      type: string
+      pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+      description: "UTC ISO-8601 timestamp of the ack. Required when status is `acknowledged`; `null` otherwise."
+      required_when: "status == acknowledged"
+    reject_reason:
+      type: string
+      description: "Free-text reason. Required when status is `rejected`; absent otherwise."
+      required_when: "status == rejected"
+    supersedes:
+      type: string
+      pattern: '^D\d+$'
+      description: "The D-id this decision replaces. Required when this decision was created via `supersede`; `null` otherwise."
+      required_when: "this decision was created by `/uncle-dev-acknowledge supersede`"
+    superseded_by:
+      type: string
+      pattern: '^D\d+$'
+      description: "The D-id that replaced this one. Required when status is `superseded`; absent otherwise."
+      required_when: "status == superseded"
+
+# --- _meta.yaml -------------------------------------------------------------
+# Lives at openspec/acknowledge/_meta.yaml. The atomic counter for D-id
+# allocation, plus the scope index. Acquire the mkdir-style sentinel lock at
+# `openspec/acknowledge/_meta.yaml.acquiring/` before reading-then-writing.
+meta_file:
+  required:
+    schema_version:
+      type: integer
+      values: [1]
+    next_decision_id:
+      type: integer
+      description: "The N to use for the next allocated D-id. Increment after read."
+    scopes:
+      type: array[string]
+      description: "Every scope file currently present (filename without .md). Updated when a new scope is created."
+    last_synced:
+      type: string
+      pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+      description: "UTC timestamp of the last successful capture or workflow operation."
+
+# --- Validation rules --------------------------------------------------------
+validation_rules:
+  - "Every <scope>.md file MUST have valid file_frontmatter"
+  - "Every `### D<N>` section MUST be preceded by `<!-- decision-id: D<N> -->` on the immediately previous line"
+  - "Every section MUST have all `required` decision_metadata bullets"
+  - "Conditional fields MUST be present (or absent) per their `required_when` clause"
+  - "When status == acknowledged: ack_by and ack_at MUST both be non-null"
+  - "When status == rejected: reject_reason MUST be present and non-empty"
+  - "When status == superseded: superseded_by MUST be present"
+  - "D-ids in any file MUST be ≤ (next_decision_id - 1) in _meta.yaml"
+  - "If a D-id appears in multiple files, those files' `duplicated_in` lists MUST mention each other (symmetric)"
+  - "general.md MUST exist (auto-created with header if missing)"
+  - "Workflow operations MUST NOT modify the prose body of any section — only metadata bullets"
+
+# --- Example: a single section as it appears in the file --------------------
+example_section: |
+  <!-- decision-id: D5 -->
+  ### D5 — constant-time login
+  - status: pending
+  - date: 2026-05-09
+  - inferred_from: ["DUMMY_HASH", "/auth/login", "argon2", "security"]
+  - related_change: 014-auth-hardening
+  - duplicated_in: [general]
+  - ack_by: null
+  - ack_at: null
+  - supersedes: null
+
+  Every login runs argon2 even on unknown-email paths against a precomputed
+  DUMMY_HASH so timing doesn't leak user existence. Identical 401 +
+  INVALID_CREDENTIALS for wrong-password / unknown-email / inactive / no-hash.

@@ -269,6 +269,16 @@ Do not push technical micro-steps or private scratch work into tracked shared ar
 
 **Reframe instructions as success criteria.** When receiving vague requirements, translate them into concrete conditions and store them in `proposal.md` rather than keeping them in chat-only form.
 
+#### Flagging Decisions for Acknowledgement
+
+When a row in `design.md` **Technical Decisions** is one the human still needs to sign off on — the chosen approach is non-obvious, has a credible alternative, or breaks an existing convention — append `→ ack` at the end of the row.
+
+After the human reviews `design.md` (still in Phase 3, before moving to Phase 4), run `/uncle-dev-acknowledge openspec/changes/<change-id>/design.md`. The skill extracts every `→ ack` row, infers scope per `skills/uncle-dev-acknowledge/inference-rules.md` from the row text plus `proposal.md`'s Scope section, and writes each decision into `openspec/acknowledge/<scope>.md` linked to this change-id via `related_change`.
+
+These notes are then `pending` and will block `/uncle-dev-build` from claiming any story whose touched scopes intersect with them — the human must run `/uncle-dev-acknowledge ack <ids>` (or `reject` / `supersede`) before implementation can begin.
+
+This is the spec-flow's bridge to the gate. Lighter-weight than an ADR (which lives in `docs/decisions/` and is repo-wide narrative); use both when a decision deserves both per-package gating AND durable architectural history.
+
 ### Phase 4: Plan Shared Work
 
 With the validated proposal and design, generate a shared story-level plan:

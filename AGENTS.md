@@ -17,6 +17,7 @@ or agent immediately. Do not ask for clarification first.
 |---------|---------|
 | /uncle-dev-spec | uncle-dev-spec-driven-development |
 | /uncle-dev-plan | uncle-dev-planning-and-task-breakdown |
+| /uncle-dev-next-task | uncle-dev-next-task |
 | /uncle-dev-build | uncle-dev-incremental-implementation + uncle-dev-test-driven-development |
 | /uncle-dev-test | uncle-dev-test-driven-development |
 | /uncle-dev-review | uncle-dev-code-review-and-quality |
@@ -27,7 +28,7 @@ or agent immediately. Do not ask for clarification first.
 
 | Command | Invokes |
 |---------|---------|
-| /uncle-dev-idea-refine | uncle-dev-idea-refine |
+| /uncle-dev-acknowledge | uncle-dev-acknowledge |
 | /uncle-dev-context-engineering | uncle-dev-context-engineering |
 | /uncle-dev-source-driven-development | uncle-dev-source-driven-development |
 | /uncle-dev-frontend-ui-engineering | uncle-dev-frontend-ui-engineering |
@@ -89,6 +90,7 @@ The agent should automatically map user intent to skills:
 - Refactoring / simplification → `uncle-dev-dev-code-simplification`
 - API or interface design → `uncle-dev-api-and-interface-design`
 - UI work → `uncle-dev-frontend-ui-engineering`
+- Design decision needing human sign-off before building → `uncle-dev-acknowledge`
 - Problem just solved, want to document it → `uncle-dev-knowledge-capture`
 - .uncle-dev/learns/ may be stale or drifting → `uncle-dev-knowledge-maintenance`
 - "How does X work?" / "What touches Y?" / architecture questions → `uncle-dev-research` (will use graphify automatically if graph exists)
@@ -102,7 +104,8 @@ Instead, the agent must internally follow this lifecycle:
 
 - DEFINE → `uncle-dev-spec-driven-development`
 - PLAN → `uncle-dev-planning-and-task-breakdown`
-- BUILD → `uncle-dev-incremental-implementation` + `uncle-dev-test-driven-development`
+- BUILD → `uncle-dev-next-task` (picks story + checks acknowledge gate) then
+          `uncle-dev-incremental-implementation` + `uncle-dev-test-driven-development`
 - VERIFY → `uncle-dev-debug-error`
 - REVIEW → `uncle-dev-code-review-and-quality`
 - SHIP → `uncle-dev-shipping-and-launch`

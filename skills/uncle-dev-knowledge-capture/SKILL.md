@@ -29,9 +29,25 @@ capture the solution while context is fresh, then writes one structured file int
 
 ### Step 0: Mode Selection
 
-Present the user with two options using the platform's blocking question tool (`AskUserQuestion`
-in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini). Wait for the user's choice
-before proceeding. Do NOT pre-select a mode.
+Before offering capture modes, classify the input. Present this question first using the platform's blocking question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini):
+
+```
+Is this a SOLVED PROBLEM or a DESIGN DECISION worth confirming?
+
+1. Solved problem — a bug was fixed or a workflow was figured out. Document it as
+   a learning in .uncle-dev/learns/. Continue with knowledge-capture.
+
+2. Design decision — a deliberate choice (e.g. "use argon2 with a dummy hash for
+   constant-time login", "no /me endpoint", "passwordHash stays nullable") that a
+   human still needs to acknowledge before /uncle-dev-build can proceed.
+   Delegate to uncle-dev-acknowledge and exit.
+```
+
+If the user picks **Design decision**, invoke `uncle-dev-acknowledge` (or instruct the user to run `/uncle-dev-acknowledge` and paste the notes) and exit immediately. Acknowledge notes belong in `openspec/acknowledge/<scope>.md`, not in `.uncle-dev/learns/` — they are a different artifact class with a different lifecycle.
+
+If the user picks **Solved problem**, continue with the capture-mode question:
+
+Present the user with two options using the same blocking-question tool. Wait for the user's choice before proceeding. Do NOT pre-select a mode.
 
 ```
 1. Full (recommended) — parallel subagents research context, cross-reference existing docs, and
@@ -201,6 +217,8 @@ Map `problem_type` to the target `.uncle-dev/learns/` subdirectory:
 ### Resolution Templates
 
 Use the template matching the track when assembling the final doc.
+
+> **Different artifact class:** for design decisions that need human acknowledgement (not solved bugs), use `uncle-dev-acknowledge` — those land in `openspec/acknowledge/<scope>.md` and gate `/uncle-dev-build`, not in `.uncle-dev/learns/`. Step 0 routes the input there before this section is reached.
 
 **Bug Track** (`build_error`, `test_failure`, `runtime_error`, `performance_issue`, `database_issue`, `security_issue`, `ui_bug`, `integration_issue`, `logic_error`):
 

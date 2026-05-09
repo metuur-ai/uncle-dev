@@ -22,6 +22,19 @@ Document decisions, not just code. The most valuable documentation captures the 
 
 For documenting engineering solutions to bugs and problems (not architectural decisions), use `knowledge-capture` instead.
 
+### Acknowledge notes vs ADRs
+
+For per-package design decisions that need a human green-light **before** `/uncle-dev-build` is allowed to claim a story (e.g. "use a precomputed dummy hash for constant-time login", "no /me endpoint", "passwordHash stays nullable"), use `uncle-dev-acknowledge` instead. Those notes land in `openspec/acknowledge/<scope>.md`, are `pending` by default, and **gate** the next-task picker.
+
+| | ADR (`docs/decisions/`) | Acknowledge note (`openspec/acknowledge/`) |
+|---|---|---|
+| Scope | Repo-wide | Per package (`general`, `web`, `api`, `share`, …) |
+| Weight | Heavyweight narrative (Context, Decision, Alternatives, Consequences) | Lightweight bullet metadata + a paragraph of rationale |
+| Lifecycle | Accepted → Superseded / Deprecated; never deleted | Pending → Acknowledged / Rejected / Superseded; gates `/uncle-dev-build` while pending |
+| Triggered by | A decision worth a durable architectural record | A decision the human needs to sign off on before implementation can proceed |
+
+Both can apply to the same decision — write the ADR for durable history AND the acknowledge note to gate implementation. Cross-link the two: the ADR's body can cite the D-id, and the acknowledge note's `inferred_from` or rationale can name the ADR file.
+
 ## Architecture Decision Records (ADRs)
 
 ADRs capture the reasoning behind significant technical decisions. They're the highest-value documentation you can write.
