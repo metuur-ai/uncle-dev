@@ -19,16 +19,16 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 7 slash commands that map to the development lifecycle. Each one activates the right skills automatically.
 
-| What you're doing | Command | Key principle |
-|-------------------|---------|---------------|
-| Define what to build | `/uncle-dev-spec` | OpenSpec change before code |
-| Plan how to build it | `/uncle-dev-plan` | Shared stories, private scratchpads |
-| Build incrementally | `/uncle-dev-build` | One slice at a time |
-| Prove it works | `/uncle-dev-test` | Tests are proof |
-| Review before merge | `/uncle-dev-review` | Improve code health |
-| Simplify the code | `/uncle-dev-code-simplify` | Clarity over cleverness |
-| Ship to production | `/uncle-dev-ship` | Faster is safer |
-| Surface past learnings | `/uncle-dev-proactive-memory` | Context injection |
+| What you're doing      | Command                       | Key principle                       |
+| ---------------------- | ----------------------------- | ----------------------------------- |
+| Define what to build   | `/uncle-dev-spec`             | OpenSpec change before code         |
+| Plan how to build it   | `/uncle-dev-plan`             | Shared stories, private scratchpads |
+| Build incrementally    | `/uncle-dev-build`            | One slice at a time                 |
+| Prove it works         | `/uncle-dev-test`             | Tests are proof                     |
+| Review before merge    | `/uncle-dev-review`           | Improve code health                 |
+| Simplify the code      | `/uncle-dev-code-simplify`    | Clarity over cleverness             |
+| Ship to production     | `/uncle-dev-ship`             | Faster is safer                     |
+| Surface past learnings | `/uncle-dev-proactive-memory` | Context injection                   |
 
 Skills also activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, and so on.
 
@@ -49,6 +49,7 @@ DEFINE and PLAN use OpenSpec as the default shared workflow: `openspec/specs/` h
 ```
 
 > **SSH errors?** The marketplace clones repos via SSH. If you don't have SSH keys set up on GitHub, either [add your SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) or switch to HTTPS for fetches only:
+>
 > ```bash
 > git config --global url."https://github.com/".insteadOf "git@github.com:"
 > ```
@@ -147,59 +148,59 @@ The commands above are the entry points. Under the hood, they activate these 21 
 
 ### Define - Clarify what to build
 
-| Skill | What It Does | Use When |
-|-------|-------------|----------|
-| [idea-refine](skills/uncle-dev-idea-refine/SKILL.md) | Structured divergent/convergent thinking to turn vague ideas into concrete proposals | You have a rough concept that needs exploration |
+| Skill                                                                        | What It Does                                                                                                                    | Use When                                               |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [idea-refine](skills/uncle-dev-idea-refine/SKILL.md)                         | Structured divergent/convergent thinking to turn vague ideas into concrete proposals                                            | You have a rough concept that needs exploration        |
 | [spec-driven-development](skills/uncle-dev-spec-driven-development/SKILL.md) | Create tracked OpenSpec change artifacts (`proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`) before any code | Starting a new project, feature, or significant change |
 
 ### Plan - Break it down
 
-| Skill | What It Does | Use When |
-|-------|-------------|----------|
+| Skill                                                                                | What It Does                                                                                  | Use When                                                          |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | [planning-and-task-breakdown](skills/uncle-dev-planning-and-task-breakdown/SKILL.md) | Decompose an OpenSpec change into shared story-level tasks plus shared execution coordination | You have an approved change and need implementable shared stories |
 
 ### Build - Write the code
 
-| Skill | What It Does | Use When |
-|-------|-------------|----------|
-| [incremental-implementation](skills/uncle-dev-incremental-implementation/SKILL.md) | Thin vertical slices - implement, test, verify, commit. Feature flags, safe defaults, rollback-friendly changes | Any change touching more than one file |
-| [test-driven-development](skills/uncle-dev-test-driven-development/SKILL.md) | Red-Green-Refactor, test pyramid (80/15/5), test sizes, DAMP over DRY, Beyonce Rule, browser testing | Implementing logic, fixing bugs, or changing behavior |
-| [context-engineering](skills/uncle-dev-context-engineering/SKILL.md) | Feed agents the right information at the right time - rules files, context packing, MCP integrations | Starting a session, switching tasks, or when output quality drops |
-| [source-driven-development](skills/uncle-dev-source-driven-development/SKILL.md) | Ground every framework decision in official documentation - verify, cite sources, flag what's unverified | You want authoritative, source-cited code for any framework or library |
-| [frontend-ui-engineering](skills/uncle-dev-frontend-ui-engineering/SKILL.md) | Component architecture, design systems, state management, responsive design, WCAG 2.1 AA accessibility | Building or modifying user-facing interfaces |
-| [api-and-interface-design](skills/uncle-dev-api-and-interface-design/SKILL.md) | Contract-first design, Hyrum's Law, One-Version Rule, error semantics, boundary validation | Designing APIs, module boundaries, or public interfaces |
+| Skill                                                                              | What It Does                                                                                                    | Use When                                                               |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [incremental-implementation](skills/uncle-dev-incremental-implementation/SKILL.md) | Thin vertical slices - implement, test, verify, commit. Feature flags, safe defaults, rollback-friendly changes | Any change touching more than one file                                 |
+| [test-driven-development](skills/uncle-dev-test-driven-development/SKILL.md)       | Red-Green-Refactor, test pyramid (80/15/5), test sizes, DAMP over DRY, Beyonce Rule, browser testing            | Implementing logic, fixing bugs, or changing behavior                  |
+| [context-engineering](skills/uncle-dev-context-engineering/SKILL.md)               | Feed agents the right information at the right time - rules files, context packing, MCP integrations            | Starting a session, switching tasks, or when output quality drops      |
+| [source-driven-development](skills/uncle-dev-source-driven-development/SKILL.md)   | Ground every framework decision in official documentation - verify, cite sources, flag what's unverified        | You want authoritative, source-cited code for any framework or library |
+| [frontend-ui-engineering](skills/uncle-dev-frontend-ui-engineering/SKILL.md)       | Component architecture, design systems, state management, responsive design, WCAG 2.1 AA accessibility          | Building or modifying user-facing interfaces                           |
+| [api-and-interface-design](skills/uncle-dev-api-and-interface-design/SKILL.md)     | Contract-first design, Hyrum's Law, One-Version Rule, error semantics, boundary validation                      | Designing APIs, module boundaries, or public interfaces                |
 
 ### Verify - Prove it works
 
-| Skill | What It Does | Use When |
-|-------|-------------|----------|
+| Skill                                                                                    | What It Does                                                                                                    | Use When                                              |
+| ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | [browser-testing-with-devtools](skills/uncle-dev-browser-testing-with-devtools/SKILL.md) | Chrome DevTools MCP for live runtime data - DOM inspection, console logs, network traces, performance profiling | Building or debugging anything that runs in a browser |
-| [debug-error](skills/uncle-dev-debug-error/SKILL.md) | Five-step triage: reproduce, localize, reduce, fix, guard. Stop-the-line rule, safe fallbacks | Tests fail, builds break, or behavior is unexpected |
+| [debug-error](skills/uncle-dev-debug-error/SKILL.md)                                     | Five-step triage: reproduce, localize, reduce, fix, guard. Stop-the-line rule, safe fallbacks                   | Tests fail, builds break, or behavior is unexpected   |
 
 ### Review - Quality gates before merge
 
-| Skill | What It Does | Use When |
-|-------|-------------|----------|
-| [code-review-and-quality](skills/uncle-dev-code-review-and-quality/SKILL.md) | Five-axis review, change sizing (~100 lines), severity labels (Nit/Optional/FYI), review speed norms, splitting strategies | Before merging any change |
-| [dev-code-simplification](skills/uncle-dev-dev-code-simplification/SKILL.md) | Chesterton's Fence, Rule of 500, reduce complexity while preserving exact behavior | Code works but is harder to read or maintain than it should be |
-| [security-and-hardening](skills/uncle-dev-security-and-hardening/SKILL.md) | OWASP Top 10 prevention, auth patterns, secrets management, dependency auditing, three-tier boundary system | Handling user input, auth, data storage, or external integrations |
-| [performance-optimization](skills/uncle-dev-performance-optimization/SKILL.md) | Measure-first approach - Core Web Vitals targets, profiling workflows, bundle analysis, anti-pattern detection | Performance requirements exist or you suspect regressions |
+| Skill                                                                          | What It Does                                                                                                               | Use When                                                          |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [code-review-and-quality](skills/uncle-dev-code-review-and-quality/SKILL.md)   | Five-axis review, change sizing (~100 lines), severity labels (Nit/Optional/FYI), review speed norms, splitting strategies | Before merging any change                                         |
+| [dev-code-simplification](skills/uncle-dev-dev-code-simplification/SKILL.md)   | Chesterton's Fence, Rule of 500, reduce complexity while preserving exact behavior                                         | Code works but is harder to read or maintain than it should be    |
+| [security-and-hardening](skills/uncle-dev-security-and-hardening/SKILL.md)     | OWASP Top 10 prevention, auth patterns, secrets management, dependency auditing, three-tier boundary system                | Handling user input, auth, data storage, or external integrations |
+| [performance-optimization](skills/uncle-dev-performance-optimization/SKILL.md) | Measure-first approach - Core Web Vitals targets, profiling workflows, bundle analysis, anti-pattern detection             | Performance requirements exist or you suspect regressions         |
 
 ### Protocol - Cross-cutting infrastructure
 
-| Skill | What It Does | Use When |
-|-------|-------------|----------|
+| Skill                                                                        | What It Does                                                                                                                                                                              | Use When                                                                                                                                    |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | [graphify-aware-analysis](skills/uncle-dev-graphify-aware-analysis/SKILL.md) | Shared protocol for querying the graphify semantic knowledge graph — availability check, command patterns (`explain`/`path`/`query`), confidence interpretation, hyperedge decision rules | Referenced automatically by research, spec, planning, debug, and review skills when `graphify-out/graph.json` exists. Not invoked directly. |
 
 ### Ship - Deploy with confidence
 
-| Skill | What It Does | Use When |
-|-------|-------------|----------|
-| [git-workflow-and-versioning](skills/uncle-dev-git-workflow-and-versioning/SKILL.md) | Trunk-based development, atomic commits, change sizing (~100 lines), the commit-as-save-point pattern | Making any code change (always) |
-| [ci-cd-and-automation](skills/uncle-dev-ci-cd-and-automation/SKILL.md) | Shift Left, Faster is Safer, feature flags, quality gate pipelines, failure feedback loops | Setting up or modifying build and deploy pipelines |
-| [deprecation-and-migration](skills/uncle-dev-deprecation-and-migration/SKILL.md) | Code-as-liability mindset, compulsory vs advisory deprecation, migration patterns, zombie code removal | Removing old systems, migrating users, or sunsetting features |
-| [documentation-and-adrs](skills/uncle-dev-documentation-and-adrs/SKILL.md) | Architecture Decision Records, API docs, inline documentation standards - document the *why* | Making architectural decisions, changing APIs, or shipping features |
-| [shipping-and-launch](skills/uncle-dev-shipping-and-launch/SKILL.md) | Pre-launch checklists, feature flag lifecycle, staged rollouts, rollback procedures, monitoring setup | Preparing to deploy to production |
+| Skill                                                                                | What It Does                                                                                           | Use When                                                            |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| [git-workflow-and-versioning](skills/uncle-dev-git-workflow-and-versioning/SKILL.md) | Trunk-based development, atomic commits, change sizing (~100 lines), the commit-as-save-point pattern  | Making any code change (always)                                     |
+| [ci-cd-and-automation](skills/uncle-dev-ci-cd-and-automation/SKILL.md)               | Shift Left, Faster is Safer, feature flags, quality gate pipelines, failure feedback loops             | Setting up or modifying build and deploy pipelines                  |
+| [deprecation-and-migration](skills/uncle-dev-deprecation-and-migration/SKILL.md)     | Code-as-liability mindset, compulsory vs advisory deprecation, migration patterns, zombie code removal | Removing old systems, migrating users, or sunsetting features       |
+| [documentation-and-adrs](skills/uncle-dev-documentation-and-adrs/SKILL.md)           | Architecture Decision Records, API docs, inline documentation standards - document the _why_           | Making architectural decisions, changing APIs, or shipping features |
+| [shipping-and-launch](skills/uncle-dev-shipping-and-launch/SKILL.md)                 | Pre-launch checklists, feature flag lifecycle, staged rollouts, rollback procedures, monitoring setup  | Preparing to deploy to production                                   |
 
 ---
 
@@ -207,13 +208,13 @@ The commands above are the entry points. Under the hood, they activate these 21 
 
 Pre-configured specialist personas for targeted reviews:
 
-| Agent | Role | Perspective |
-|-------|------|-------------|
-| [code-reviewer](agents/uncle-dev-ag-code-reviewer.md) | Senior Staff Engineer | Five-axis code review with "would a staff engineer approve this?" standard |
-| [test-engineer](agents/uncle-dev-ag-test-engineer.md) | QA Specialist | Test strategy, coverage analysis, and the Prove-It pattern |
-| [security-auditor](agents/uncle-dev-ag-security-auditor.md) | Security Engineer | Vulnerability detection, threat modeling, OWASP assessment |
-| [graph-analyst](agents/uncle-dev-ag-graph-analyst.md) | Graph Traversal Specialist | Multi-hop semantic graph analysis — spawned by research and review skills when `graphify-out/graph.json` exists |
-| [repo-research-analyst](agents/uncle-dev-ag-repo-research-analyst.md) | Repository Analyst | Structured repo exploration producing a handoff document — spawned by the research skill |
+| Agent                                                                 | Role                       | Perspective                                                                                                     |
+| --------------------------------------------------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| [code-reviewer](agents/uncle-dev-ag-code-reviewer.md)                 | Senior Staff Engineer      | Five-axis code review with "would a staff engineer approve this?" standard                                      |
+| [test-engineer](agents/uncle-dev-ag-test-engineer.md)                 | QA Specialist              | Test strategy, coverage analysis, and the Prove-It pattern                                                      |
+| [security-auditor](agents/uncle-dev-ag-security-auditor.md)           | Security Engineer          | Vulnerability detection, threat modeling, OWASP assessment                                                      |
+| [graph-analyst](agents/uncle-dev-ag-graph-analyst.md)                 | Graph Traversal Specialist | Multi-hop semantic graph analysis — spawned by research and review skills when `graphify-out/graph.json` exists |
+| [repo-research-analyst](agents/uncle-dev-ag-repo-research-analyst.md) | Repository Analyst         | Structured repo exploration producing a handoff document — spawned by the research skill                        |
 
 ---
 
@@ -221,12 +222,12 @@ Pre-configured specialist personas for targeted reviews:
 
 Quick-reference material that skills pull in when needed:
 
-| Reference | Covers |
-|-----------|--------|
-| [testing-patterns.md](references/testing-patterns.md) | Test structure, naming, mocking, React/API/E2E examples, anti-patterns |
-| [security-checklist.md](references/security-checklist.md) | Pre-commit checks, auth, input validation, headers, CORS, OWASP Top 10 |
-| [performance-checklist.md](references/performance-checklist.md) | Core Web Vitals targets, frontend/backend checklists, measurement commands |
-| [accessibility-checklist.md](references/accessibility-checklist.md) | Keyboard nav, screen readers, visual design, ARIA, testing tools |
+| Reference                                                           | Covers                                                                     |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| [testing-patterns.md](references/testing-patterns.md)               | Test structure, naming, mocking, React/API/E2E examples, anti-patterns     |
+| [security-checklist.md](references/security-checklist.md)           | Pre-commit checks, auth, input validation, headers, CORS, OWASP Top 10     |
+| [performance-checklist.md](references/performance-checklist.md)     | Core Web Vitals targets, frontend/backend checklists, measurement commands |
+| [accessibility-checklist.md](references/accessibility-checklist.md) | Keyboard nav, screen readers, visual design, ARIA, testing tools           |
 
 ---
 
@@ -306,7 +307,7 @@ agent-skills/
 
 AI coding agents default to the shortest path - which often means skipping specs, tests, security reviews, and the practices that make software reliable. Agent Skills gives agents structured workflows that enforce the same discipline senior engineers bring to production code.
 
-Each skill encodes hard-won engineering judgment: *when* to write a spec, *what* to test, *how* to review, and *when* to ship. These aren't generic prompts - they're the kind of opinionated, process-driven workflows that separate production-quality work from prototype-quality work.
+Each skill encodes hard-won engineering judgment: _when_ to write a spec, _what_ to test, _how_ to review, and _when_ to ship. These aren't generic prompts - they're the kind of opinionated, process-driven workflows that separate production-quality work from prototype-quality work.
 
 Skills bake in best practices from Google's engineering culture — including concepts from [Software Engineering at Google](https://abseil.io/resources/swe-book) and Google's [engineering practices guide](https://google.github.io/eng-practices/). You'll find Hyrum's Law in API design, the Beyonce Rule and test pyramid in testing, change sizing and review speed norms in code review, Chesterton's Fence in simplification, trunk-based development in git workflow, Shift Left and feature flags in CI/CD, and a dedicated deprecation skill treating code as a liability. These aren't abstract principles — they're embedded directly into the step-by-step workflows agents follow.
 
@@ -323,3 +324,14 @@ See [docs/skill-anatomy.md](docs/skill-anatomy.md) for the format specification 
 ## License
 
 MIT - use these skills in your projects, teams, and tools.
+
+```
+Read the project CLAUDE.md at the root of this repo. Then add a section called
+"## Graphify — mandatory for subagents" that instructs all spawned agents and
+subagents to check for graphify-out/graph.json before using grep/Glob/Read for
+codebase exploration. If the graph exists, they must run graphify query/explain/path
+first and only fall back to file search if graphify returns empty. Read
+graphify-out/GRAPH_REPORT.md for god nodes and community structure. The rule
+applies to all agents: inline scouts, repo-research-analyst, code reviewers,
+investigate sessions.
+```

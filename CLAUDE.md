@@ -43,3 +43,21 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 - Always: Follow the skill-anatomy.md format for new skills
 - Never: Add skills that are vague advice instead of actionable processes
 - Never: Duplicate content between skills — reference other skills instead
+
+## Graphify — mandatory for subagents
+
+This project has a live knowledge graph at `graphify-out/graph.json`.
+
+Every spawned agent or subagent MUST check and use it before grep/Glob/Read:
+```bash
+[ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF"
+```
+If ON:
+- Architecture/structure question → `graphify query "<question>" --budget 1500`
+- "How does X work?" → `graphify explain "<X>"`
+- "How does X relate to Y?" → `graphify path "<X>" "<Y>"`
+- Read `graphify-out/GRAPH_REPORT.md` for god nodes and community structure
+
+Only fall back to grep/Read/Glob if graphify returns empty.
+
+Applies to: inline scouts, repo-research-analyst, code reviewers, investigate sessions — every agent spawned in this repo.
