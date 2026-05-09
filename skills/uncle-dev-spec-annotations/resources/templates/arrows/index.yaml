@@ -1,0 +1,43 @@
+# docs/arrows/index.yaml — segment registry for the spec graph
+#
+# Each entry is a product-behavior segment owned by one LLD.
+# The prefix marks the segment boundary in @spec annotations.
+#
+# Status values:
+#   PROPOSED  — segment exists in HLD/LLD but no specs/code yet
+#   MAPPED    — specs exist; code/tests being added
+#   AUDITED   — full coherence audit passed; graph is clean
+#   DRIFT     — coherence audit failed; see drift field for details
+
+schema_version: 1
+last_updated: 2026-05-09
+
+arrows:
+  # Example entry — replace with real segments:
+  auth:
+    status: MAPPED
+    prefix: AUTH-*
+    sampled: 2026-05-09
+    audited: null
+    audited_sha: null
+    blocks: []
+    blockedBy: []
+    detail: auth.md
+    next: "Run first coherence audit."
+    drift: null
+
+  # Add more segments as your repo grows:
+  #
+  # billing:
+  #   status: PROPOSED
+  #   prefix: BILLING-*
+  #   detail: billing.md
+  #   next: "Author docs/llds/billing.md and seed first 3 specs."
+  #
+  # search:
+  #   status: AUDITED
+  #   prefix: SEARCH-*
+  #   sampled: 2026-04-15
+  #   audited: 2026-05-01
+  #   audited_sha: abc1234
+  #   detail: search.md

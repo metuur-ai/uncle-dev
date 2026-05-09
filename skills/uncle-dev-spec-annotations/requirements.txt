@@ -1,0 +1,9 @@
+# Spec coherence scanner — optional dependencies for AST-aware parsing.
+#
+# The scanner runs without these (use --no-tree-sitter or simply omit installing).
+# Without tree-sitter, .py files use stdlib `ast`, all other languages use
+# comment-aware regex. ORPHAN detection works fully in either mode;
+# HELPER ANNOTATION detection is degraded in fallback mode.
+
+tree-sitter>=0.21,<0.23
+tree-sitter-languages>=1.10
