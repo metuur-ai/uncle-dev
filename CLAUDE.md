@@ -8,16 +8,16 @@ This is the agent-skills project — a collection of production-grade engineerin
 skills/       → Core skills (SKILL.md per directory, with colocated reference files)
 agents/       → Reusable agent personas (uncle-dev-ag-code-reviewer, uncle-dev-ag-test-engineer, uncle-dev-ag-security-auditor)
 hooks/        → Session lifecycle hooks
-.claude/commands/ → Slash commands (/uncle-dev-research, /uncle-dev-spec, /uncle-dev-plan, /uncle-dev-build, /uncle-dev-test, /uncle-dev-review, /uncle-dev-code-simplify, /uncle-dev-ship, /uncle-dev-proactive-memory, /uncle-dev-acknowledge, /uncle-dev-next-task)
+.claude/commands/ → Slash commands (/uncle-dev-research, /uncle-dev-spec, /uncle-dev-plan, /uncle-dev-build, /uncle-dev-test, /uncle-dev-review, /uncle-dev-code-simplify, /uncle-dev-ship, /uncle-dev-proactive-memory, /uncle-dev-acknowledge, /uncle-dev-next-task, /uncle-dev-design-docs, /uncle-dev-spec-scan, /uncle-dev-spec-graph)
 docs/         → Setup guides for different tools
 scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 ```
 
 ## Skills by Phase
 
-**Define:** uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-acknowledge
+**Define:** uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
 **Plan:** uncle-dev-planning-and-task-breakdown
-**Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-context-engineering, uncle-dev-source-driven-development, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
+**Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-spec-annotations, uncle-dev-context-engineering, uncle-dev-source-driven-development, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
 **Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debug-error
 **Review:** uncle-dev-code-review-and-quality, uncle-dev-dev-code-simplification, uncle-dev-security-and-hardening, uncle-dev-performance-optimization
 **Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-ci-cd-and-automation, uncle-dev-deprecation-and-migration, uncle-dev-documentation-and-adrs, uncle-dev-shipping-and-launch
@@ -32,6 +32,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 - Every skill has: Overview, When to Use, Process, Common Rationalizations, Red Flags, Verification
 - Supporting reference files (checklists, patterns) live alongside their SKILL.md in the same skill directory
 - Supporting files only created when content exceeds 100 lines
+- Architecture intent flows HLD → LLD → EARS specs → tests → code. Code and tests reference durable behavior via `@spec` annotations. See `uncle-dev-design-architecture-docs` and `uncle-dev-spec-annotations`.
 
 ## Commands
 

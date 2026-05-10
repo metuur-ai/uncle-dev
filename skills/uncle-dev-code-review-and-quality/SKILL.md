@@ -473,6 +473,18 @@ Part of code review is dependency review:
 - Review comments without severity labels — makes it unclear what's required vs optional
 - Accepting "I'll fix it later" — it never happens
 
+## `@spec` Coherence in Review
+
+If the repo uses durable EARS spec IDs (`docs/specs/`), the diff must keep the spec graph coherent. Run `/uncle-dev-spec-scan` on the diff before approving — it surfaces broken citations the hooks may have missed (e.g. when an EARS ID was deleted from `docs/specs/` after the code was annotated). See `uncle-dev-spec-annotations` for the full coherence model.
+
+Add to the review checklist:
+
+- [ ] `@spec` annotations exist on each behavior entry point introduced or modified
+- [ ] Annotations are placed on owners, not helpers (no HELPER ANNOTATION warnings in the scan)
+- [ ] Every cited `@spec` ID resolves to a defined spec in `docs/specs/`
+- [ ] Every EARS spec touched by the change has at least one test citation
+- [ ] If the change introduces a new segment, `docs/arrows/index.yaml` and `docs/arrows/<segment>.md` are present
+
 ## Verification
 
 After review is complete:
@@ -482,3 +494,4 @@ After review is complete:
 - [ ] Tests pass
 - [ ] Build succeeds
 - [ ] The verification story is documented (what changed, how it was verified)
+- [ ] If the repo uses `docs/specs/`: `/uncle-dev-spec-scan` runs clean (zero ORPHANS) on the diff

@@ -367,6 +367,35 @@ For detailed testing patterns, examples, and anti-patterns across frameworks, se
 - Test names that don't describe the expected behavior
 - Skipping tests to make the suite pass
 
+## `@spec` Annotations on Tests
+
+If the repo uses durable EARS spec IDs (`docs/specs/`), every test that proves a product behavior must carry a `@spec` annotation citing the spec ID it verifies. Place the annotation on the test, not on each assertion inside it.
+
+```typescript
+// @spec AUTH-UI-001
+it("returns a scoped session for valid credentials", async () => { ... });
+```
+
+```python
+# @spec AUTH-UI-001
+def test_returns_scoped_session_for_valid_credentials():
+    ...
+```
+
+```go
+// @spec AUTH-UI-001
+func TestReturnsScopedSessionForValidCredentials(t *testing.T) { ... }
+```
+
+Negative requirements (`shall NOT`) usually live or die in tests — annotate the test that proves the absence:
+
+```typescript
+// @spec AUTH-SEC-004
+it("does not expose raw authentication failure details", () => { ... });
+```
+
+Run `/uncle-dev-spec-scan` to confirm every behavioral test cites a real spec ID. The coherence guard hook also blocks edits/commits that cite undefined IDs. See `uncle-dev-spec-annotations` for placement rules, per-language syntax, and segment conventions.
+
 ## Verification
 
 After completing any implementation:
@@ -377,3 +406,4 @@ After completing any implementation:
 - [ ] Test names describe the behavior being verified
 - [ ] No tests were skipped or disabled
 - [ ] Coverage hasn't decreased (if tracked)
+- [ ] If the repo uses `docs/specs/`: every behavioral test cites a real `@spec` ID

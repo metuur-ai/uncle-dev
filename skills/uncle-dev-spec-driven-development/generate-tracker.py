@@ -5,14 +5,28 @@ Auto-generates openspec/tracker/changes.yaml from:
   - openspec/changes/<id>/tasks.yaml  (metadata + system-of-record IDs)
   - openspec/changes/<id>/tasks.md    (checkbox state — source of truth)
   - openspec/changes/<id>/handoff.md  (shipped marker)
+  - openspec/changes/<id>/proposal.md (## EARS Specs block — optional)
+
+When `docs/specs/` exists in the repo, each change's `proposal.md` can declare
+the EARS spec IDs it touches in an `## EARS Specs` block:
+
+    ## EARS Specs
+    - Introduces: FAV-001, FAV-002
+    - Modifies: AUTH-005
+
+The tracker invokes the spec coherence scanner and emits a `spec_coverage`
+field per change with declared/with_code/with_test/coverage_pct/missing.
 
 Usage:
   python3 generate-tracker.py --project /full/path/to/project/openspec
+  python3 generate-tracker.py --project /full/path/to/project/openspec --with-spec-graph
 """
 
 import argparse
+import json
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 
@@ -27,6 +41,11 @@ def parse_args():
         required=True,
         metavar="PATH",
         help="Absolute path to the project's openspec/ directory",
+    )
+    parser.add_argument(
+        "--with-spec-graph",
+        action="store_true",
+        help="Also regenerate the spec graph artifacts in docs/arrows/ (requires docs/specs/)",
     )
     return parser.parse_args()
 
@@ -138,6 +157,131 @@ def read_file(path):
         return f.read()
 
 
+# --- Spec coverage integration --------------------------------------------
+
+# Matches lines like "- Introduces: FAV-001, FAV-002" or "- Modifies: AUTH-005"
+_EARS_BLOCK_HEADING_RE = re.compile(r"^##\s+EARS\s+Specs\s*$", re.IGNORECASE)
+_EARS_LINE_RE = re.compile(
+    r"^\s*-\s*(Introduces|Modifies)\s*:\s*(.+?)\s*$", re.IGNORECASE
+)
+_SPEC_ID_RE = re.compile(r"\b[A-Z][A-Z0-9]+(?:-[A-Z0-9]+)*-\d+\b")
+
+
+def parse_proposal_ears_block(proposal_path):
+    """Extract declared spec IDs from the `## EARS Specs` block in a proposal.
+
+    Returns a list of unique IDs (Introduces + Modifies), preserving order.
+    Returns [] if the file or block is absent.
+    """
+    if not os.path.exists(proposal_path):
+        return []
+    declared = []
+    seen = set()
+    in_block = False
+    with open(proposal_path, encoding="utf-8") as f:
+        for line in f:
+            stripped = line.rstrip("\n")
+            if _EARS_BLOCK_HEADING_RE.match(stripped):
+                in_block = True
+                continue
+            if in_block and stripped.startswith("## "):
+                break
+            if not in_block:
+                continue
+            m = _EARS_LINE_RE.match(stripped)
+            if not m:
+                continue
+            for sid in _SPEC_ID_RE.findall(m.group(2)):
+                if sid not in seen:
+                    seen.add(sid)
+                    declared.append(sid)
+    return declared
+
+
+def find_sibling_script(name):
+    """Locate a sibling script in skills/uncle-dev-spec-annotations/."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    sibling = os.path.normpath(os.path.join(here, "..", "uncle-dev-spec-annotations", name))
+    if os.path.isfile(sibling):
+        return sibling
+    plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT")
+    if plugin_root:
+        candidate = os.path.join(plugin_root, "skills", "uncle-dev-spec-annotations", name)
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+def run_scanner(repo_root):
+    """Invoke scan-spec-coherence.py and return parsed JSON, or None if unavailable."""
+    scanner = find_sibling_script("scan-spec-coherence.py")
+    if not scanner:
+        return None
+    if not os.path.isdir(os.path.join(repo_root, "docs", "specs")):
+        return None
+    try:
+        result = subprocess.run(
+            ["python3", scanner, "--root", repo_root, "--format", "json"],
+            capture_output=True, text=True, check=False, cwd=repo_root,
+        )
+    except OSError as exc:
+        print(f"[tracker] WARN: scanner invocation failed: {exc}", file=sys.stderr)
+        return None
+    if not result.stdout.strip():
+        return None
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        print(f"[tracker] WARN: scanner JSON parse failed: {exc}", file=sys.stderr)
+        return None
+
+
+def compute_spec_coverage(declared, scanner_report):
+    """Build the spec_coverage block for one change.
+
+    Returns a dict shaped per the schema:
+      {declared, with_code, with_test, coverage_pct, missing}
+    or None if there's nothing to compute (no declared IDs, or no scanner).
+    """
+    if not declared:
+        return None
+    if scanner_report is None:
+        return None
+    specs = scanner_report.get("specs", {}) or {}
+    with_code = []
+    with_test = []
+    missing = {}
+    for sid in declared:
+        rec = specs.get(sid)
+        if rec is None:
+            # Declared but the spec catalog doesn't define it — record as a gap
+            missing[sid] = ["spec_definition", "code", "test"]
+            continue
+        has_code = bool(rec.get("code_citations"))
+        has_test = bool(rec.get("test_citations"))
+        if has_code:
+            with_code.append(sid)
+        if has_test:
+            with_test.append(sid)
+        gaps = []
+        if not has_code:
+            gaps.append("code")
+        if not has_test:
+            gaps.append("test")
+        if gaps:
+            missing[sid] = gaps
+    total_slots = len(declared) * 2  # each ID gets a code slot + test slot
+    filled_slots = len(with_code) + len(with_test)
+    coverage_pct = round(filled_slots / total_slots * 100) if total_slots else 0
+    return {
+        "declared": declared,
+        "with_code": with_code,
+        "with_test": with_test,
+        "coverage_pct": coverage_pct,
+        "missing": missing,
+    }
+
+
 # --- YAML writer ------------------------------------------------------------
 
 def yaml_str(value):
@@ -178,6 +322,21 @@ def build_yaml(entries):
         if e["created_at"]:
             lines.append(f"    created_at: {yaml_str(e['created_at'])}")
         lines.append(f"    updated_at: {today}")
+        cov = e.get("spec_coverage")
+        if cov is None:
+            lines.append("    spec_coverage: null")
+        else:
+            lines.append("    spec_coverage:")
+            lines.append(f"      declared: [{', '.join(cov['declared'])}]")
+            lines.append(f"      with_code: [{', '.join(cov['with_code'])}]")
+            lines.append(f"      with_test: [{', '.join(cov['with_test'])}]")
+            lines.append(f"      coverage_pct: {cov['coverage_pct']}")
+            if cov["missing"]:
+                lines.append("      missing:")
+                for sid, gaps in sorted(cov["missing"].items()):
+                    lines.append(f"        {sid}: [{', '.join(gaps)}]")
+            else:
+                lines.append("      missing: {}")
         lines.append("")
 
     return "\n".join(lines)
@@ -195,6 +354,10 @@ def main():
 
     os.makedirs(paths["tracker"], exist_ok=True)
 
+    # Scanner runs once for the whole repo; result is reused per-change.
+    repo_root = os.path.dirname(os.path.abspath(args.project).rstrip(os.sep))
+    scanner_report = run_scanner(repo_root)
+
     change_dirs = sorted(
         d for d in os.listdir(paths["changes"])
         if os.path.isdir(os.path.join(paths["changes"], d))
@@ -208,10 +371,12 @@ def main():
         meta = parse_tasks_yaml(os.path.join(change_path, "tasks.yaml"))
         tasks_text = read_file(os.path.join(change_path, "tasks.md"))
         handoff_text = read_file(os.path.join(change_path, "handoff.md"))
+        declared = parse_proposal_ears_block(os.path.join(change_path, "proposal.md"))
 
         criteria_done, criteria_total = count_checkboxes(tasks_text)
         status = derive_status(criteria_done, criteria_total, handoff_text)
         phase = derive_phase(criteria_done, criteria_total, handoff_text)
+        coverage = compute_spec_coverage(declared, scanner_report)
 
         entries[change_id] = {
             "title": meta["title"],
@@ -222,6 +387,7 @@ def main():
             "criteria_total": criteria_total,
             "records": meta["records"],
             "created_at": meta["created_at"],
+            "spec_coverage": coverage,
         }
         counts[status] = counts.get(status, 0) + 1
 
@@ -231,6 +397,7 @@ def main():
         f.write(yaml_content)
 
     total = len(entries)
+    coverage_count = sum(1 for e in entries.values() if e["spec_coverage"] is not None)
     print(
         f"[tracker] Regenerated: {total} changes — "
         f"{counts['shipped']} shipped, "
@@ -238,7 +405,24 @@ def main():
         f"{counts['in_progress']} in_progress, "
         f"{counts['not_started']} not_started"
     )
+    if scanner_report is not None:
+        print(f"[tracker] Spec coverage computed for {coverage_count}/{total} changes")
     print(f"[tracker] Output: {paths['output']}")
+
+    if args.with_spec_graph:
+        builder = find_sibling_script("build-spec-graph.py")
+        if builder is None:
+            print("[tracker] WARN: --with-spec-graph requested but build-spec-graph.py not found", file=sys.stderr)
+        elif not os.path.isdir(os.path.join(repo_root, "docs")):
+            print("[tracker] --with-spec-graph: skipped (no docs/ directory)")
+        else:
+            try:
+                subprocess.run(
+                    ["python3", builder, "--root", repo_root],
+                    check=False, cwd=repo_root,
+                )
+            except OSError as exc:
+                print(f"[tracker] WARN: graph builder failed: {exc}", file=sys.stderr)
 
 
 if __name__ == "__main__":

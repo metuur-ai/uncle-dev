@@ -331,6 +331,27 @@ The change folder is a living source of truth, not a one-time artifact:
 - Keeping cross-story dependencies only in `.devlocal/`
 - Letting `tasks.md` turn into a personal code-level checklist
 
+### Phase 3.5: Declare EARS Spec IDs
+
+If the repo uses durable behavior IDs (`docs/specs/`), every change must declare which IDs it touches. This is the bridge between the transient OpenSpec change (`openspec/changes/NNN-slug/`) and the durable spec graph (`docs/specs/`, `docs/arrows/`, `@spec` annotations in code).
+
+In `proposal.md`, add an `## EARS Specs` block listing IDs the change introduces or modifies:
+
+```markdown
+## EARS Specs
+- Introduces: FAV-001, FAV-002
+- Modifies: AUTH-005
+```
+
+Then for each declared ID:
+
+- **Introduces**: add the ID to `docs/specs/<segment>-specs.md` with status `[ ]` (active gap) or `[x]` (already implemented). For a new segment, also update `docs/arrows/index.yaml` and create `docs/arrows/<segment>.md`.
+- **Modifies**: re-read the existing spec definition. If wording sharpens, edit it in place (the ID stays the same). If the behavior fundamentally changes, retire the old ID and introduce a new one.
+
+The spec coverage tracker (`generate-tracker.py`) reads this block and emits a per-change `spec_coverage` field showing which IDs have code + test annotations. See `uncle-dev-spec-annotations` for ID format, segment selection, the `@spec` annotation rules, and the coherence scanner. See `uncle-dev-design-architecture-docs` if introducing a new segment.
+
+If the repo does NOT use `docs/specs/`, skip Phase 3.5 (the convention is opt-in; everything else in this workflow still applies).
+
 ## Verification
 
 Before proceeding to implementation, confirm:
@@ -342,3 +363,4 @@ Before proceeding to implementation, confirm:
 - [ ] `tasks.md` contains shared story-level work only
 - [ ] `execution.md` captures cross-story sequencing and blockers
 - [ ] The human has reviewed and approved the shared change truth
+- [ ] If the repo uses `docs/specs/`: every EARS spec ID introduced/modified by this change exists in `docs/specs/<segment>-specs.md` and is listed in `proposal.md`'s `## EARS Specs` block

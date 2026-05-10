@@ -231,6 +231,30 @@ After each increment, verify:
 - Touching files outside the task scope "while I'm here"
 - Creating new utility files for one-time operations
 
+## `@spec` Annotations on Code
+
+If the repo uses durable EARS spec IDs (`docs/specs/`), each behavior entry point must carry a `@spec` annotation citing the spec ID it implements. The annotation belongs on the **owner**, not every helper:
+
+```typescript
+// @spec AUTH-UI-001
+export async function authenticate(creds) { ... }   // entry point — annotated
+
+function parseCredentials(raw) { ... }               // helper — no annotation
+function validatePassword(p) { ... }                 // helper — no annotation
+function createSession(id) { ... }                   // helper — no annotation
+```
+
+When one behavior crosses subsystems, annotate each subsystem entry point — but not every internal helper inside them:
+
+```
+AUTH-UI-001
+   ├──▶ LoginForm.tsx       // @spec AUTH-UI-001
+   ├──▶ authController.ts   // @spec AUTH-UI-001
+   └──▶ sessionStore.ts     // @spec AUTH-UI-001
+```
+
+The `spec-coherence-guard.sh` hook blocks edits and commits that cite undefined IDs in real time. Run `/uncle-dev-spec-scan` to surface annotations on non-entry-point AST nodes (HELPER ANNOTATION warnings). See `uncle-dev-spec-annotations` for per-language examples, the segment-boundary rule, and negative-requirement patterns.
+
 ## Verification
 
 After completing all increments for a task:
@@ -240,3 +264,4 @@ After completing all increments for a task:
 - [ ] The build is clean
 - [ ] The feature works end-to-end as specified
 - [ ] No uncommitted changes remain
+- [ ] If the repo uses `docs/specs/`: every behavior entry point introduced or modified carries a `@spec` annotation

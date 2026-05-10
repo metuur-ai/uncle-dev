@@ -41,7 +41,7 @@ SPEC_DEF_RE = re.compile(
 )
 
 
-def parse_specs(specs_dir: str) -> Dict[str, SpecDef]:
+def parse_specs(specs_dir: str, repo_root: str) -> Dict[str, SpecDef]:
     """Parse all spec files under docs/specs/. Returns {id: SpecDef}."""
     specs: Dict[str, SpecDef] = {}
     if not os.path.isdir(specs_dir):
@@ -52,7 +52,7 @@ def parse_specs(specs_dir: str) -> Dict[str, SpecDef]:
             if not fname.endswith(".md"):
                 continue
             path = os.path.join(root, fname)
-            rel = os.path.relpath(path)
+            rel = os.path.relpath(path, start=repo_root)
             try:
                 with open(path, encoding="utf-8") as f:
                     for line_no, line in enumerate(f, start=1):
@@ -268,7 +268,7 @@ def main() -> int:
     root = os.path.abspath(args.root)
     specs_dir = os.path.join(root, "docs", "specs")
 
-    specs = parse_specs(specs_dir)
+    specs = parse_specs(specs_dir, root)
 
     annotations: List[Annotation] = []
     for rel_path in walk_files(root):
@@ -292,8 +292,9 @@ def main() -> int:
     report["root"] = root
 
     if args.format == "json":
-        if not args.quiet:
-            print(json.dumps(report, indent=2, sort_keys=True))
+        # JSON output is the data — --quiet should not suppress it, only the
+        # human-readable text format.
+        print(json.dumps(report, indent=2, sort_keys=True))
     else:
         if not args.quiet:
             print(format_text(report, root))

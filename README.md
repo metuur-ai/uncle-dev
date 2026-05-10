@@ -17,22 +17,29 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 ## Commands
 
-7 slash commands that map to the development lifecycle. Each one activates the right skills automatically.
+Slash commands that map to the development lifecycle. Each one activates the right skills automatically.
 
-| What you're doing      | Command                       | Key principle                       |
-| ---------------------- | ----------------------------- | ----------------------------------- |
-| Define what to build   | `/uncle-dev-spec`             | OpenSpec change before code         |
-| Plan how to build it   | `/uncle-dev-plan`             | Shared stories, private scratchpads |
-| Build incrementally    | `/uncle-dev-build`            | One slice at a time                 |
-| Prove it works         | `/uncle-dev-test`             | Tests are proof                     |
-| Review before merge    | `/uncle-dev-review`           | Improve code health                 |
-| Simplify the code      | `/uncle-dev-code-simplify`    | Clarity over cleverness             |
-| Ship to production     | `/uncle-dev-ship`             | Faster is safer                     |
-| Surface past learnings | `/uncle-dev-proactive-memory` | Context injection                   |
+| What you're doing             | Command                       | Key principle                       |
+| ----------------------------- | ----------------------------- | ----------------------------------- |
+| Define what to build          | `/uncle-dev-spec`             | OpenSpec change before code         |
+| Author HLD/LLD architecture   | `/uncle-dev-design-docs`      | Segments map intent to code         |
+| Plan how to build it          | `/uncle-dev-plan`             | Shared stories, private scratchpads |
+| Build incrementally           | `/uncle-dev-build`            | One slice at a time                 |
+| Prove it works                | `/uncle-dev-test`             | Tests are proof                     |
+| Validate `@spec` coherence    | `/uncle-dev-spec-scan`        | Code → tests → specs link cleanly   |
+| Build the spec graph          | `/uncle-dev-spec-graph`       | HLD → LLD → spec → test → code      |
+| Review before merge           | `/uncle-dev-review`           | Improve code health                 |
+| Simplify the code             | `/uncle-dev-code-simplify`    | Clarity over cleverness             |
+| Ship to production            | `/uncle-dev-ship`             | Faster is safer                     |
+| Surface past learnings        | `/uncle-dev-proactive-memory` | Context injection                   |
 
 Skills also activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, and so on.
 
 DEFINE and PLAN use OpenSpec as the default shared workflow: `openspec/specs/` holds current project truth, `openspec/changes/<change-id>/` holds shared change truth, and `.devlocal/` is the disposable personal workspace.
+
+### Durable spec graph (optional)
+
+When a repo opts in to the spec graph, durable behavior IDs live in `docs/specs/<segment>-specs.md` (separate from transient OpenSpec changes), and code/tests carry `@spec` annotations that connect them to those IDs. The graph flows `HLD → LLD → EARS specs → tests → code`. Validate with `/uncle-dev-spec-scan`, visualize with `/uncle-dev-spec-graph`, and a `spec-coherence-guard.sh` PreToolUse hook blocks edits/commits that cite undefined IDs. The OpenSpec tracker (`/uncle-dev-openspec-sync`) reports per-change `spec_coverage` when each `proposal.md` declares an `## EARS Specs` block. See [`uncle-dev-spec-annotations`](skills/uncle-dev-spec-annotations/SKILL.md) and [`uncle-dev-design-architecture-docs`](skills/uncle-dev-design-architecture-docs/SKILL.md) for the full model.
 
 ---
 
@@ -148,10 +155,11 @@ The commands above are the entry points. Under the hood, they activate these 21 
 
 ### Define - Clarify what to build
 
-| Skill                                                                        | What It Does                                                                                                                    | Use When                                               |
-| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| [idea-refine](skills/uncle-dev-idea-refine/SKILL.md)                         | Structured divergent/convergent thinking to turn vague ideas into concrete proposals                                            | You have a rough concept that needs exploration        |
-| [spec-driven-development](skills/uncle-dev-spec-driven-development/SKILL.md) | Create tracked OpenSpec change artifacts (`proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`) before any code | Starting a new project, feature, or significant change |
+| Skill                                                                                  | What It Does                                                                                                                    | Use When                                               |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [idea-refine](skills/uncle-dev-idea-refine/SKILL.md)                                   | Structured divergent/convergent thinking to turn vague ideas into concrete proposals                                            | You have a rough concept that needs exploration        |
+| [spec-driven-development](skills/uncle-dev-spec-driven-development/SKILL.md)           | Create tracked OpenSpec change artifacts (`proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`) before any code | Starting a new project, feature, or significant change |
+| [design-architecture-docs](skills/uncle-dev-design-architecture-docs/SKILL.md)         | Author durable HLD and per-segment LLDs that partition product intent into segments and feed EARS specs                         | Starting a product, adding a new behavior segment, or refactoring segment boundaries |
 
 ### Plan - Break it down
 
@@ -165,6 +173,7 @@ The commands above are the entry points. Under the hood, they activate these 21 
 | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | [incremental-implementation](skills/uncle-dev-incremental-implementation/SKILL.md) | Thin vertical slices - implement, test, verify, commit. Feature flags, safe defaults, rollback-friendly changes | Any change touching more than one file                                 |
 | [test-driven-development](skills/uncle-dev-test-driven-development/SKILL.md)       | Red-Green-Refactor, test pyramid (80/15/5), test sizes, DAMP over DRY, Beyonce Rule, browser testing            | Implementing logic, fixing bugs, or changing behavior                  |
+| [spec-annotations](skills/uncle-dev-spec-annotations/SKILL.md)                     | `@spec` annotations connect code/tests to durable EARS spec IDs. Per-language AST scanner + blocking hook + spec graph generator | Annotating behavior entry points; running coherence checks across HLD/LLD/EARS/tests/code |
 | [context-engineering](skills/uncle-dev-context-engineering/SKILL.md)               | Feed agents the right information at the right time - rules files, context packing, MCP integrations            | Starting a session, switching tasks, or when output quality drops      |
 | [source-driven-development](skills/uncle-dev-source-driven-development/SKILL.md)   | Ground every framework decision in official documentation - verify, cite sources, flag what's unverified        | You want authoritative, source-cited code for any framework or library |
 | [frontend-ui-engineering](skills/uncle-dev-frontend-ui-engineering/SKILL.md)       | Component architecture, design systems, state management, responsive design, WCAG 2.1 AA accessibility          | Building or modifying user-facing interfaces                           |
