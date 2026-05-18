@@ -19,19 +19,19 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 Slash commands that map to the development lifecycle. Each one activates the right skills automatically.
 
-| What you're doing             | Command                       | Key principle                       |
-| ----------------------------- | ----------------------------- | ----------------------------------- |
-| Define what to build          | `/uncle-dev-spec`             | OpenSpec change before code         |
-| Author HLD/LLD architecture   | `/uncle-dev-design-docs`      | Segments map intent to code         |
-| Plan how to build it          | `/uncle-dev-plan`             | Shared stories, private scratchpads |
-| Build incrementally           | `/uncle-dev-build`            | One slice at a time                 |
-| Prove it works                | `/uncle-dev-test`             | Tests are proof                     |
-| Validate `@spec` coherence    | `/uncle-dev-spec-scan`        | Code → tests → specs link cleanly   |
-| Build the spec graph          | `/uncle-dev-spec-graph`       | HLD → LLD → spec → test → code      |
-| Review before merge           | `/uncle-dev-review`           | Improve code health                 |
-| Simplify the code             | `/uncle-dev-code-simplify`    | Clarity over cleverness             |
-| Ship to production            | `/uncle-dev-ship`             | Faster is safer                     |
-| Surface past learnings        | `/uncle-dev-proactive-memory` | Context injection                   |
+| What you're doing           | Command                       | Key principle                       |
+| --------------------------- | ----------------------------- | ----------------------------------- |
+| Define what to build        | `/uncle-dev-spec`             | OpenSpec change before code         |
+| Author HLD/LLD architecture | `/uncle-dev-design-docs`      | Segments map intent to code         |
+| Plan how to build it        | `/uncle-dev-plan`             | Shared stories, private scratchpads |
+| Build incrementally         | `/uncle-dev-build`            | One slice at a time                 |
+| Prove it works              | `/uncle-dev-test`             | Tests are proof                     |
+| Validate `@spec` coherence  | `/uncle-dev-spec-scan`        | Code → tests → specs link cleanly   |
+| Build the spec graph        | `/uncle-dev-spec-graph`       | HLD → LLD → spec → test → code      |
+| Review before merge         | `/uncle-dev-review`           | Improve code health                 |
+| Simplify the code           | `/uncle-dev-code-simplify`    | Clarity over cleverness             |
+| Ship to production          | `/uncle-dev-ship`             | Faster is safer                     |
+| Surface past learnings      | `/uncle-dev-proactive-memory` | Context injection                   |
 
 Skills also activate automatically based on what you're doing — designing an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`, and so on.
 
@@ -155,11 +155,11 @@ The commands above are the entry points. Under the hood, they activate these 21 
 
 ### Define - Clarify what to build
 
-| Skill                                                                                  | What It Does                                                                                                                    | Use When                                               |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| [idea-refine](skills/uncle-dev-idea-refine/SKILL.md)                                   | Structured divergent/convergent thinking to turn vague ideas into concrete proposals                                            | You have a rough concept that needs exploration        |
-| [spec-driven-development](skills/uncle-dev-spec-driven-development/SKILL.md)           | Create tracked OpenSpec change artifacts (`proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`) before any code | Starting a new project, feature, or significant change |
-| [design-architecture-docs](skills/uncle-dev-design-architecture-docs/SKILL.md)         | Author durable HLD and per-segment LLDs that partition product intent into segments and feed EARS specs                         | Starting a product, adding a new behavior segment, or refactoring segment boundaries |
+| Skill                                                                          | What It Does                                                                                                                    | Use When                                                                             |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [idea-refine](skills/uncle-dev-idea-refine/SKILL.md)                           | Structured divergent/convergent thinking to turn vague ideas into concrete proposals                                            | You have a rough concept that needs exploration                                      |
+| [spec-driven-development](skills/uncle-dev-spec-driven-development/SKILL.md)   | Create tracked OpenSpec change artifacts (`proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`) before any code | Starting a new project, feature, or significant change                               |
+| [design-architecture-docs](skills/uncle-dev-design-architecture-docs/SKILL.md) | Author durable HLD and per-segment LLDs that partition product intent into segments and feed EARS specs                         | Starting a product, adding a new behavior segment, or refactoring segment boundaries |
 
 ### Plan - Break it down
 
@@ -169,15 +169,15 @@ The commands above are the entry points. Under the hood, they activate these 21 
 
 ### Build - Write the code
 
-| Skill                                                                              | What It Does                                                                                                    | Use When                                                               |
-| ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| [incremental-implementation](skills/uncle-dev-incremental-implementation/SKILL.md) | Thin vertical slices - implement, test, verify, commit. Feature flags, safe defaults, rollback-friendly changes | Any change touching more than one file                                 |
-| [test-driven-development](skills/uncle-dev-test-driven-development/SKILL.md)       | Red-Green-Refactor, test pyramid (80/15/5), test sizes, DAMP over DRY, Beyonce Rule, browser testing            | Implementing logic, fixing bugs, or changing behavior                  |
+| Skill                                                                              | What It Does                                                                                                                     | Use When                                                                                  |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| [incremental-implementation](skills/uncle-dev-incremental-implementation/SKILL.md) | Thin vertical slices - implement, test, verify, commit. Feature flags, safe defaults, rollback-friendly changes                  | Any change touching more than one file                                                    |
+| [test-driven-development](skills/uncle-dev-test-driven-development/SKILL.md)       | Red-Green-Refactor, test pyramid (80/15/5), test sizes, DAMP over DRY, Beyonce Rule, browser testing                             | Implementing logic, fixing bugs, or changing behavior                                     |
 | [spec-annotations](skills/uncle-dev-spec-annotations/SKILL.md)                     | `@spec` annotations connect code/tests to durable EARS spec IDs. Per-language AST scanner + blocking hook + spec graph generator | Annotating behavior entry points; running coherence checks across HLD/LLD/EARS/tests/code |
-| [context-engineering](skills/uncle-dev-context-engineering/SKILL.md)               | Feed agents the right information at the right time - rules files, context packing, MCP integrations            | Starting a session, switching tasks, or when output quality drops      |
-| [source-driven-development](skills/uncle-dev-source-driven-development/SKILL.md)   | Ground every framework decision in official documentation - verify, cite sources, flag what's unverified        | You want authoritative, source-cited code for any framework or library |
-| [frontend-ui-engineering](skills/uncle-dev-frontend-ui-engineering/SKILL.md)       | Component architecture, design systems, state management, responsive design, WCAG 2.1 AA accessibility          | Building or modifying user-facing interfaces                           |
-| [api-and-interface-design](skills/uncle-dev-api-and-interface-design/SKILL.md)     | Contract-first design, Hyrum's Law, One-Version Rule, error semantics, boundary validation                      | Designing APIs, module boundaries, or public interfaces                |
+| [context-engineering](skills/uncle-dev-context-engineering/SKILL.md)               | Feed agents the right information at the right time - rules files, context packing, MCP integrations                             | Starting a session, switching tasks, or when output quality drops                         |
+| [source-driven-development](skills/uncle-dev-source-driven-development/SKILL.md)   | Ground every framework decision in official documentation - verify, cite sources, flag what's unverified                         | You want authoritative, source-cited code for any framework or library                    |
+| [frontend-ui-engineering](skills/uncle-dev-frontend-ui-engineering/SKILL.md)       | Component architecture, design systems, state management, responsive design, WCAG 2.1 AA accessibility                           | Building or modifying user-facing interfaces                                              |
+| [api-and-interface-design](skills/uncle-dev-api-and-interface-design/SKILL.md)     | Contract-first design, Hyrum's Law, One-Version Rule, error semantics, boundary validation                                       | Designing APIs, module boundaries, or public interfaces                                   |
 
 ### Verify - Prove it works
 
@@ -344,3 +344,43 @@ graphify-out/GRAPH_REPORT.md for god nodes and community structure. The rule
 applies to all agents: inline scouts, repo-research-analyst, code reviewers,
 investigate sessions.
 ```
+
+---
+
+---
+
+---
+
+- the Spec graph builder must be places on `graphify-out/` directory
+- Annotations only use @spec, @feature, @rule
+  I'm exploring adding specialized companion modes that extend the workflow beyond pure code authoring.
+
+## Uncle Domain
+
+- Purpose: act as an expert assistant for the product, domain, and business.
+- Create a domain- and product-focused agent that analyzes features, change requests, and user-reported bugs that affect expected behavior.
+- Use spec frameworks (OpenSpec, SpecKit, EARS, LID, etc.) to analyze product intent before starting the spec process.
+- Goal: continuously keep expected product behavior, the current implementation, and the platform-level behavior in sync — not just generate code but ensure product behavior matches reality.
+- Integrate Graphify: allow the agent to load Graphify JSON files (paths configured) so it can run queries, traverse relationships, and enrich product/spec analysis.
+- Configure the agent via `/.agents/uncle-dev-setup.yaml` with the skills and rules it should use (domain skills, business rules, required frameworks, policies, behavior maps, operational resources).
+- Context routing: the skill must support three context layers to route to the right resources:
+  - expected product behavior
+  - current existing behavior
+  - actual platform-level behavior
+- Extensible flavors: teams can define domain-specific “flavors” (sets of skills and rules) via configuration to tailor the agent to particular domains or code areas.
+
+## Uncle Framework
+
+- A skill that encodes the team’s framework and library guidance: recommended patterns, best practices, and anti-patterns.
+- Invoked during spec analysis and build phases to ensure proposed solutions conform to the team’s chosen technologies and architecture.
+- Configure framework rules in `/.agents/uncle-dev-setup.yaml`; rules can apply globally or to specific paths (e.g., `packages/web` → React skill, `packages/api` → Python skill).
+
+## Product Mode Agent
+
+- A product-centric agent that ensures alignment between expected behavior, the codebase’s current behavior, and the platform’s actual behavior.
+- Responsibilities:
+  - Analyze specifications and proposed changes to detect misalignments between expected behavior and implementation.
+  - Provide clear insights and actionable recommendations to restore or preserve alignment.
+  - Present results for non-technical stakeholders (product managers, designers) using plain language, visualizations, and domain-specific phrasing so recommendations are easy to understand and act on.
+
+  All the Agent are reactive invocation, not proactive. They only run when the user explicitly invokes them via a command or at a defined checkpoint in a workflow. They do not have autonomous execution capabilities and cannot take actions without user initiation. But uncle-dev skills can recomend invoking the agent at specific points in the workflow when its analysis would be most valuable (e.g., after spec analysis, before implementation, during review). The user always has the final say on when to involve the agent and whether to act on its recommendations.
