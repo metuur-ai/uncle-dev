@@ -4,6 +4,11 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
+# shellcheck source=lib/manifest.sh
+source "${SCRIPT_DIR}/lib/manifest.sh"
+# shellcheck source=lib/install-common.sh
+source "${SCRIPT_DIR}/lib/install-common.sh"
+
 PLUGINS_DIR="${HOME}/.claude/plugins"
 MARKETPLACES_FILE="${PLUGINS_DIR}/known_marketplaces.json"
 INSTALLED_FILE="${PLUGINS_DIR}/installed_plugins.json"
@@ -23,9 +28,10 @@ usage() {
 Usage:
   ./scripts/install-claude.sh [--scope user|local] [--force]
 
-Installs this repository as a Claude Code plugin without requiring a GitHub
-SSH key. Copies commands, skills, agents, and hooks into ~/.claude/plugins/cache/
-and registers the plugin so Claude Code can load it on next startup.
+Installs this repository as a Claude Code plugin. Copies all skills (including
+OpenSpec skills), agents, commands (including opsx/), hooks, rules, and plugin
+manifest into ~/.claude/plugins/cache/ and registers the plugin.
+
 Also generates dist/uncle-dev-claude.tar.gz for distribution.
 
 Options:
@@ -35,14 +41,7 @@ Options:
 EOF
 }
 
-log()  { echo "$*" >&2; }
-fail() { log "Error: $*"; exit 1; }
-
-# ── dependency check ──────────────────────────────────────────────────────────
-
-command -v jq >/dev/null 2>&1 || fail "jq is required but not found. Install it with: brew install jq"
-
-# ── argument parsing ──────────────────────────────────────────────────────────
+command -v jq >/dev/null 2>&1 || fail "jq is required but not found. Install: brew install jq"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -55,31 +54,23 @@ while [[ $# -gt 0 ]]; do
       esac
       shift
       ;;
-    --force)
-      FORCE=1
-      shift
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    *)
-      fail "Unexpected argument: $1"
-      ;;
+    --force) FORCE=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) fail "Unexpected argument: $1" ;;
   esac
 done
 
 # ── pre-flight ────────────────────────────────────────────────────────────────
 
-[[ -d "${PLUGINS_DIR}" ]] || fail "Claude plugins directory not found at ${PLUGINS_DIR}. Is Claude Code installed?"
-[[ -f "${MARKETPLACES_FILE}" ]] || fail "known_marketplaces.json not found at ${MARKETPLACES_FILE}"
-[[ -f "${INSTALLED_FILE}" ]] || fail "installed_plugins.json not found at ${INSTALLED_FILE}"
-[[ -d "${REPO_ROOT}/.claude/commands" ]] || fail "No .claude/commands directory found in repo at ${REPO_ROOT}"
+[[ -d "${PLUGINS_DIR}" ]] || fail "Claude plugins directory not found: ${PLUGINS_DIR}. Is Claude Code installed?"
+[[ -f "${MARKETPLACES_FILE}" ]] || fail "known_marketplaces.json not found: ${MARKETPLACES_FILE}"
+[[ -f "${INSTALLED_FILE}" ]] || fail "installed_plugins.json not found: ${INSTALLED_FILE}"
+
+validate_sources "${REPO_ROOT}"
 
 ALREADY_INSTALLED="$(jq --arg key "${PLUGIN_KEY}" '.plugins | has($key)' "${INSTALLED_FILE}")"
 if [[ "${ALREADY_INSTALLED}" == "true" && "${FORCE}" -ne 1 ]]; then
-  log "Plugin '${PLUGIN_KEY}' is already installed."
-  log "Run with --force to reinstall."
+  log "Plugin '${PLUGIN_KEY}' is already installed. Run with --force to reinstall."
   exit 0
 fi
 
@@ -96,23 +87,31 @@ fi
 
 mkdir -p "${CACHE_PATH}"
 
-# commands/ — Claude looks for this at the cache root
-cp -r "${REPO_ROOT}/.claude/commands" "${CACHE_PATH}/commands"
+# skills/ — root skills (32) + .claude/skills/ OpenSpec skills (4), merged
+copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_ROOT}" "${CACHE_PATH}/skills" "${FORCE}"
+copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_OPENSPEC}" "${CACHE_PATH}/skills" "${FORCE}"
 
-# skills/ — all skill directories with SKILL.md and colocated reference files
-cp -r "${REPO_ROOT}/skills" "${CACHE_PATH}/skills"
+# agents/ — reusable personas
+copy_dir_contents "${REPO_ROOT}/${ASSET_AGENTS}" "${CACHE_PATH}/agents" "${FORCE}"
 
-# agents/ — reusable agent personas
-cp -r "${REPO_ROOT}/agents" "${CACHE_PATH}/agents"
+# commands/ — recursive, preserving opsx/ subdir
+copy_dir_contents "${REPO_ROOT}/${ASSET_COMMANDS_ROOT}" "${CACHE_PATH}/commands" "${FORCE}"
 
 # hooks/ — session lifecycle hooks
-cp -r "${REPO_ROOT}/hooks" "${CACHE_PATH}/hooks"
+copy_dir_contents "${REPO_ROOT}/${ASSET_HOOKS}" "${CACHE_PATH}/hooks" "${FORCE}"
 
-# .claude-plugin/plugin.json — plugin metadata
+# rules — AGENTS.md, AGENT_RULES.md, CLAUDE.md at cache root
+for rule in "${ASSET_RULES[@]}"; do
+  copy_file "${REPO_ROOT}/${rule}" "${CACHE_PATH}/${rule}" "${FORCE}"
+done
+
+# .claude-plugin/ — full directory (plugin.json + marketplace.json, no filtering)
 mkdir -p "${CACHE_PATH}/.claude-plugin"
-jq '{name, version, description, author, license}' \
-  "${REPO_ROOT}/.claude-plugin/plugin.json" \
-  > "${CACHE_PATH}/.claude-plugin/plugin.json"
+copy_file "${REPO_ROOT}/${ASSET_PLUGIN_META}" "${CACHE_PATH}/.claude-plugin/plugin.json" "${FORCE}"
+copy_file "${REPO_ROOT}/.claude-plugin/marketplace.json" "${CACHE_PATH}/.claude-plugin/marketplace.json" "${FORCE}"
+
+# hooks.json also at .claude-plugin/ for auto-discovery by Claude Code
+copy_file "${REPO_ROOT}/hooks/hooks.json" "${CACHE_PATH}/.claude-plugin/hooks.json" "${FORCE}"
 
 # ── register marketplace (directory source) ───────────────────────────────────
 
@@ -152,22 +151,29 @@ jq \
   "${INSTALLED_FILE}" > "${INSTALLED_FILE}.tmp"
 mv "${INSTALLED_FILE}.tmp" "${INSTALLED_FILE}"
 
-# ── copy commands to ~/.claude/commands/ for bare /cmd access ─────────────────
+# ── promote commands to ~/.claude/commands/ ───────────────────────────────────
 
 USER_COMMANDS_DIR="${HOME}/.claude/commands"
 mkdir -p "${USER_COMMANDS_DIR}"
 
-log "Copying commands to ${USER_COMMANDS_DIR} for bare slash-command access"
+log "Promoting commands to ${USER_COMMANDS_DIR}"
 
-for f in "${CACHE_PATH}/commands"/*.md; do
-  dest="${USER_COMMANDS_DIR}/$(basename "${f}")"
+# Walk recursively so opsx/ subdir structure is preserved under ~/.claude/commands/opsx/
+while IFS= read -r -d '' cmd_file; do
+  rel="${cmd_file#"${CACHE_PATH}/commands/"}"
+  dest="${USER_COMMANDS_DIR}/${rel}"
+  mkdir -p "$(dirname "$dest")"
+
   if [[ -f "${dest}" && "${FORCE}" -ne 1 ]]; then
-    log "  Skipping $(basename "${f}") (already exists, use --force to overwrite)"
+    if cmp -s "${cmd_file}" "${dest}"; then
+      continue
+    fi
+    log "  Skipping ${rel} (already exists, use --force to overwrite)"
   else
-    cp "${f}" "${dest}"
-    log "  Copied $(basename "${f}")"
+    cp "${cmd_file}" "${dest}"
+    log "  Copied ${rel}"
   fi
-done
+done < <(find "${CACHE_PATH}/commands" -type f -name '*.md' -print0 | sort -z)
 
 # ── generate distributable archive ───────────────────────────────────────────
 
@@ -177,13 +183,8 @@ ARCHIVE="${DIST_DIR}/uncle-dev-claude.tar.gz"
 log "Generating archive at ${ARCHIVE}"
 tar -czf "${ARCHIVE}" -C "$(dirname "${CACHE_PATH}")" "$(basename "${CACHE_PATH}")"
 
-# ── done ──────────────────────────────────────────────────────────────────────
+# ── summary ───────────────────────────────────────────────────────────────────
 
-log ""
-log "Done. Installed commands:"
-for f in "${CACHE_PATH}/commands"/*.md; do
-  log "  /$(basename "${f%.md}")"
-done
-log ""
+summarize_install "${CACHE_PATH}" "Claude Code"
 log "Archive: ${ARCHIVE}"
-log "Restart Claude Code for the commands to become available."
+log "Restart Claude Code for the changes to take effect."
