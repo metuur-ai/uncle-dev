@@ -139,6 +139,12 @@ assemble_plugin() {
     "${plugin_root}/agents" \
     "${FORCE}"
 
+  # scripts/ — config lookup and setup utilities
+  copy_dir_contents \
+    "${REPO_ROOT}/${ASSET_SCRIPTS}" \
+    "${plugin_root}/scripts" \
+    "${FORCE}"
+
   # rules — AGENTS.md, AGENT_RULES.md, CLAUDE.md at plugin root
   for rule in "${ASSET_RULES[@]}"; do
     copy_file "${REPO_ROOT}/${rule}" "${plugin_root}/${rule}" "${FORCE}"

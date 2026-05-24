@@ -1,66 +1,85 @@
 ---
-description: Start spec-driven development — define an OpenSpec change before writing code
+description: Start spec-driven development — define requirements before writing code
 ---
 
-## Working Principles
+## Step 0 — Read SDD mode (do this first, before anything else)
 
-1. **Think Before Coding** — Ask clarifying questions before writing any artifact. Surface ambiguities in the problem, not the solution.
-2. **Simplicity First** — Spec only what this change needs. Don't design future features or add scope that wasn't requested.
-3. **Surgical Changes** — Each OpenSpec artifact has a distinct purpose. Don't duplicate content between `proposal.md`, `design.md`, and `tasks.md`.
-4. **Goal-Driven Execution** — Success means the user has reviewed and approved the spec before any code is written.
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec)
+echo "${SDD_MODE}"
+```
+
+**Route based on result — pick exactly one path and follow it:**
 
 ---
 
-Invoke the agent-skills:uncle-dev-spec-driven-development skill.
+## Path A — `lid-ears` mode
 
-Begin by checking if the OpenSpec CLI is available (`openspec --version`). If installed:
+**If sdd_mode is `lid-ears`: follow this path. Do NOT mention OpenSpec, change IDs, or scaffolding until the user confirms the requirements table.**
 
-- If `openspec/` does not exist, run `openspec init` to scaffold the project
-- Use `openspec list --specs` and `openspec list` to read current specs and open changes
-- Use `openspec schemas` to discover available workflow schemas
+Invoke the agent-skills:uncle-dev-spec-driven-development skill for reference context, then execute this sequence:
 
-If not installed, recommend `npm install -g openspec` and proceed manually.
+### 1. L — Lenses
+Ask and document:
+- Who are the users or systems affected?
+- What is their pain today? What changes after this ships?
+- Any secondary consumers?
 
-Inspect `openspec/specs/` and any relevant open changes so the new change starts from current tracked truth.
+### 2. I — Intent
+Ask and document:
+- What must be observable/true when this ships?
+- What currently broken behaviour gets fixed?
+- What must NOT change?
 
-Require a `<change-id>` for the work. Derive the next sequential ID as follows:
+### 3. D — Details
+Ask and document:
+- Hard constraints (platform, tool, no-MCP, agent-agnostic, etc.)
+- Compliance or security requirements
+- Explicit out-of-scope items already decided
 
-1. Scan `openspec/changes/` for directories matching `NNN-*` (three-digit prefix)
-2. Extract the highest `NNN` found; next number = highest + 1 (use `001` if none exist)
-3. Propose the next ID to the user: `"Next change ID: 003-<descriptive-slug> — enter a slug or accept"`
-4. Validate any user-provided ID against the pattern `^\d{3}-.+`; reject and re-prompt if it does not match (e.g., reject `my-feature`, accept `003-my-feature`)
+### 4. EARS requirements table
+Write one table per unit of work using these keywords:
+- `THE SYSTEM SHALL` — always-on
+- `WHEN <trigger>, THE SYSTEM SHALL` — event-driven
+- `WHILE <state>, THE SYSTEM SHALL` — continuous
+- `IF <condition>, THE SYSTEM SHALL` — conditional / compliance
+- `WHERE <context>, THE SYSTEM SHALL` — scoped
 
-Then scaffold the change. First check if the OpenSpec CLI is available (`openspec --version`):
+Format:
+```
+| ID    | EARS statement |
+|-------|----------------|
+| R-1.1 | WHEN … |
+```
 
-**If installed**, use the CLI:
+### 5. HARD GATE
+Present the full table and ask exactly this, nothing more:
+> "Do these requirements look correct? Reply YES to lock them, or tell me what to change."
 
-1. `openspec change create <validated-change-id>`
-2. `openspec artifact add <change-id> execution.md`
-3. `openspec artifact add <change-id> handoff.md`
+**STOP. Do not ask any follow-up questions. Do not offer options. Do not mention OpenSpec, change IDs, or next steps. Wait silently for the user's reply.**
 
-**If not installed**, recommend installation (`npm install -g openspec`) and fall back to manually creating `openspec/changes/<change-id>/` with the required files.
+### 6. After confirmation → scaffold
+Only after explicit user confirmation:
+- Check `openspec --version`
+- Derive next change ID from `openspec/changes/` (format: `NNN-slug`)
+- `openspec change create <id>` + add `execution.md` and `handoff.md`
+- Populate `proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md` using the confirmed EARS requirements
 
-Ensure the active change contains `proposal.md`, `design.md`, `tasks.md`, `execution.md`, and `handoff.md`.
+---
 
-When the CLI is available, also use:
-- `openspec instructions <artifact>` to get enriched guidance before writing each artifact
-- `openspec validate <change-id>` after populating artifacts
-- `openspec status <change-id>` to verify completeness
+## Path B — `openspec` mode (default)
 
-Ask clarifying questions about:
-1. The objective and target users
-2. Core features and acceptance criteria
-3. Tech stack preferences and constraints
-4. Known boundaries (what to always do, ask first about, and never do)
+**If sdd_mode is `openspec` or missing: follow this path.**
 
-Then populate the shared OpenSpec artifacts:
+Invoke the agent-skills:uncle-dev-spec-driven-development skill and follow its full process:
 
-- `proposal.md` for objective, problem framing, success criteria, scope, and boundaries
-- `design.md` for architecture, constraints, commands, project structure, testing approach, and technical decisions
-- `tasks.md` for shared story-level breakdown
-- `execution.md` for shared sequencing and cross-story dependencies
-- `handoff.md` for QA guidance and validation steps
+1. Check `openspec --version` — init if needed
+2. Read current specs (`openspec list --specs`) and open changes (`openspec list`)
+3. Derive next change ID from `openspec/changes/` (format `NNN-slug`), propose to user
+4. `openspec change create <id>` + `openspec artifact add <id> execution.md` + `handoff.md`
+5. Ask clarifying questions (objective, users, acceptance criteria, constraints, boundaries)
+6. Populate all five artifacts: `proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`
+7. `openspec validate <id>` and confirm with user before proceeding
 
-Private technical substeps belong in `.devlocal/`, not in tracked shared artifacts.
-
-Confirm the change contents with the user before proceeding.
+Private notes go in `.devlocal/`, not tracked artifacts.

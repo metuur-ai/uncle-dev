@@ -25,6 +25,52 @@ Supported tools: **Claude Code**, **Codex**, **OpenCode**. All three can be conf
 - uncle-dev is already fully configured — check Step 1 before re-running
 - You are using Cursor, Windsurf, or GitHub Copilot — see `docs/cursor-setup.md`, `docs/windsurf-setup.md`, `docs/copilot-setup.md`
 
+## Fast Path — setup-project.sh
+
+**MANDATORY:** Steps 1, 3, 4, 5, and 6 MUST be executed by running the setup script — never by the AI agent manually. The script interactively asks the user for preferences (including `sdd_mode`). If the AI skips the script and applies defaults silently, it is violating this process.
+
+The script ships inside the plugin cache after `install-claude.sh` runs. Locate it:
+
+```bash
+# Preferred: plugin cache (always present after install)
+SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/setup-project.sh"
+
+# Fallback: local repo clone
+[ -f "${SETUP_SCRIPT}" ] || SETUP_SCRIPT="$(
+  echo "${UNCLE_DEV_ROOT:-}" \
+    ~/others/ai-agents/production-grade-agent-skills \
+    ~/agent-skills \
+  | tr ' ' '\n' | xargs -I{} sh -c '[ -f "{}/scripts/setup-project.sh" ] && echo "{}/scripts/setup-project.sh"' 2>/dev/null | head -1
+)"
+```
+
+Run from the **target project root** — the user's terminal, not a subshell:
+
+| Situation | Command |
+|---|---|
+| First-time setup | `bash "${SETUP_SCRIPT}"` |
+| Change config (sdd_mode, annotations, graphify) | `bash "${SETUP_SCRIPT}" --update` |
+
+**`--update` re-asks all preference questions** and overwrites the existing `.agents/uncle-dev-setup.yaml` preferences. Tool detection is always re-run. Use it whenever the user says "change my SDD mode", "switch to lid-ears", or "update my uncle-dev config".
+
+**Wait for the script to finish.** The script will prompt the user for:
+1. `sdd_mode` — openspec or lid-ears
+2. `spec_annotations` — yes/no
+3. `graphify` — yes/no
+
+The agent must NOT answer these on the user's behalf. If the script cannot run interactively, ask the user each question explicitly before writing any config.
+
+After the script completes, only **Step 2** (plugin installation) may need manual attention:
+```bash
+jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
+  ~/.claude/plugins/installed_plugins.json
+```
+If `false`: `bash <AGENT_SKILLS_ROOT>/scripts/install-claude.sh`, then restart Claude Code.
+
+**Proceed with the manual steps below only if `setup-project.sh` fails or bash is unavailable.**
+
+---
+
 ## Core Process
 
 ### Step 1 — Detect active tools
@@ -130,13 +176,31 @@ Create required directories (all tools):
 mkdir -p openspec/specs openspec/changes .uncle-dev/learns .devlocal .agents
 ```
 
+Before writing the config, ask the user the following preference questions. Accept a one-word answer or Enter to take the default:
+
+```
+1. SDD mode — how should /uncle-dev-spec start requirements work?
+   [openspec] scaffold OpenSpec change first, EARS near end (default)
+   [lid-ears] elicit requirements via LID EARS first, OpenSpec tracks them after
+   → sdd_mode: ___
+
+2. Spec annotations — require @spec IDs linking code to specs? [Y/n]
+   → spec_annotations: true/false
+
+3. Graphify — have you run `graphify .` on this project? [y/N]
+   → graphify: true/false
+```
+
 Write `.agents/uncle-dev-setup.yaml` from the colocated template (`uncle-dev-setup.template.yaml`), substituting:
 - `project.name` ← `$(basename $(pwd))`
 - `setup_date` ← today's date (YYYY-MM-DD)
 - `tool.active` ← list of detected tools from Step 1 (e.g., `[claude-code, codex]`)
 - `tool.agent_skills_root` ← the `AGENT_SKILLS_ROOT` path found in Step 2
+- `preferences.sdd_mode` ← answer from question 1 (default: `openspec`)
+- `preferences.spec_annotations` ← answer from question 2 (default: `true`)
+- `preferences.graphify` ← answer from question 3 (default: `false`)
 
-If `.agents/uncle-dev-setup.yaml` already exists, read it first and preserve fields that are already customized. Only update `tool.*` fields.
+If `.agents/uncle-dev-setup.yaml` already exists, read it first and preserve fields that are already customized. Only update `tool.*` fields and any preference whose current value is still the template default.
 
 ---
 

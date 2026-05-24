@@ -21,6 +21,9 @@ ASSET_COMMANDS_OPSX=".claude/commands/opsx"
 # hooks/ — session lifecycle hooks (*.sh + hooks.json + SIMPLIFY-IGNORE.md)
 ASSET_HOOKS="hooks"
 
+# scripts/ — project setup and utility scripts (setup-project.sh, install-*.sh, lib/)
+ASSET_SCRIPTS="scripts"
+
 # .claude-plugin/plugin.json — Claude Code plugin manifest
 ASSET_PLUGIN_META=".claude-plugin/plugin.json"
 

@@ -63,3 +63,31 @@ If ON:
 Only fall back to grep/Read/Glob if graphify returns empty.
 
 Applies to: inline scouts, repo-research-analyst, code reviewers, investigate sessions — every agent spawned in this repo.
+
+<!-- uncle-dev -->
+## uncle-dev
+
+This project uses uncle-dev engineering skills for structured AI-assisted development.
+
+### Skills by Phase
+**Define:** uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
+**Plan:** uncle-dev-planning-and-task-breakdown
+**Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-spec-annotations, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
+**Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debug-error
+**Review:** uncle-dev-code-review-and-quality, uncle-dev-security-and-hardening, uncle-dev-performance-optimization
+**Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-documentation-and-adrs
+**Capture:** uncle-dev-knowledge-capture
+**Maintain:** uncle-dev-knowledge-maintenance
+
+### Conventions
+- Architecture flows HLD → LLD → EARS specs → tests → code
+- Code and tests reference durable behavior via `@spec` annotations
+- OpenSpec artifacts tracked in `openspec/changes/<change-id>/` (proposal, design, tasks, execution, handoff)
+- Personal scratchpad in `.devlocal/<user>/` (gitignored, not shared)
+- Team learnings captured in `.uncle-dev/learns/`
+
+### Workflow rules
+- Run `/uncle-dev-spec` before any non-trivial feature
+- Run `/uncle-dev-plan` after spec, before coding
+- Check `.agents/uncle-dev-setup.yaml` for project-specific overrides and sdd_mode
+<!-- /uncle-dev -->

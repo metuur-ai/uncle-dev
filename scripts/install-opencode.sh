@@ -110,6 +110,9 @@ copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_OPENSPEC}" "${SKILLS_DEST}" "${FO
 # agents/ — reusable personas
 copy_dir_contents "${REPO_ROOT}/${ASSET_AGENTS}" "${AGENTS_PERSONAS_DEST}" "${FORCE}"
 
+# scripts/ — config lookup and setup utilities
+copy_dir_contents "${REPO_ROOT}/${ASSET_SCRIPTS}" "${INSTALL_ROOT}/.opencode/scripts" "${FORCE}"
+
 # rules — AGENT_RULES.md and CLAUDE.md alongside AGENTS.md
 for rule in "${ASSET_RULES[@]}"; do
   copy_file "${REPO_ROOT}/${rule}" "${RULES_ROOT}/${rule}" "${FORCE}"

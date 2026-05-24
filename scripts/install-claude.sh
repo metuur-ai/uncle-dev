@@ -100,6 +100,9 @@ copy_dir_contents "${REPO_ROOT}/${ASSET_COMMANDS_ROOT}" "${CACHE_PATH}/commands"
 # hooks/ — session lifecycle hooks
 copy_dir_contents "${REPO_ROOT}/${ASSET_HOOKS}" "${CACHE_PATH}/hooks" "${FORCE}"
 
+# scripts/ — setup-project.sh and install utilities
+copy_dir_contents "${REPO_ROOT}/${ASSET_SCRIPTS}" "${CACHE_PATH}/scripts" "${FORCE}"
+
 # rules — AGENTS.md, AGENT_RULES.md, CLAUDE.md at cache root
 for rule in "${ASSET_RULES[@]}"; do
   copy_file "${REPO_ROOT}/${rule}" "${CACHE_PATH}/${rule}" "${FORCE}"

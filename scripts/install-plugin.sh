@@ -232,6 +232,7 @@ install_gemini() {
   log "Installing for Gemini CLI in $dest_dir"
 
   copy_dir_contents "$REPO_ROOT/skills" "$dest_dir"
+  copy_dir_contents "$REPO_ROOT/scripts" "$(scope_root "$workspace/.gemini/scripts" "$HOME/.gemini/scripts")"
 }
 
 install_getting_started() {
@@ -242,6 +243,7 @@ install_getting_started() {
 
   copy_dir_contents "$REPO_ROOT/skills" "$base_dir/skills"
   copy_dir_contents "$REPO_ROOT/agents" "$base_dir/agents"
+  copy_dir_contents "$REPO_ROOT/scripts" "$base_dir/scripts"
 }
 
 install_windsurf() {

@@ -37,7 +37,80 @@ BASELINE ──→ SCAFFOLD ──→ SPECIFY ──→ PLAN ──→ IMPLEMENT
  reviews      reviews     reviews   reviews   reviews
 ```
 
-### Phase 0: Ensure OpenSpec Is Initialized
+### Phase 0: Read Project SDD Mode
+
+Before any tool invocation, read the project's configured SDD mode:
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec
+```
+
+**Route based on result:**
+
+| `sdd_mode` | Starting flow |
+|---|---|
+| `openspec` (default / missing) | Continue to **Phase 0-OpenSpec** below — scaffold first, EARS near end |
+| `lid-ears` | Jump to **Phase 0-LID** below — elicit requirements first, scaffold after |
+
+---
+
+#### Phase 0-LID: LID EARS Elicitation (when `sdd_mode: lid-ears`)
+
+**STOP. Do not ask any OpenSpec questions. Do not propose change IDs. Do not ask about packaging or change structure. Do not run any `openspec` command. Complete this entire phase and receive explicit user confirmation before advancing to Phase 0-OpenSpec.**
+
+Run this phase in full. The output becomes the input to `proposal.md` and `design.md`.
+
+**L — Lenses** (ask, then document)
+
+Surface who is affected and from which angle:
+- Who are the users or systems that interact with this change?
+- What is their current pain? What changes for them after this ships?
+- Are there secondary consumers (other services, agents, hooks)?
+
+**I — Intent** (ask, then document)
+
+State what must be true when this change ships — not how, just what:
+- What is the observable outcome from the user's perspective?
+- What currently broken or missing behaviour gets fixed?
+- What must NOT change (invariants)?
+
+**D — Details** (ask, then document)
+
+Surface non-negotiables, constraints, and boundaries:
+- Platform, tool, or stack constraints (e.g., no MCP, macOS-only, agent-agnostic core)
+- Compliance or security requirements
+- Explicit out-of-scope items the user has already decided
+
+After completing L, I, D — write the **EARS requirements table** before scaffolding:
+
+Use the EARS keyword set:
+- `THE SYSTEM SHALL` — always-on behaviour
+- `WHEN <trigger>, THE SYSTEM SHALL` — event-driven
+- `WHILE <state>, THE SYSTEM SHALL` — continuous during a condition
+- `IF <condition>, THE SYSTEM SHALL` — conditional / compliance gates
+- `WHERE <context>, THE SYSTEM SHALL` — location or environment scoped
+
+Format as a table per unit of work:
+
+```
+| ID     | EARS statement |
+|--------|----------------|
+| R-1.1  | WHEN the user invokes /foo, THE SYSTEM SHALL … |
+| R-1.2  | IF compliance.strict is true, THE SYSTEM SHALL … |
+```
+
+**HARD GATE — do not pass until the user explicitly confirms:**
+
+Present the full LID EARS table and ask: *"Do these requirements look correct? Any changes before I scaffold the OpenSpec change?"*
+
+Wait for the user's reply. Do not assume confirmation. Do not proceed to Phase 0-OpenSpec, do not propose a change ID, and do not run any `openspec` command until the user has responded "yes", "looks good", or equivalent.
+
+After explicit user confirmation → continue to **Phase 0-OpenSpec**.
+
+---
+
+### Phase 0-OpenSpec: Ensure OpenSpec Is Initialized
 
 Check if the OpenSpec CLI is available (`openspec --version`). If installed:
 

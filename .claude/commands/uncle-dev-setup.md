@@ -1,12 +1,33 @@
 Load and execute the `uncle-dev-setup` skill located at `skills/uncle-dev-setup/SKILL.md`.
 
-Run all six setup steps for the current working directory, covering all detected tools (Claude Code, Codex, OpenCode):
+## Arguments
 
-1. Detect active tools — check for Claude Code, Codex, and OpenCode installations
-2. Install uncle-dev plugin for each detected tool (install-claude.sh / install-codex.sh / install-opencode.sh)
-3. Scaffold shared directories (`openspec/`, `.uncle-dev/learns/`, `.devlocal/`, `.agents/`) and write `.agents/uncle-dev-setup.yaml`
-4. Wire uncle-dev hooks into `.claude/settings.json` (Claude Code only — Codex and OpenCode skip this step)
-5. Inject uncle-dev rules into `CLAUDE.md` (Claude Code) or verify `AGENTS.md` (OpenCode); Codex needs no rules file
-6. Add `.devlocal/` to `.gitignore` and print the per-tool verification summary
+| Argument | Behaviour |
+|---|---|
+| _(none)_ | First-time setup — scaffolds directories, writes config, injects CLAUDE.md block. Skips preference questions if `.agents/uncle-dev-setup.yaml` already exists. |
+| `update` | Reconfigure — re-asks all preference questions (sdd_mode, spec_annotations, graphify) and overwrites existing preferences. Tool detection always re-runs. |
 
-After completing setup, open `.agents/uncle-dev-setup.yaml` and set `project.type`, `language`, and `framework` to match the project. Restart Claude Code for hooks to take effect.
+## Execution
+
+1. Locate the setup script (plugin cache first, repo clone as fallback):
+```bash
+SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/setup-project.sh"
+[ -f "${SETUP_SCRIPT}" ] || SETUP_SCRIPT="$(
+  for d in "${UNCLE_DEV_ROOT:-}" ~/others/ai-agents/production-grade-agent-skills ~/agent-skills; do
+    [ -f "${d}/scripts/setup-project.sh" ] && echo "${d}/scripts/setup-project.sh" && break
+  done
+)"
+```
+
+2. Run the script from the **current project root**:
+   - No argument or unrecognized argument → `bash "${SETUP_SCRIPT}"`
+   - `update` → `bash "${SETUP_SCRIPT}" --update`
+
+3. **Do not proceed without running the script.** The script interactively asks the user preference questions. The agent must not answer on the user's behalf or apply defaults silently.
+
+4. After the script completes, check plugin installation:
+```bash
+jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
+  ~/.claude/plugins/installed_plugins.json
+```
+If `false`: run `bash <AGENT_SKILLS_ROOT>/scripts/install-claude.sh`, then restart Claude Code.
