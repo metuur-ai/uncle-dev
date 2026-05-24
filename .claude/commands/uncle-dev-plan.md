@@ -4,12 +4,70 @@ description: Break work into small verifiable tasks with acceptance criteria and
 
 ## Working Principles
 
-1. **Think Before Coding** — Read the full spec (`proposal.md`, `design.md`) before writing a single task. Understand the dependency graph before ordering anything.
+1. **Think Before Coding** — Read the full spec before writing a single task. Understand the dependency graph before ordering anything.
 2. **Simplicity First** — Tasks should be the minimum slices that deliver value. Don't decompose into exhaustive subtasks or predict work that isn't confirmed.
-3. **Surgical Changes** — Write only what belongs in `tasks.md` and `execution.md`. Private technical notes go in `.devlocal/`, not in shared artifacts.
+3. **Surgical Changes** — Write only what belongs in the task file. Private technical notes go in `.devlocal/`, not in shared artifacts.
 4. **Goal-Driven Execution** — Every task must have explicit acceptance criteria and a verification step. A plan without checkpoints is incomplete.
 
 ---
+
+## Step 0 — Read SDD mode (do this first)
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+**Route based on result — pick exactly one path:**
+
+---
+
+## Path A — `lid-ears` mode
+
+**If sdd_mode is `lid-ears`: follow this path. Do NOT run any `openspec` command.**
+
+Read inputs:
+- `docs/ears/<slug>.md` — EARS requirements (the source of truth for stories)
+- `docs/lld/<slug>.md` — architecture constraints and key decisions
+
+Apply agent-skills:uncle-dev-code-context to read `AGENTS.md` files in all directories the plan will touch.
+
+Then write `docs/tasks/<slug>.md` using this format:
+
+```markdown
+# <Feature Title> — Tasks
+
+## <Unit 1 name from EARS>
+
+- [ ] 1.1 <story title> (est: ~Xm)
+  - acceptance: R-1.1 — WHEN … THE SYSTEM SHALL …
+  - verify: <how to confirm the requirement is met>
+
+- [ ] 1.2 <story title> (deps: 1.1, est: ~Xm)
+  - acceptance: R-1.2 — …
+  - verify: …
+
+## <Unit 2 name from EARS>
+
+- [ ] 2.1 <story title> (est: ~Xm)
+  - acceptance: R-2.1 — …
+  - verify: …
+```
+
+Rules:
+- One story per EARS requirement (or one story per closely related group if trivially small)
+- `deps:` must match story IDs declared in this same file — no cross-file deps
+- `(mutex: tag)` when two stories cannot run concurrently (e.g., both modify the same schema)
+- Keep private technical breakdown in `.devlocal/<user>/<story-id>/scratchpad.md`
+
+Present the plan for human review. **No `openspec` commands. No `execution.md`.**
+
+---
+
+## Path B — `openspec` mode (default)
+
+**If sdd_mode is `openspec` or missing: follow this path.**
 
 Invoke the agent-skills:uncle-dev-planning-and-task-breakdown skill.
 

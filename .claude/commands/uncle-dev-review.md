@@ -11,14 +11,20 @@ description: Conduct a five-axis code review — correctness, readability, archi
 
 ---
 
+## Step 0 — Read SDD mode and load intent context
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+**Load intent context based on sdd_mode before reviewing any code:**
+
+- **`lid-ears` mode** — Read `docs/hld/<slug>.md` (goals, non-goals), `docs/lld/<slug>.md` (constraints, key decisions), and `docs/ears/<slug>.md` (EARS requirements the code must satisfy). Use these as the intent source for verifying correctness. Do NOT run any `openspec` command.
+- **`openspec` mode** — Check if the OpenSpec CLI is available (`openspec --version`). When available: `openspec show <change-id>` to read proposal and design, `openspec validate <change-id>` to check artifact consistency. If not installed, recommend `npm install -g openspec` and read change artifacts directly.
+
 Invoke the agent-skills:uncle-dev-code-review-and-quality skill.
-
-Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to load change context before reviewing:
-
-- `openspec show <change-id>` to read the change's proposal and design for intent verification
-- `openspec validate <change-id>` to check artifact consistency alongside the code review
-
-If not installed, recommend `npm install -g openspec` and read change artifacts directly.
 
 Detect the review mode from the user's input and dispatch accordingly:
 

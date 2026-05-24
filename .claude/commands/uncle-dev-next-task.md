@@ -1,6 +1,74 @@
 ---
-description: Pick the next ready task from OpenSpec changes and .devlocal scratchpads, with parallelism and lock awareness
+description: Pick the next ready task — from docs/tasks/ in lid-ears mode, or from OpenSpec changes in openspec mode
 ---
+
+## Step 0 — Read SDD mode (do this first)
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+**Route based on result — pick exactly one path:**
+
+---
+
+## Path A — `lid-ears` mode
+
+**If sdd_mode is `lid-ears`: follow this path. Do NOT invoke the agent-skills:uncle-dev-next-task skill.**
+
+Work items live in `docs/tasks/<slug>.md` (produced by `/uncle-dev-plan`).
+
+Resolution process:
+
+1. `ls docs/tasks/*.md` — find all task files; if none exist, exit: "no task files found; run `/uncle-dev-plan` first."
+2. Parse each file for unchecked items: `- [ ] <id> <title>`
+3. Respect `(deps: x, y)` — a story is ready only if all declared deps are checked
+4. Respect `(mutex: tag)` — drop stories whose mutex is held by another in-flight story
+5. Check `.devlocal/_locks/` for active locks — drop stories with an active lock
+6. Rank the ready set: most-descendants → resumes-scratchpad → smallest-est → document-order
+7. Emit the handoff:
+
+```
+READY SET (N available)
+  ┌─ recommended
+  │  source:     lid-ears
+  │  file:       docs/tasks/<slug>.md:<line>
+  │  story:      <id> <title>
+  │  deps:       [<checked deps>]
+  │  est:        ~Xm
+  │  why:        <tie-breaker reason>
+  │  scratchpad: .devlocal/<user>/<story-id>/scratchpad.md
+  │
+  ├─ parallel-safe alternatives
+  │  • <id> <title>   [<slug>]
+  │
+  └─ blocked
+     • <id> <title> ← waits on [<deps>]
+
+NEXT ACTION: pick recommended, or pass --story <id> to override.
+```
+
+8. Acquire `.devlocal/_locks/<slug>/<story-id>.lock` only if `--claim` is passed
+
+**Failure modes:**
+- No `docs/tasks/` or all files empty → exit: "no task files found; run `/uncle-dev-plan` first."
+- All stories checked → exit: "all tasks complete; run `/uncle-dev-ship`."
+- Ready set empty but unchecked stories exist → list each with its blocking dep(s)
+
+**Arguments work the same as openspec mode:**
+- `(no args)` — full resolution, emit recommendation
+- `--ready` — print ready set only, no single recommendation
+- `--story <id>` — explicit pick, skip resolution
+- `--release <story-id>` — release a stale lock and exit
+- `--claim` — acquire a lock on the recommended story
+
+---
+
+## Path B — `openspec` mode (default)
+
+**If sdd_mode is `openspec` or missing: follow this path.**
 
 Invoke the agent-skills:uncle-dev-next-task skill.
 

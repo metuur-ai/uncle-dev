@@ -21,13 +21,59 @@ Decompose an approved OpenSpec change into shared story-level work and shared ex
 
 ## The Planning Process
 
-**Graphify availability check** — run once before Step 1:
-```bash
-[ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
-```
-If OFF, skip all graphify sections below and proceed with the standard process.
+### Phase 0 — Read SDD mode (do this first)
 
-### Step 1: Enter Plan Mode
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+**Route based on result:**
+
+- **`lid-ears`** → Skip to **Step 1-LID** below. Do NOT run any `openspec` command.
+- **`openspec` or missing** → Continue with **Step 1-OpenSpec** below.
+
+---
+
+### Step 1-LID — Plan Mode (lid-ears)
+
+**ABSOLUTE PROHIBITION: Do NOT run any `openspec` command in this path.**
+
+Read inputs in read-only mode:
+- `docs/ears/<slug>.md` — EARS requirements (source of truth for stories)
+- `docs/lld/<slug>.md` — architecture constraints and key decisions
+
+Apply agent-skills:uncle-dev-code-context to read `AGENTS.md` files in all affected directories.
+
+Write `docs/tasks/<slug>.md` using this format:
+```markdown
+# <Feature Title> — Tasks
+
+## <Unit 1 name from EARS>
+
+- [ ] 1.1 <story title> (est: ~Xm)
+  - acceptance: R-1.1 — WHEN … THE SYSTEM SHALL …
+  - verify: <how to confirm>
+
+- [ ] 1.2 <story title> (deps: 1.1, est: ~Xm)
+  - acceptance: R-1.2 — …
+  - verify: …
+```
+
+Rules:
+- One story per EARS requirement (or one per closely related group if trivially small)
+- `deps:` must reference story IDs in this same file — no cross-file deps
+- `(mutex: tag)` when two stories cannot run concurrently (e.g., both modify the same file)
+- Private technical breakdown goes in `.devlocal/<user>/<story-id>/scratchpad.md`
+
+**No `execution.md` in lid-ears mode.** Cross-story coordination notes go in `.devlocal/`.
+
+**Do NOT write code during planning.** The output is `docs/tasks/<slug>.md` only. Skip to Step 2 (dependency graph — conceptually map before writing; no separate execution artifact needed).
+
+---
+
+### Step 1-OpenSpec — Plan Mode (openspec)
 
 Before writing any code, operate in read-only mode. Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to gather context:
 
@@ -45,6 +91,14 @@ If the CLI is not installed, recommend `npm install -g openspec` and read files 
 - Note risks and unknowns
 
 **Do NOT write code during planning.** The outputs are `tasks.md` and `execution.md`, not implementation.
+
+---
+
+**Graphify availability check** — run once before Step 2:
+```bash
+[ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
+```
+If OFF, skip all graphify sections below and proceed with the standard process.
 
 ### Step 2: Identify the Dependency Graph
 

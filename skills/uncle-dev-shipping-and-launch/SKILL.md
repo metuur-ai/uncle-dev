@@ -17,9 +17,29 @@ Ship with confidence. The goal is not just to deploy — it's to deploy safely, 
 - Opening a beta or early access program
 - Any deployment that carries risk (all of them)
 
-## OpenSpec CLI Integration
+## SDD Mode Detection
 
-Check if the OpenSpec CLI is available (`openspec --version`). When available, use it during the ship workflow:
+Read `sdd_mode` before running the pre-launch checklist:
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+### lid-ears mode — Pre-Ship Verification
+
+**If sdd_mode is `lid-ears`: run these checks INSTEAD of the OpenSpec CLI section below. Do NOT run any `openspec` command.**
+
+1. **Tasks complete** — Read `docs/tasks/*.md`; confirm all items are `- [x]`. List unchecked items and stop if found.
+2. **EARS coverage** — Read `docs/ears/*.md`; for each requirement (R-x.y), confirm at least one test asserts it. List uncovered requirements and stop if found.
+3. **Docs current** — Confirm `docs/hld/<slug>.md`, `docs/lld/<slug>.md`, `docs/ears/<slug>.md` reflect the shipped implementation. Flag any stale sections.
+
+Skip the OpenSpec CLI Integration section entirely and continue to The Pre-Launch Checklist.
+
+### OpenSpec CLI Integration
+
+**If sdd_mode is `openspec` or missing:** Check if the OpenSpec CLI is available (`openspec --version`). When available, use it during the ship workflow:
 
 - `openspec validate <change-id>` — Confirm all change artifacts are well-formed before launch
 - `openspec status <change-id>` — Verify all artifacts are complete

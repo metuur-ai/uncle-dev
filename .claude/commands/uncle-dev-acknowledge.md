@@ -1,6 +1,34 @@
 ---
-description: Capture and manage design-decision notes under openspec/acknowledge/. Notes are pending by default and gate /uncle-dev-build until acknowledged.
+description: Capture and manage design-decision notes — openspec/acknowledge/ in openspec mode, docs/decisions/ ADRs in lid-ears mode
 ---
+
+## Step 0 — Read SDD mode (do this first)
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+---
+
+## Path A — `lid-ears` mode
+
+**If sdd_mode is `lid-ears`: follow this path. The `openspec/acknowledge/` gate does not exist in lid-ears mode.**
+
+Design decisions in lid-ears mode are captured as ADRs, not as gating acknowledge notes.
+
+- For a **decision worth a durable record**: invoke `/uncle-dev-documentation-and-adrs` to write `docs/decisions/ADR-NNN-<slug>.md`. The ADR captures context, decision, alternatives, and consequences — it is the equivalent of an acknowledge note but narrative and repo-wide.
+- For a **quick inline decision** that doesn't warrant a full ADR: write a comment directly in the relevant `docs/lld/<slug>.md` under a "Key Decisions" section.
+- The `/uncle-dev-build` **gate does not apply** in lid-ears mode — there are no pending acknowledgements to block implementation.
+
+Exit after explaining the above. Do NOT invoke the agent-skills:uncle-dev-acknowledge skill or create `openspec/acknowledge/` files.
+
+---
+
+## Path B — `openspec` mode (default)
+
+**If sdd_mode is `openspec` or missing: follow this path.**
 
 Invoke the agent-skills:uncle-dev-acknowledge skill.
 

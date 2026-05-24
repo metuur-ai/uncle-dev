@@ -11,6 +11,48 @@ description: Run the pre-launch checklist and prepare for production deployment
 
 ---
 
+## Step 0 — Read SDD mode (do this first)
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+**Route based on result — pick exactly one path:**
+
+---
+
+## Path A — `lid-ears` mode
+
+**If sdd_mode is `lid-ears`: follow this path. Do NOT run any `openspec` command.**
+
+Invoke the agent-skills:uncle-dev-shipping-and-launch skill.
+
+Pre-ship verification (run before the checklist):
+
+1. **Tasks complete** — Read `docs/tasks/*.md`; confirm all items are `- [x]`. List any unchecked items and stop if found.
+2. **EARS coverage** — Read `docs/ears/*.md`; for each requirement (R-x.y), confirm at least one test asserts it. List any uncovered requirements and stop if found.
+3. **Docs current** — Confirm `docs/hld/<slug>.md`, `docs/lld/<slug>.md`, `docs/ears/<slug>.md` reflect the shipped implementation. Flag any stale sections.
+
+Then run the standard pre-launch checklist:
+
+1. **Code Quality** — Tests pass, build clean, lint clean, no TODOs, no console.logs
+2. **Security** — audit clean, no secrets in code, auth in place
+3. **Performance** — no N+1 queries, bundle sized appropriately
+4. **Accessibility** — keyboard nav works, screen reader compatible, contrast adequate
+5. **Infrastructure** — env vars set, migrations ready, monitoring configured
+6. **Documentation** — README current, ADRs written, changelog updated
+
+Report any failing checks and help resolve them before deployment.
+Define the rollback plan before proceeding.
+
+---
+
+## Path B — `openspec` mode (default)
+
+**If sdd_mode is `openspec` or missing: follow this path.**
+
 Invoke the agent-skills:uncle-dev-shipping-and-launch skill.
 
 Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to verify the change is ready to ship:

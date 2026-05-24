@@ -43,7 +43,16 @@ Is this a SOLVED PROBLEM or a DESIGN DECISION worth confirming?
    Delegate to uncle-dev-acknowledge and exit.
 ```
 
-If the user picks **Design decision**, invoke `uncle-dev-acknowledge` (or instruct the user to run `/uncle-dev-acknowledge` and paste the notes) and exit immediately. Acknowledge notes belong in `openspec/acknowledge/<scope>.md`, not in `.uncle-dev/learns/` — they are a different artifact class with a different lifecycle.
+If the user picks **Design decision**, route based on `sdd_mode`:
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+- **`lid-ears` mode**: Invoke `/uncle-dev-documentation-and-adrs` (or instruct the user to run it) to write `docs/decisions/ADR-NNN-<slug>.md`. Design decisions in lid-ears mode live as narrative ADRs, not gating acknowledge notes. Exit immediately.
+- **`openspec` mode**: Invoke `uncle-dev-acknowledge` (or instruct the user to run `/uncle-dev-acknowledge` and paste the notes) and exit immediately. Acknowledge notes belong in `openspec/acknowledge/<scope>.md`, not in `.uncle-dev/learns/` — they are a different artifact class with a different lifecycle.
 
 If the user picks **Solved problem**, continue with the capture-mode question:
 
