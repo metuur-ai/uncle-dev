@@ -219,23 +219,62 @@ if [[ "${TOOL_CLAUDE}" -eq 1 ]]; then
 fi
 
 # ── step 5: inject CLAUDE.md block (Claude Code only) ────────────────────────
+# The block is generated dynamically so the configured sdd_mode is explicit in
+# CLAUDE.md — agents read it without parsing the yaml config file.
+# In --update mode, an existing block is removed and rewritten with the new mode.
 
 if [[ "${TOOL_CLAUDE}" -eq 1 ]]; then
   echo ""
   echo "Injecting CLAUDE.md rules..."
 
   CLAUDE_MD="${PROJECT_ROOT}/CLAUDE.md"
+  [[ -f "${CLAUDE_MD}" ]] || touch "${CLAUDE_MD}"
 
+  # Remove existing block so we can rewrite it with the current sdd_mode.
+  # This runs on every setup (first-time and --update) to keep the block in sync.
   if grep -q '<!-- uncle-dev -->' "${CLAUDE_MD}" 2>/dev/null; then
-    ok "CLAUDE.md already contains <!-- uncle-dev --> block — skipping"
-  else
-    [[ -f "${CLAUDE_MD}" ]] || touch "${CLAUDE_MD}"
-    cat >> "${CLAUDE_MD}" <<'BLOCK'
+    if [[ "${UPDATE_MODE}" -eq 1 ]]; then
+      # Remove old block (everything from <!-- uncle-dev --> to <!-- /uncle-dev -->)
+      python3 -c "
+import re, sys
+text = open('${CLAUDE_MD}').read()
+text = re.sub(r'\n?<!-- uncle-dev -->.*?<!-- /uncle-dev -->', '', text, flags=re.DOTALL)
+open('${CLAUDE_MD}', 'w').write(text)
+"
+      ok "CLAUDE.md — removed old uncle-dev block (rewriting with sdd_mode=${SDD_MODE})"
+    else
+      ok "CLAUDE.md already contains <!-- uncle-dev --> block — preserving (use --update to rewrite)"
+    fi
+  fi
+
+  # Write block (first-time, or after removal in --update mode)
+  if ! grep -q '<!-- uncle-dev -->' "${CLAUDE_MD}" 2>/dev/null; then
+
+    # Build the sdd_mode-specific section
+    if [[ "${SDD_MODE}" == "lid-ears" ]]; then
+      SDD_SECTION="### SDD mode: lid-ears (LID+EARS)
+This project uses the **LID+EARS documentation chain** for spec-driven development.
+- Run \`/uncle-dev-spec\` before any non-trivial feature — it will elicit requirements and produce three docs
+- Documents live in \`docs/hld/\`, \`docs/lld/\`, \`docs/ears/\`
+- **Do NOT use OpenSpec change scaffolding in this project**
+- Arrow of intent: HLD → LLD → EARS → code/tests
+- To change a behaviour: update \`docs/ears/\` first, then let changes flow downstream"
+    else
+      SDD_SECTION="### SDD mode: openspec
+This project uses **OpenSpec** for spec-driven development.
+- Run \`/uncle-dev-spec\` before any non-trivial feature — it will scaffold an OpenSpec change
+- Specs tracked in \`openspec/changes/<change-id>/\` (proposal, design, tasks, execution, handoff)
+- Run \`/uncle-dev-plan\` after spec, before coding"
+    fi
+
+    cat >> "${CLAUDE_MD}" <<BLOCK
 
 <!-- uncle-dev -->
 ## uncle-dev
 
 This project uses uncle-dev engineering skills for structured AI-assisted development.
+
+${SDD_SECTION}
 
 ### Skills by Phase
 **Define:** uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
@@ -248,19 +287,11 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 **Maintain:** uncle-dev-knowledge-maintenance
 
 ### Conventions
-- Architecture flows HLD → LLD → EARS specs → tests → code
-- Code and tests reference durable behavior via `@spec` annotations
-- OpenSpec artifacts tracked in `openspec/changes/<change-id>/` (proposal, design, tasks, execution, handoff)
-- Personal scratchpad in `.devlocal/<user>/` (gitignored, not shared)
-- Team learnings captured in `.uncle-dev/learns/`
-
-### Workflow rules
-- Run `/uncle-dev-spec` before any non-trivial feature
-- Run `/uncle-dev-plan` after spec, before coding
-- Check `.agents/uncle-dev-setup.yaml` for project-specific overrides and sdd_mode
+- Personal scratchpad in \`.devlocal/<user>/\` (gitignored, not shared)
+- Team learnings captured in \`.uncle-dev/learns/\`
 <!-- /uncle-dev -->
 BLOCK
-    ok "CLAUDE.md — <!-- uncle-dev --> block appended"
+    ok "CLAUDE.md — <!-- uncle-dev --> block written (sdd_mode=${SDD_MODE})"
   fi
 fi
 
