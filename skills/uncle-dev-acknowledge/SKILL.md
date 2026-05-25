@@ -1,9 +1,24 @@
 ---
 name: uncle-dev-acknowledge
-description: Captures design-decision notes as gating, package-scoped acknowledgements under openspec/acknowledge/. Notes are pending by default and block /uncle-dev-build from claiming any story in their scope until a human acks them. Use when the user pastes a list of "decisions worth checking", when /uncle-dev-spec surfaces decisions worth confirming during Phase 3, or when knowledge-capture detects a design decision (not a solved bug). Also handles ack/reject/supersede on existing decision IDs.
+description: Captures design-decision notes — as gating openspec/acknowledge/ entries in openspec mode, or as ADRs in lid-ears mode. Use when the user pastes a list of "decisions worth checking", when /uncle-dev-spec surfaces decisions worth confirming, or when knowledge-capture detects a design decision. Also handles ack/reject/supersede on existing decision IDs (openspec mode only).
 ---
 
 # Acknowledge
+
+## Phase 0 — Read SDD mode (ALWAYS first)
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+| Result | Path |
+|--------|------|
+| `lid-ears` | **Exit immediately.** Tell the user: "This project uses lid-ears mode. Design decisions are captured as ADRs in `docs/decisions/`. Run `/uncle-dev-documentation-and-adrs` to write one." Do NOT create any `openspec/acknowledge/` files. |
+| `openspec` or missing | Continue with the full process below. |
+
+---
 
 ## Overview
 
@@ -20,6 +35,7 @@ Once acknowledged, notes stay in place with `status: acknowledged` as citation h
 - A human wants to write notes by hand — read `note-schema.yaml` and edit the scope file directly.
 
 **When NOT to use:**
+- `sdd_mode: lid-ears` — use `/uncle-dev-documentation-and-adrs` instead.
 - A bug was just solved → `uncle-dev-knowledge-capture` (writes to `.uncle-dev/learns/`).
 - A repo-wide architectural decision needs a narrative record → `uncle-dev-documentation-and-adrs` (writes `docs/decisions/ADR-NNN-*.md`). Cross-link both ways when both apply.
 - The note is just an inline code comment about *what* the code does → don't capture it; the code is the truth.

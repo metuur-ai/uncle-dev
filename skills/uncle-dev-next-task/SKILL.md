@@ -1,15 +1,17 @@
 ---
 name: uncle-dev-next-task
-description: Picks the next actionable task from OpenSpec changes and `.devlocal/` scratchpads, computes a parallel-safe ready set, and surfaces conflicts. Use when starting or resuming work, when the user asks "what's next", when `/uncle-dev-build continue` runs, or when multiple agents need to coordinate on which story to pick.
+description: Picks the next actionable task — from docs/tasks/ in lid-ears mode, or from OpenSpec changes in openspec mode. Computes a parallel-safe ready set and surfaces conflicts. Use when starting or resuming work, when the user asks "what's next", when `/uncle-dev-build continue` runs, or when multiple agents need to coordinate on which story to pick.
 ---
 
 # Next Task Picker
 
 ## Overview
 
-Resolve the question "what should I work on right now?" deterministically across OpenSpec change tasks and personal `.devlocal/` scratchpads. Computes a **ready set** of parallel-safe stories (across one or many in-progress changes), recommends one pick with a reason, and surfaces any scratchpad/tasks.md conflict for the user to resolve.
+Resolve the question "what should I work on right now?" deterministically. Routes to the correct task source based on `sdd_mode`:
+- **`lid-ears`**: picks from `docs/tasks/<slug>.md` files (produced by `/uncle-dev-plan`)
+- **`openspec`**: picks from OpenSpec change `tasks.md` files and `.devlocal/` scratchpads
 
-This skill is a **coordinator**, not an implementer. It returns a structured handoff that `/uncle-dev-build`, `/uncle-dev-test`, `/uncle-dev-review`, and `/uncle-dev-ship` consume so they don't each re-parse `tasks.md`.
+This skill is a **coordinator**, not an implementer. It returns a structured handoff that `/uncle-dev-build`, `/uncle-dev-test`, `/uncle-dev-review`, and `/uncle-dev-ship` consume.
 
 ## When to Use
 
@@ -17,12 +19,11 @@ This skill is a **coordinator**, not an implementer. It returns a structured han
 - Multiple agents or worktrees are sharing a repo and need to claim distinct stories
 - You want to know what's parallel-safe vs what's blocked
 - Before `/uncle-dev-ship`, to verify no stories are unchecked
-- Before `/uncle-dev-spec`, to confirm there's no active change you forgot about
+- Before `/uncle-dev-spec`, to confirm there is no active work you forgot about
 
 **When NOT to use:**
 - The user named a specific story or PR to work on (skip resolution, go straight there)
-- No `openspec/` directory exists and no `.devlocal/` scratchpads — there is nothing to pick from
-- Ad-hoc bug fixes or typo corrections that aren't tracked in OpenSpec
+- Ad-hoc bug fixes or typo corrections that aren't tracked anywhere
 
 ## Inputs and Outputs
 
@@ -82,6 +83,99 @@ This gate is non-bypassable. After unblocking, re-run /uncle-dev-next-task.
 Callers (`/uncle-dev-build`, `/uncle-dev-test`, etc.) MUST surface this output verbatim and stop — they do not get to claim a story while the gate fires.
 
 ## The Resolution Process
+
+### Phase 0 — Read SDD mode (ALWAYS first)
+
+**Run this before any other step. The result determines which path to follow.**
+
+```bash
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
+echo "${SDD_MODE}"
+```
+
+| Result | Path |
+|--------|------|
+| `lid-ears` | Follow **Path A — LID-EARS** below. Never check for `openspec/`. |
+| `openspec` or missing | Follow **Path B — OpenSpec** below. |
+
+---
+
+### Path A — LID-EARS Resolution
+
+**Only when `sdd_mode: lid-ears`. Do NOT run any openspec command.**
+
+```
+   ┌─────────────────────────────────────────────────┐
+   │ 1. Find task files                              │
+   │    - ls docs/tasks/*.md                         │
+   │    - If none exist → exit: "no task files;      │
+   │      run /uncle-dev-plan first"                 │
+   └─────────────────────────────────────────────────┘
+                          │
+                          ▼
+   ┌─────────────────────────────────────────────────┐
+   │ 2. Parse unchecked items                        │
+   │    - Find all "- [ ] <id> <title>" lines        │
+   │    - Extract (deps:), (mutex:), (est:)          │
+   └─────────────────────────────────────────────────┘
+                          │
+                          ▼
+   ┌─────────────────────────────────────────────────┐
+   │ 3. Compute ready set                            │
+   │    - Drop stories with unsatisfied deps         │
+   │    - Drop stories whose mutex is held           │
+   │    - Drop stories with active locks in          │
+   │      .devlocal/_locks/<slug>/<story-id>.lock    │
+   └─────────────────────────────────────────────────┘
+                          │
+                          ▼
+   ┌─────────────────────────────────────────────────┐
+   │ 4. Rank and recommend                           │
+   │    Tie-breakers:                                │
+   │    a) Most descendants (unblocks most)          │
+   │    b) Resumes in-flight scratchpad              │
+   │    c) Smallest est                              │
+   │    d) Document order                            │
+   └─────────────────────────────────────────────────┘
+                          │
+                          ▼
+   ┌─────────────────────────────────────────────────┐
+   │ 5. Emit handoff and (optionally) acquire lock   │
+   └─────────────────────────────────────────────────┘
+```
+
+**Handoff format (lid-ears):**
+```
+READY SET (N available)
+  ┌─ recommended
+  │  source:     lid-ears
+  │  file:       docs/tasks/<slug>.md:<line>
+  │  story:      <id> <title>
+  │  deps:       [<checked deps>]
+  │  est:        ~Xm
+  │  why:        <tie-breaker reason>
+  │  scratchpad: .devlocal/<user>/<story-id>/scratchpad.md
+  │
+  ├─ parallel-safe alternatives
+  │  • <id> <title>
+  │
+  └─ blocked
+     • <id> <title> ← waits on [<deps>]
+
+NEXT ACTION: pick recommended, or pass --story <id> to override.
+```
+
+**Failure modes (lid-ears):**
+- No `docs/tasks/` directory or all files empty → exit: "no task files found; run `/uncle-dev-plan` first."
+- All stories checked → exit: "all tasks complete; run `/uncle-dev-ship`."
+- Ready set empty but unchecked stories exist → list each with its blocking dep(s)
+
+---
+
+### Path B — OpenSpec Resolution
+
+**Only when `sdd_mode: openspec` or missing.**
 
 ```
    ┌─────────────────────────────────────────────────┐
