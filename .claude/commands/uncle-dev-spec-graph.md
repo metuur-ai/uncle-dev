@@ -1,5 +1,5 @@
 ---
-description: Build the spec graph from HLD + LLDs + EARS specs + @spec annotations and write JSON, Mermaid, and a human report
+description: Build the spec graph from HLD + LLDs + EARS specs + @spec annotations and write JSON, Mermaid, HTML, and a human report into graphify-out/
 ---
 
 Generate the `@spec` graph artifacts and present the report.
@@ -9,18 +9,17 @@ The generator script is `build-spec-graph.py` in the `uncle-dev-spec-annotations
 ```
 docs/high-level-design.md   ──┐
 docs/arrows/index.yaml      ──┤
-docs/arrows/<segment>.md    ──┼──▶ build-spec-graph.py ──▶ docs/arrows/spec-graph.json
-docs/llds/<segment>.md      ──┤                            docs/arrows/spec-graph.mmd
-docs/specs/<segment>-specs ──┤                            docs/arrows/SPEC_GRAPH_REPORT.md
-scan-spec-coherence.py JSON ──┘
+docs/arrows/<segment>.md    ──┼──▶ build-spec-graph.py ──▶ graphify-out/spec-graph.json
+docs/llds/<segment>.md      ──┤                            graphify-out/spec-graph.mmd
+docs/specs/<segment>-specs ──┤                            graphify-out/spec-graph.html
+scan-spec-coherence.py JSON ──┘                            graphify-out/SPEC_GRAPH_REPORT.md
 ```
 
 1. Locate the script. Search in this order:
    - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-annotations/build-spec-graph.py`
-   - `~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/skills/uncle-dev-spec-annotations/build-spec-graph.py`
    - The agent-skills repo if cloned locally
 
-2. Run it from the project root. Default writes all three artifacts:
+2. Run it from the project root. Default writes all four artifacts into `graphify-out/`:
 
 ```bash
 python3 <path-to-build-spec-graph.py> --root "$(pwd)"
@@ -32,16 +31,24 @@ python3 <path-to-build-spec-graph.py> --root "$(pwd)"
 python3 <path-to-build-spec-graph.py> --root "$(pwd)" --format json
 python3 <path-to-build-spec-graph.py> --root "$(pwd)" --format mermaid
 python3 <path-to-build-spec-graph.py> --root "$(pwd)" --format report
+python3 <path-to-build-spec-graph.py> --root "$(pwd)" --format html
 ```
 
-3. Read `docs/arrows/SPEC_GRAPH_REPORT.md` and present its contents to the user — segment summary, cascade impact, orphan list, and the embedded Mermaid diagram. Point them at:
-   - `docs/arrows/spec-graph.json` — canonical machine-readable graph
-   - `docs/arrows/spec-graph.mmd` — Mermaid source (renderable in VS Code preview, GitHub markdown, mmdc)
-   - `docs/arrows/SPEC_GRAPH_REPORT.md` — human report
+   To write to a custom directory:
 
-4. If `graphify-out/` exists in the repo, the generator also writes `graphify-out/spec-edges.json` — a projection so the graphify CLI can traverse `@spec` edges. Mention this in the response when applicable.
+```bash
+python3 <path-to-build-spec-graph.py> --root "$(pwd)" --out path/to/dir
+```
 
-5. **Skip silently** if `docs/` does not exist — repo has not adopted the spec graph (graceful no-op).
+3. Read `graphify-out/SPEC_GRAPH_REPORT.md` and present its contents to the user — segment summary, cascade impact, orphan list, and the embedded Mermaid diagram. Point them at:
+   - `graphify-out/spec-graph.json` — canonical machine-readable graph
+   - `graphify-out/spec-graph.mmd` — Mermaid source (renderable in VS Code preview, GitHub markdown, mmdc)
+   - `graphify-out/spec-graph.html` — interactive vis.js graph (same style as graphify's graph.html): dark theme, force-directed layout, click-to-inspect sidebar, search, node-type filter legend. Open in any browser.
+   - `graphify-out/SPEC_GRAPH_REPORT.md` — human report
+
+4. The generator also writes `graphify-out/spec-edges.json` alongside these files — a projection so the graphify CLI can traverse `@spec` edges.
+
+5. **Skip silently** if `docs/` does not exist — repo has not adopted the spec graph (graceful no-op). `graphify-out/` is created automatically if it does not exist yet.
 
 **When to regenerate:**
 - After adding/removing an EARS spec

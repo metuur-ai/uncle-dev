@@ -14,9 +14,10 @@ description: Conduct a five-axis code review — correctness, readability, archi
 ## Step 0 — Read SDD mode and load intent context
 
 ```bash
-CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
-SDD_MODE=$(bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec 2>/dev/null)
-echo "${SDD_MODE}"
+_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
+[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
+SDD_MODE=$(bash "$_cfg" preferences.sdd_mode openspec 2>/dev/null || echo "openspec")
+echo "$SDD_MODE"
 ```
 
 **Load intent context based on sdd_mode before reviewing any code:**
