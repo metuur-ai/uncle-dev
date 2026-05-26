@@ -16,7 +16,11 @@ description: Run the pre-launch checklist and prepare for production deployment
 ```bash
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode openspec 2>/dev/null || echo "openspec")
+SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
+# Auto-detect from filesystem when config doesn't set a mode
+if [[ -z "$SDD_MODE" ]]; then
+  [[ -d "openspec" ]] && SDD_MODE="openspec" || SDD_MODE="lid-ears"
+fi
 echo "$SDD_MODE"
 ```
 
