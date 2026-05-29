@@ -8,9 +8,18 @@ description: Start spec-driven development — define requirements before writin
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
 SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
-# Auto-detect from filesystem when config doesn't set a mode
+# Auto-detect from filesystem when config doesn't set a mode.
+# Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
+# setup-project.sh previously created openspec/ unconditionally — its presence
+# alone is not a reliable signal of openspec mode.
 if [[ -z "$SDD_MODE" ]]; then
-  [[ -d "openspec" ]] && SDD_MODE="openspec" || SDD_MODE="lid-ears"
+  if [[ -d "docs/ears" || -d "docs/hld" || -d "docs/lld" ]]; then
+    SDD_MODE="lid-ears"
+  elif [[ -d "openspec" ]]; then
+    SDD_MODE="openspec"
+  else
+    SDD_MODE="lid-ears"
+  fi
 fi
 echo "$SDD_MODE"
 ```
@@ -139,13 +148,13 @@ Present all three documents (HLD, LLD, EARS) and ask exactly this, nothing more:
 
 ---
 
-### 6. After confirmation → confirm file locations
+### 6. After confirmation → confirm file locations, then auto-chain into planning
 
 Only after explicit user confirmation. **No openspec commands. No change creation.**
 
-Tell the user:
+Tell the user (concise — one block, no prompts):
 ```
-Specs saved:
+Specs locked. Saved:
   docs/hld/<slug>.md   — High-Level Design
   docs/lld/<slug>.md   — Low-Level Design
   docs/ears/<slug>.md  — EARS Requirements
@@ -153,8 +162,10 @@ Specs saved:
 Arrow of intent: HLD → LLD → EARS → code/tests.
 To change a behaviour, update the EARS spec first, then let changes flow downstream.
 
-Run /uncle-dev-plan when ready to break this into tasks.
+Continuing into planning…
 ```
+
+Then **immediately invoke `/uncle-dev-plan`** in the same turn — do not stop, do not wait for further input. The YES at step 5 is the user's authorization to complete the full define-time workflow (spec → plan). The plan step has its own gate before any code is written.
 
 ---
 
@@ -170,6 +181,7 @@ Invoke the agent-skills:uncle-dev-spec-driven-development skill and follow its f
 4. `openspec change create <id>` + `openspec artifact add <id> execution.md` + `handoff.md`
 5. Ask clarifying questions (objective, users, acceptance criteria, constraints, boundaries)
 6. Populate all five artifacts: `proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`
-7. `openspec validate <id>` and confirm with user before proceeding
+7. `openspec validate <id>` and ask the user to confirm before proceeding (HARD GATE)
+8. After explicit YES, **immediately invoke `/uncle-dev-plan`** in the same turn to continue into shared planning. The plan step has its own gate before any code is written.
 
 Private notes go in `.devlocal/`, not tracked artifacts.

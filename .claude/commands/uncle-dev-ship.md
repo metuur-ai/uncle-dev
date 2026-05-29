@@ -17,9 +17,18 @@ description: Run the pre-launch checklist and prepare for production deployment
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
 SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
-# Auto-detect from filesystem when config doesn't set a mode
+# Auto-detect from filesystem when config doesn't set a mode.
+# Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
+# setup-project.sh previously created openspec/ unconditionally — its presence
+# alone is not a reliable signal of openspec mode.
 if [[ -z "$SDD_MODE" ]]; then
-  [[ -d "openspec" ]] && SDD_MODE="openspec" || SDD_MODE="lid-ears"
+  if [[ -d "docs/ears" || -d "docs/hld" || -d "docs/lld" ]]; then
+    SDD_MODE="lid-ears"
+  elif [[ -d "openspec" ]]; then
+    SDD_MODE="openspec"
+  else
+    SDD_MODE="lid-ears"
+  fi
 fi
 echo "$SDD_MODE"
 ```

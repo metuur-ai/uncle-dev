@@ -149,14 +149,28 @@ fi
 echo ""
 echo "Scaffolding project directories..."
 
+# Mode-specific spec directories. Creating openspec/ in lid-ears projects
+# pollutes auto-detection in command files (they treat openspec/ as the mode
+# marker), so each mode owns its own directories.
+if [[ "${SDD_MODE}" == "lid-ears" ]]; then
+  mkdir -p \
+    "${PROJECT_ROOT}/docs/hld" \
+    "${PROJECT_ROOT}/docs/lld" \
+    "${PROJECT_ROOT}/docs/ears"
+  SPEC_DIRS_SUMMARY="docs/hld  docs/lld  docs/ears"
+else
+  mkdir -p \
+    "${PROJECT_ROOT}/openspec/specs" \
+    "${PROJECT_ROOT}/openspec/changes"
+  SPEC_DIRS_SUMMARY="openspec/specs  openspec/changes"
+fi
+
 mkdir -p \
-  "${PROJECT_ROOT}/openspec/specs" \
-  "${PROJECT_ROOT}/openspec/changes" \
   "${PROJECT_ROOT}/.uncle-dev/learns" \
   "${PROJECT_ROOT}/.devlocal" \
   "${PROJECT_ROOT}/.agents"
 
-ok "openspec/specs  openspec/changes  .uncle-dev/learns  .devlocal  .agents"
+ok "${SPEC_DIRS_SUMMARY}  .uncle-dev/learns  .devlocal  .agents"
 
 if [[ "${SKIP_PREFS}" -eq 0 ]]; then
   TEMPLATE="${REPO_ROOT}/skills/uncle-dev-setup/uncle-dev-setup.template.yaml"
@@ -312,7 +326,13 @@ echo "────────────────────────�
 echo "uncle-dev project setup complete"
 echo ""
 echo "Common"
-[[ -d "${PROJECT_ROOT}/openspec" ]]          && ok "openspec/"          || warn "openspec/ missing"
+if [[ "${SDD_MODE}" == "lid-ears" ]]; then
+  [[ -d "${PROJECT_ROOT}/docs/hld" && -d "${PROJECT_ROOT}/docs/lld" && -d "${PROJECT_ROOT}/docs/ears" ]] \
+    && ok "docs/hld/  docs/lld/  docs/ears/" \
+    || warn "docs/{hld,lld,ears}/ missing"
+else
+  [[ -d "${PROJECT_ROOT}/openspec" ]] && ok "openspec/" || warn "openspec/ missing"
+fi
 [[ -d "${PROJECT_ROOT}/.uncle-dev/learns" ]] && ok ".uncle-dev/learns/" || warn ".uncle-dev/learns/ missing"
 [[ -d "${PROJECT_ROOT}/.devlocal" ]]         && ok ".devlocal/"         || warn ".devlocal/ missing"
 [[ -f "${CONFIG_FILE}" ]]                    && ok ".agents/uncle-dev-setup.yaml (sdd_mode=${SDD_MODE})" || warn ".agents/uncle-dev-setup.yaml missing"

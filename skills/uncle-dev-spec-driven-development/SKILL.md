@@ -137,12 +137,12 @@ Present all three documents. Ask exactly this — nothing more:
 
 **STOP. No follow-up questions. No options. No next steps. Wait silently.**
 
-### Step 6 — Confirm and close
+### Step 6 — Confirm, save, and auto-chain into planning
 
-After explicit YES from the user, write the three files, then tell them:
+After explicit YES from the user, write the three files, then tell them (concise — no prompts, no questions):
 
 ```
-Specs saved:
+Specs locked. Saved:
   docs/hld/<slug>.md   — High-Level Design
   docs/lld/<slug>.md   — Low-Level Design
   docs/ears/<slug>.md  — EARS Requirements
@@ -150,10 +150,12 @@ Specs saved:
 Arrow of intent: HLD → LLD → EARS → code/tests.
 To change a behaviour, update the EARS spec first — changes flow downstream.
 
-Run /uncle-dev-plan when ready to break this into tasks.
+Continuing into planning…
 ```
 
-**End of lid-ears flow. Do NOT open openspec-workflow.md or run any openspec command.**
+Then **immediately invoke `/uncle-dev-plan` in the same turn**. The YES at Step 5 is the user's authorization to complete the full define-time workflow (spec → plan). Do not stop and wait for the user to type the next command. The plan step enforces its own gate before any code is written.
+
+**Do NOT open openspec-workflow.md or run any openspec command.**
 
 ---
 
@@ -163,6 +165,7 @@ Run /uncle-dev-plan when ready to break this into tasks.
 - [ ] `docs/lld/<slug>.md` written with architecture, constraints, key decisions, out of scope
 - [ ] `docs/ears/<slug>.md` written with EARS table per unit of work
 - [ ] User has explicitly confirmed the specs before anything downstream was touched
+- [ ] After YES, `/uncle-dev-plan` was invoked in the same turn (do not leave the user at a "run X next" pointer)
 
 ---
 

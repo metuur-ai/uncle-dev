@@ -63,4 +63,6 @@ Then populate the shared OpenSpec artifacts:
 
 Private technical substeps belong in `.devlocal/`, not in tracked shared artifacts.
 
-Confirm the change contents with the user before proceeding.
+Confirm the change contents with the user (HARD GATE — ask `"Do these artifacts look correct? Reply YES to lock them, or tell me what to change."` and wait silently).
+
+After explicit YES, **immediately invoke `/uncle-dev-plan` in the same turn** to continue into shared planning. The user's YES authorizes the full define-time workflow (spec → plan); do not stop and ask the user to type the next command. The plan step enforces its own gate before any code is written.
