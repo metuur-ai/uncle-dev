@@ -37,6 +37,28 @@ Recent learnings (.uncle-dev/learns/): $RECENT"
     fi
   fi
 
+  # Surface the most recent uncle-dev-wrap handoff so the next session can resume.
+  # Handoffs live in .devlocal/handoffs/ (gitignored personal scratchpad) and are
+  # written by /uncle-dev-wrap. We list the newest file by mtime; the agent loads
+  # it on demand via Read — we never paste the body into the session prompt.
+  HANDOFFS_DIR="$PROJECT_DIR/.devlocal/handoffs"
+  # Ensure the dir exists so /uncle-dev-wrap (and manual drops) always have a target.
+  # Idempotent and cheap; failure (e.g. read-only fs) is non-fatal — skip silently.
+  mkdir -p "$HANDOFFS_DIR" 2>/dev/null
+  if [ -d "$HANDOFFS_DIR" ]; then
+    LATEST_HANDOFF=$(find "$HANDOFFS_DIR" -maxdepth 1 -name "handoff-*.md" -type f 2>/dev/null \
+      | xargs ls -t 2>/dev/null \
+      | head -1)
+    if [ -n "$LATEST_HANDOFF" ]; then
+      # Strip the project prefix so the agent uses a relative path with Read
+      REL_HANDOFF="${LATEST_HANDOFF#$PROJECT_DIR/}"
+      CONTENT="$CONTENT
+
+Recent handoff from /uncle-dev-wrap: $REL_HANDOFF
+To resume, run: Read $REL_HANDOFF and continue from \"Next Session Focus\"."
+    fi
+  fi
+
   # Use jq to produce valid JSON (handles escaping of newlines and special chars)
   MSG="agent-skills loaded. Use the skill discovery flowchart to find the right skill for your task.
 

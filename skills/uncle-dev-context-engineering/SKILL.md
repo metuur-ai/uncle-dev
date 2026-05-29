@@ -1,6 +1,6 @@
 ---
 name: uncle-dev-context-engineering
-description: Optimizes agent context setup. Use when starting a new session, when agent output quality degrades, when switching between tasks, or when you need to configure rules files and context for a project.
+description: Optimizes agent context setup. Use when starting a new session, when agent output quality degrades, when switching between tasks, when you need to configure rules files and context for a project, or when setting up hierarchical AGENTS.md context for a large codebase.
 ---
 
 # Context Engineering
@@ -77,7 +77,38 @@ Create a rules file that persists across sessions. This is the highest-leverage 
 - `.github/copilot-instructions.md` (GitHub Copilot)
 - `AGENTS.md` (OpenAI Codex)
 
-To enforce that `AGENTS.md` files are read before every edit and kept current after structural changes, apply the `code-context` skill. It is the operational enforcement layer for the context hierarchy described here.
+**Constraint:** CLAUDE.md and AGENTS.md must not coexist at project root. Choose one.
+
+### Intent Layer: Hierarchical Context for Large Codebases
+
+For projects where a single root rules file is insufficient, build a hierarchy of `AGENTS.md` nodes in subdirectories. Each node describes what its area owns, its contracts, and its patterns — so agents navigate like senior engineers without reading every file.
+
+#### When to create a child node
+
+| Directory token count | Action |
+|---|---|
+| < 20k | No node needed |
+| 20–64k | Create a 2–3k token `AGENTS.md` |
+| > 64k | Split into multiple child nodes |
+
+Also create a node when: responsibility shifts at a directory boundary, or hidden contracts/invariants exist that aren't visible in the code.
+
+#### Setup workflow
+
+```
+1. Detect   → scripts/detect_state.sh [path]  → none | partial | complete
+2. Measure  → scripts/estimate_tokens.sh <dir> → token count + recommendation
+             scripts/analyze_structure.sh [path] → boundary candidates
+3. Decide   → Which directories cross the threshold? Where are hidden contracts?
+4. Execute  → Create nodes using the child node template
+5. Maintain → Re-measure when directories grow; audit nodes for drift
+```
+
+Each child `AGENTS.md` follows this structure: **Purpose** (owns / does NOT own) → **Entry Points** → **Contracts & Invariants** → **Patterns** → **Anti-patterns** → **Related Context** (relative paths to sibling nodes).
+
+See `agents-md-guide.md` for the full template, quality checklist, SME capture questions, and compression examples.
+
+To enforce that `AGENTS.md` files are read before every edit and kept current after structural changes, add the code-context rule to your project's CLAUDE.md. The rule is defined in the uncle-dev section of this project's CLAUDE.md.
 
 ### Level 2: Specs and Architecture
 

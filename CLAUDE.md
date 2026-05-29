@@ -8,7 +8,7 @@ This is the agent-skills project — a collection of production-grade engineerin
 skills/       → Core skills (SKILL.md per directory, with colocated reference files)
 agents/       → Reusable agent personas (uncle-dev-ag-code-reviewer, uncle-dev-ag-test-engineer, uncle-dev-ag-security-auditor)
 hooks/        → Session lifecycle hooks
-.claude/commands/ → Slash commands (/uncle-dev-research, /uncle-dev-spec, /uncle-dev-plan, /uncle-dev-build, /uncle-dev-test, /uncle-dev-review, /uncle-dev-code-simplify, /uncle-dev-ship, /uncle-dev-proactive-memory, /uncle-dev-acknowledge, /uncle-dev-next-task, /uncle-dev-design-docs, /uncle-dev-spec-scan, /uncle-dev-spec-graph, /uncle-senior)
+.claude/commands/ → Slash commands (/uncle-dev-research, /uncle-dev-spec, /uncle-dev-plan, /uncle-dev-build, /uncle-dev-test, /uncle-dev-review, /uncle-dev-code-simplify, /uncle-dev-ship, /uncle-dev-proactive-memory, /uncle-dev-acknowledge, /uncle-dev-next-task, /uncle-dev-design-docs, /uncle-dev-spec-scan, /uncle-dev-spec-graph, /uncle-dev-wrap, /uncle-senior)
 docs/         → Setup guides for different tools
 scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 ```
@@ -23,6 +23,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 **Review:** uncle-dev-code-review-and-quality, uncle-dev-dev-code-simplification, uncle-dev-security-and-hardening, uncle-dev-performance-optimization
 **Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-ci-cd-and-automation, uncle-dev-deprecation-and-migration, uncle-dev-documentation-and-adrs, uncle-dev-shipping-and-launch
 **Capture:** uncle-dev-knowledge-capture
+**Handoff:** uncle-dev-wrap
 **Maintain:** uncle-dev-knowledge-maintenance
 
 ## Conventions
@@ -77,6 +78,7 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 **Review:** uncle-dev-code-review-and-quality, uncle-dev-security-and-hardening, uncle-dev-performance-optimization
 **Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-documentation-and-adrs
 **Capture:** uncle-dev-knowledge-capture
+**Handoff:** uncle-dev-wrap
 **Maintain:** uncle-dev-knowledge-maintenance
 
 ### Conventions
@@ -90,4 +92,11 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 - Run `/uncle-dev-spec` before any non-trivial feature
 - Run `/uncle-dev-plan` after spec, before coding
 - Check `.agents/uncle-dev-setup.yaml` for project-specific overrides and sdd_mode
+
+### Code Context (always enforced)
+- Before editing any file, check if its directory has an `AGENTS.md` — if so, read it first
+- If no `AGENTS.md` exists in a source directory, create one before editing (template: `skills/uncle-dev-context-engineering/agents-md-guide.md`)
+- After adding, moving, or deleting source directories, update the affected `AGENTS.md` files in the same turn
+- Respect architecture boundaries defined in `AGENTS.md` — never import across them without explicit justification
+- CLAUDE.md and AGENTS.md must not coexist at project root — choose one
 <!-- /uncle-dev -->

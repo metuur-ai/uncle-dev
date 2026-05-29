@@ -1,59 +1,30 @@
 ---
 name: uncle-dev-code-context
-description: Enforce mandatory context workflow before code changes: read local AGENTS.md files, respect architecture boundaries, and update context docs after structural changes.
+description: "CONVERTED TO RULE. This skill's enforcement logic now lives as the 'Code Context' rule in the uncle-dev section of CLAUDE.md. Install that rule in any project that uses uncle-dev. See uncle-dev-context-engineering for the full context hierarchy strategy and agents-md-guide.md for the AGENTS.md authoring template."
 ---
 
-# skill:context-manager
+# code-context → now a CLAUDE.md rule
 
-## Does exactly this
+This skill has been converted to an always-on rule.
 
-Enforces mandatory context workflow: read local AGENTS.md files before edits, respect architecture boundaries, and update context docs after structural changes.
+## Why
 
----
+A pre-edit gate that requires explicit invocation can be skipped. Rules in CLAUDE.md are enforced automatically on every session — no invocation required.
 
-## When to use
+## The Rule
 
-Apply this skill when a task includes any of the following:
+Add this to the `## uncle-dev` section of your project's CLAUDE.md:
 
-- Editing files.
-- Creating, moving, or deleting source directories.
-- Changing dependencies between architectural layers.
+```markdown
+### Code Context (always enforced)
+- Before editing any file, check if its directory has an `AGENTS.md` — if so, read it first
+- If no `AGENTS.md` exists in a source directory, create one before editing
+- After adding, moving, or deleting source directories, update the affected `AGENTS.md` files in the same turn
+- Respect architecture boundaries defined in `AGENTS.md` — never import across them without explicit justification
+- CLAUDE.md and AGENTS.md must not coexist at project root — choose one
+```
 
-## Required Workflow
+## Related
 
-1. Identify all directories that will be edited.
-2. For each directory, check whether `AGENTS.md` exists.
-3. If `AGENTS.md` exists, read it before editing.
-4. If `AGENTS.md` does not exist and the directory contains source files, create documentation context first.
-5. Validate dependency direction against architecture boundaries.
-6. Perform edits.
-7. If structure, entrypoints, or boundaries changed, update the affected `AGENTS.md` files in the same turn.
-
-## Stop Conditions
-
-Stop and fix context before proceeding if any of these occur:
-
-- Editing starts before reading applicable `AGENTS.md`.
-- A new source directory is added without context documentation.
-- A dependency violates layer boundaries.
-- Architectural changes are made without updating context docs.
-
-## References
-
-- `AGENT_RULES.md`: Unknown - verify (file not found in current repository).
-- `CLAUDE.md`: Available in repository root for tool-specific guidance.
-- `OPENCODE.md`: Unknown - verify (file not found in current repository).
-- `COPILOT.md`: Unknown - verify (file not found in current repository).
-
-## Execution Checklist
-
-- [ ] Read all relevant `AGENTS.md` files before editing.
-- [ ] Confirm imports respect architecture boundaries.
-- [ ] Apply code changes.
-- [ ] Update context documentation for structural changes.
-
----
-
-## If you need more detail
-
-No additional resources — this skill is self-contained. Use the workflow above as your checklist.
+- `uncle-dev-context-engineering` — strategy skill for the full context hierarchy
+- `uncle-dev-context-engineering/agents-md-guide.md` — template, quality checklist, SME capture questions
