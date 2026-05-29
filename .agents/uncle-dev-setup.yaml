@@ -70,10 +70,15 @@ preferences:
   sdd_mode: "lid-ears"        # openspec | lid-ears
                               #   openspec  → scaffold OpenSpec change first, EARS near end (default)
                               #   lid-ears  → elicit requirements via LID EARS first, OpenSpec tracks them after
+  tdd-mode: strict            # strict | lite
+                              #   strict → full red-green-refactor, Prove-It for bugs, @spec annotations (default)
+                              #   lite   → tests only for complex/critical logic; no red-first requirement;
+                              #            no Prove-It required for minor fixes; coverage not enforced
   spec_annotations: true      # require @spec IDs linking code to specs
   graphify: true             # set true after running: graphify . (creates graphify-out/)
   knowledge_capture: true     # enable post-test nudge to run /uncle-dev-knowledge-capture
   destructive_guard: true     # block dangerous git/db commands via hook
+  mutation-testing: true      # set to false to disable uncle-dev-mutation-testing skill entirely
 
 # ── Hook toggles ─────────────────────────────────────────────────────────────
 # All hooks default to on. Set to false to disable a specific guard.

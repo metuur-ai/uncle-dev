@@ -9,6 +9,38 @@ description: Drives development with tests. Use when implementing any logic, fix
 
 Write a failing test before writing the code that makes it pass. For bug fixes, reproduce the bug with a test before attempting a fix. Tests are proof — "seems right" is not done. A codebase with good tests is an AI agent's superpower; a codebase without tests is a liability.
 
+**Config check — run this first:**
+```bash
+grep "tdd-mode" .agents/uncle-dev-setup.yaml 2>/dev/null || echo "not set (default: strict)"
+```
+If `.agents/uncle-dev-setup.yaml` has `tdd-mode: lite`, follow the **Lite Mode** section below instead of the full TDD cycle.
+
+## Lite Mode
+
+Use when `tdd-mode: lite` is set in `.agents/uncle-dev-setup.yaml`. Designed for rapid iteration on low-criticality code where full TDD overhead isn't justified.
+
+**What changes in lite mode:**
+
+| Area | Strict | Lite |
+|---|---|---|
+| Test-first | Required (red before green) | Optional — write tests after if that's faster |
+| What to test | Every new behavior | Complex logic and critical paths only; skip trivial mappers, accessors, config |
+| Bug fixes | Prove-It pattern required | Reproduction test recommended but not required for minor fixes |
+| Coverage | Must not decrease | Not enforced |
+| `@spec` annotations | Required if `spec_annotations: true` | Skipped |
+| All tests must pass | Yes | Yes — this never changes |
+
+**Lite mode process:**
+
+1. Implement the change.
+2. Identify any logic that is non-trivial (branching, math, state mutation, error paths). Write a test for each.
+3. Run the full test suite. Fix anything that broke.
+4. Done — no red-green cycle, no coverage check.
+
+**What still applies in lite mode:** tests must pass, no skipped/disabled tests, descriptive test names.
+
+**Switch back to strict** for: auth, billing, data integrity, public APIs, anything that already has a test suite worth protecting.
+
 ## When to Use
 
 - Implementing any new logic or behavior
