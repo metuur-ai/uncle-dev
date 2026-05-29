@@ -129,11 +129,19 @@ EARS keywords — use exactly as written:
 | R-1.2 | IF … THE SYSTEM SHALL … |
 ```
 
+### Step 4.5 — Pre-mortem Risk Check
+
+With the full spec drafted (HLD + LLD + EARS), run a pre-mortem before locking:
+
+Invoke `/uncle-dev-pre-mortem` — pass the HLD goals + success criteria, LLD architecture + constraints, and EARS requirements as context. It imagines the initiative has completely failed and works backward to surface hidden risks.
+
+Present the **Top 3 Risks and mitigations** from the pre-mortem output alongside the three spec documents at Step 5. The user may revise specs in response before confirming YES.
+
 ### Step 5 — HARD GATE
 
-Present all three documents. Ask exactly this — nothing more:
+Present all three documents **and the pre-mortem Top 3 Risks**. Ask exactly this — nothing more:
 
-> "Do these specs look correct? Reply YES to lock them, or tell me what to change."
+> "Do these specs look correct and are the risks acceptable? Reply YES to lock them, or tell me what to change."
 
 **STOP. No follow-up questions. No options. No next steps. Wait silently.**
 
@@ -164,7 +172,8 @@ Then **immediately invoke `/uncle-dev-plan` in the same turn**. The YES at Step 
 - [ ] `docs/hld/<slug>.md` written with overview, stakeholders, goals, non-goals, success criteria
 - [ ] `docs/lld/<slug>.md` written with architecture, constraints, key decisions, out of scope
 - [ ] `docs/ears/<slug>.md` written with EARS table per unit of work
-- [ ] User has explicitly confirmed the specs before anything downstream was touched
+- [ ] `/uncle-dev-pre-mortem` run against HLD + LLD + EARS; Top 3 Risks presented at Step 5
+- [ ] User has explicitly confirmed specs and risk profile before anything downstream was touched
 - [ ] After YES, `/uncle-dev-plan` was invoked in the same turn (do not leave the user at a "run X next" pointer)
 
 ---

@@ -140,9 +140,20 @@ One table per logical unit of work:
 
 ---
 
+### 4.5 Pre-mortem Risk Check
+
+With the full spec drafted (HLD + LLD + EARS), run a pre-mortem before locking:
+
+Invoke `/uncle-dev-pre-mortem` — pass the HLD goals + success criteria, LLD architecture + constraints, and EARS requirements as context. It imagines the initiative has completely failed and works backward to surface hidden risks.
+
+Present the **Top 3 Risks and mitigations** from the pre-mortem output alongside the three spec documents at Step 5. The user may revise specs in response before confirming YES.
+
+---
+
 ### 5. HARD GATE
-Present all three documents (HLD, LLD, EARS) and ask exactly this, nothing more:
-> "Do these specs look correct? Reply YES to lock them, or tell me what to change."
+
+Present all three documents (HLD, LLD, EARS) **and the pre-mortem Top 3 Risks**. Ask exactly this, nothing more:
+> "Do these specs look correct and are the risks acceptable? Reply YES to lock them, or tell me what to change."
 
 **STOP. Do not ask follow-up questions. Do not offer options. Do not mention OpenSpec, change IDs, or next steps. Wait silently for the user's reply.**
 
