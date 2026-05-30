@@ -13,6 +13,9 @@ set -uo pipefail
 
 REPO_ROOT="$(pwd)"
 SPECS_DIR="$REPO_ROOT/docs/specs"
+CFG_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
+[ -f "$CFG_SCRIPT" ] || CFG_SCRIPT="$REPO_ROOT/scripts/uncle-dev-config.sh"
+EXEC_PROFILE="$(bash "$CFG_SCRIPT" preferences.execution_profile balanced 2>/dev/null || echo "balanced")"
 
 # Graceful no-op: repos without a spec catalog aren't blocked.
 [ -d "$SPECS_DIR" ] || exit 0
@@ -47,6 +50,15 @@ block_with_message() {
   local msg="$1"
   printf '%s\n' "$msg" >&2
   exit 2
+}
+
+advisory_message() {
+  local msg="$1"
+  if command -v jq >/dev/null 2>&1; then
+    jq -n --arg msg "$msg" '{"priority":"INFO","message":$msg}'
+  else
+    printf '%s\n' "$msg" >&2
+  fi
 }
 
 # ---------------------------------------------------------------------------
@@ -89,7 +101,7 @@ handle_edit_or_write() {
   done <<< "$cited_ids"
 
   if [ -n "$unknown" ]; then
-    block_with_message "spec-coherence-guard: BLOCKED edit to $file_path
+    local msg="spec-coherence-guard: BLOCKED edit to $file_path
 
   Unknown spec IDs cited via @spec: $unknown
 
@@ -100,6 +112,11 @@ handle_edit_or_write() {
     - Remove the @spec annotation if this code does not implement product behavior
 
   Run /uncle-dev-spec-scan for the full coherence report."
+    if [ "$EXEC_PROFILE" = "strict" ]; then
+      block_with_message "$msg"
+    else
+      advisory_message "${msg/BLOCKED/WARN}"
+    fi
   fi
   exit 0
 }
@@ -137,12 +154,17 @@ handle_bash() {
   local rc=$?
 
   if [ $rc -ne 0 ]; then
-    block_with_message "spec-coherence-guard: BLOCKED git commit
+    local msg="spec-coherence-guard: BLOCKED git commit
 
 $(python3 "$scanner" --root "$REPO_ROOT" --no-tree-sitter --format text 2>&1)
 
   Fix the orphan @spec citations above before committing.
   Run /uncle-dev-spec-scan locally to iterate."
+    if [ "$EXEC_PROFILE" = "strict" ] || [ "$EXEC_PROFILE" = "balanced" ]; then
+      block_with_message "$msg"
+    else
+      advisory_message "${msg/BLOCKED/WARN}"
+    fi
   fi
   exit 0
 }

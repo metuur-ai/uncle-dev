@@ -40,9 +40,21 @@ echo "$SDD_MODE"
 
 Invoke the agent-skills:uncle-dev-code-review-and-quality skill.
 
+Read execution profile to choose default review depth:
+
+```bash
+EXECUTION_PROFILE=$(bash "$_cfg" preferences.execution_profile balanced 2>/dev/null || echo "balanced")
+echo "$EXECUTION_PROFILE"
+```
+
 Detect the review mode from the user's input and dispatch accordingly:
 
-**`/uncle-dev-review`** (full) — Run three parallel agents (code quality, architecture, change impact), then synthesize with `uncle-dev-ag-review-synthesizer`. Use for significant changes (>300 lines, security-sensitive, or architectural decisions).
+**`/uncle-dev-review`** default mode by profile:
+- `fast` -> quick mode by default
+- `balanced` -> quick for small/focused diffs, full for large/risky diffs
+- `strict` -> full mode by default
+
+Full mode = run three parallel agents (code quality, architecture, change impact), then synthesize with `uncle-dev-ag-review-synthesizer`. Use for significant changes (>300 lines, security-sensitive, or architectural decisions).
 
 **`/uncle-dev-review --quick`** — Run `uncle-dev-ag-code-reviewer` only. Use for small, focused changes.
 

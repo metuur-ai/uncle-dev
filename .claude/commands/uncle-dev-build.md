@@ -11,12 +11,14 @@ description: Implement the next task incrementally — build, test, verify, comm
 
 ---
 
-## Step 0: Read SDD mode, then resolve the next task
+## Step 0: Read SDD mode and execution profile, then resolve the next task
 
 ```bash
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
 SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
+EXECUTION_PROFILE=$(bash "$_cfg" preferences.execution_profile balanced 2>/dev/null || echo "balanced")
+TDD_MODE=$(bash "$_cfg" preferences.tdd-mode lite 2>/dev/null || echo "lite")
 # Auto-detect from filesystem when config doesn't set a mode.
 # Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
 # setup-project.sh previously created openspec/ unconditionally — its presence
@@ -31,6 +33,8 @@ if [[ -z "$SDD_MODE" ]]; then
   fi
 fi
 echo "$SDD_MODE"
+echo "$EXECUTION_PROFILE"
+echo "$TDD_MODE"
 ```
 
 Run `/uncle-dev-next-task --claim` (which is now sdd_mode-aware) to:
@@ -59,8 +63,11 @@ For the chosen story:
 4. Break the implementation into private technical steps in `.devlocal/<user>/<story-id>/scratchpad.md`
 5. Write a failing test that directly asserts the EARS requirement (RED)
 6. Implement the minimum code to pass the test (GREEN)
-7. Run the full test suite to check for regressions
-8. Run the build to verify compilation
+7. Verify based on profile:
+   - `strict` -> run full test suite + full build on every slice
+   - `balanced` -> run targeted tests per slice; run full suite + build when story is marked complete
+   - `fast` -> run targeted tests only per slice; run full suite + build before merging/releasing
+8. If `tdd-mode: strict`, keep red-green proof for each behavior; if `tdd-mode: lite`, test complex/critical behavior and skip red-first for trivial changes
 9. Promote shared discoveries:
    - Update `docs/tasks/<slug>.md` for shared scope/task changes
    - Update `docs/lld/<slug>.md` if implementation changes shared technical constraints
@@ -72,7 +79,7 @@ If any step fails, follow the agent-skills:uncle-dev-debug-error skill.
 
 ---
 
-## Path B — `openspec` mode (default)
+## Path B — `openspec` mode
 
 **If sdd_mode is `openspec` or missing: follow this path.**
 
@@ -86,8 +93,11 @@ For the chosen story:
 3. If useful, break the implementation into private technical steps in `.devlocal/<user>/<story-id>/scratchpad.md`
 4. Write a failing test for the expected behavior (RED)
 5. Implement the minimum code to pass the test (GREEN)
-6. Run the full test suite to check for regressions
-7. Run the build to verify compilation
+6. Verify based on profile:
+   - `strict` -> full test suite + full build on every slice
+   - `balanced` -> targeted tests per slice; full suite + build when story completes
+   - `fast` -> targeted tests per slice; full suite + build before merge/release
+7. Apply `tdd-mode` strictness (`strict` full prove-it, `lite` focused tests for non-trivial logic)
 8. Promote shared discoveries:
    - Update `execution.md` for blockers or cross-story dependencies
    - Update `tasks.md` for shared scope/task changes

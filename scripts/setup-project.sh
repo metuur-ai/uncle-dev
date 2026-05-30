@@ -7,7 +7,7 @@
 #
 # What this script handles (equivalent to /uncle-dev-setup Steps 1, 3, 4, 5, 6):
 #   1. Detect active tools (Claude Code / Codex / OpenCode)
-#   2. Ask preference questions (sdd_mode, spec_annotations, graphify)
+#   2. Ask preference questions (sdd_mode, tdd_mode, execution_profile, spec_annotations, graphify)
 #   3. Create required directories and write .agents/uncle-dev-setup.yaml
 #   4. Clean .claude/settings.json (remove any bad ${CLAUDE_PLUGIN_ROOT} hooks)
 #   5. Inject <!-- uncle-dev --> block into CLAUDE.md (Claude Code only)
@@ -69,6 +69,31 @@ ask_yn() {
   [[ "${answer}" == "y" ]] && echo "true" || echo "false"
 }
 
+ask_choice() {
+  # ask_choice PROMPT DEFAULT OPT1 OPT2 [...]
+  # Re-prompts until the value is one of OPTn.
+  local prompt="$1"
+  local default="$2"
+  shift 2
+  local options=("$@")
+  local answer=""
+
+  while true; do
+    printf "  %s [%s]: " "${prompt}" "${default}" >&2
+    read -r answer
+    answer="${answer:-${default}}"
+
+    for opt in "${options[@]}"; do
+      if [[ "${answer}" == "${opt}" ]]; then
+        echo "${answer}"
+        return 0
+      fi
+    done
+
+    warn "Invalid choice '${answer}'. Allowed values: ${options[*]}"
+  done
+}
+
 require_jq() {
   command -v jq >/dev/null 2>&1 || fail "jq is required. Install: brew install jq"
 }
@@ -128,19 +153,36 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
   echo "  SDD mode — how should /uncle-dev-spec start?"
   echo "    openspec  → scaffold OpenSpec change first"
   echo "    lid-ears  → elicit requirements via LID EARS first (default)"
-  SDD_MODE="$(ask "sdd_mode" "lid-ears")"
-  [[ "${SDD_MODE}" == "openspec" || "${SDD_MODE}" == "lid-ears" ]] \
-    || { warn "Unknown sdd_mode '${SDD_MODE}', defaulting to lid-ears"; SDD_MODE="lid-ears"; }
+  SDD_MODE="$(ask_choice "sdd_mode" "lid-ears" "openspec" "lid-ears")"
 
   echo ""
   SPEC_ANNOTATIONS="$(ask_yn "Require @spec IDs linking code to specs?" "y")"
 
   echo ""
+  echo "  TDD mode — how strict should test workflow be?"
+  echo "    strict   → full red-green-refactor, prove-it for bugs"
+  echo "    lite     → tests for complex/critical logic only (default)"
+  TDD_MODE="$(ask_choice "tdd-mode" "lite" "strict" "lite")"
+
+  echo ""
+  echo "  Execution profile — speed vs guardrails?"
+  echo "    fast      → fastest inner loop, advisory non-critical checks"
+  echo "    balanced  → targeted tests per slice, full checks at milestones (default)"
+  echo "    strict    → full checks and blocking guards"
+  EXECUTION_PROFILE="$(ask_choice "execution_profile" "balanced" "fast" "balanced" "strict")"
+
+  echo ""
   GRAPHIFY="$(ask_yn "Have you run 'graphify .' on this project?" "n")"
 else
   # Read existing values (best-effort via grep, no yq dependency)
+  if grep -qE '^[[:space:]]*tdd_mode:' "${CONFIG_FILE}" 2>/dev/null; then
+    warn "Detected legacy key 'tdd_mode' in .agents/uncle-dev-setup.yaml. Use 'tdd-mode' instead."
+    warn "Run --update and confirm choices to rewrite the config with canonical keys."
+  fi
   SDD_MODE="$(grep 'sdd_mode:' "${CONFIG_FILE}" 2>/dev/null | awk -F'"' '{print $2}' || echo "lid-ears")"
   SPEC_ANNOTATIONS="$(grep 'spec_annotations:' "${CONFIG_FILE}" 2>/dev/null | awk '{print $2}' || echo "true")"
+  TDD_MODE="$(grep 'tdd-mode:' "${CONFIG_FILE}" 2>/dev/null | awk '{print $2}' || echo "lite")"
+  EXECUTION_PROFILE="$(grep 'execution_profile:' "${CONFIG_FILE}" 2>/dev/null | awk -F'"' '{print $2}' || echo "balanced")"
   GRAPHIFY="$(grep 'graphify:' "${CONFIG_FILE}" 2>/dev/null | awk '{print $2}' || echo "false")"
 fi
 
@@ -182,6 +224,8 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
     -e "s|active: \[\]|active: ${ACTIVE_TOOLS_YAML}|g" \
     -e "s|agent_skills_root: \"\"|agent_skills_root: \"${REPO_ROOT}\"|g" \
     -e "s|sdd_mode: \"lid-ears\"|sdd_mode: \"${SDD_MODE}\"|g" \
+    -e "s|execution_profile: \"balanced\"|execution_profile: \"${EXECUTION_PROFILE}\"|g" \
+    -e "s|tdd-mode: lite|tdd-mode: ${TDD_MODE}|g" \
     -e "s|spec_annotations: true|spec_annotations: ${SPEC_ANNOTATIONS}|g" \
     -e "s|graphify: false|graphify: ${GRAPHIFY}|g" \
     "${TEMPLATE}" > "${CONFIG_FILE}"

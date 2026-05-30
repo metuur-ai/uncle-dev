@@ -58,6 +58,7 @@
       "type": "object",
       "required": [
         "level",
+        "execution_profile",
         "sdd_required",
         "sdd_mode",
         "tdd-mode",
@@ -73,6 +74,10 @@
         "level": {
           "type": "string",
           "enum": ["strict", "lite"]
+        },
+        "execution_profile": {
+          "type": "string",
+          "enum": ["fast", "balanced", "strict"]
         },
         "sdd_required": { "type": "boolean" },
         "sdd_mode": {

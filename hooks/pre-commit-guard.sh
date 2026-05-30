@@ -8,6 +8,11 @@ set -euo pipefail
 command -v jq  >/dev/null 2>&1 || exit 0
 command -v git >/dev/null 2>&1 || exit 0
 
+REPO_ROOT="$(pwd)"
+CFG_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
+[ -f "$CFG_SCRIPT" ] || CFG_SCRIPT="$REPO_ROOT/scripts/uncle-dev-config.sh"
+EXEC_PROFILE="$(bash "$CFG_SCRIPT" preferences.execution_profile balanced 2>/dev/null || echo "balanced")"
+
 # Read tool input from stdin
 if [ -t 0 ]; then INPUT="{}"; else INPUT=$(cat); fi
 COMMAND=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || COMMAND=""
@@ -50,9 +55,15 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 if [ -n "$ISSUES" ]; then
-  jq -n --arg msg "pre-commit-guard: review before committing:${ISSUES}\n\nFix these or confirm they are intentional before proceeding." \
-    '{"priority": "IMPORTANT", "message": $msg}'
-  exit 1
+  if [ "$EXEC_PROFILE" = "strict" ] || [ "$EXEC_PROFILE" = "balanced" ]; then
+    jq -n --arg msg "pre-commit-guard: review before committing:${ISSUES}\n\nFix these or confirm they are intentional before proceeding." \
+      '{"priority": "IMPORTANT", "message": $msg}'
+    exit 1
+  else
+    jq -n --arg msg "pre-commit-guard (advisory):${ISSUES}\n\nExecution profile is fast; commit not blocked." \
+      '{"priority": "INFO", "message": $msg}'
+    exit 0
+  fi
 fi
 
 exit 0

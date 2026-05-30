@@ -49,7 +49,7 @@ Run from the **target project root** — the user's terminal, not a subshell:
 | Situation | Command |
 |---|---|
 | First-time setup | `bash "${SETUP_SCRIPT}"` |
-| Change config (level, sdd_mode, tdd-mode, annotations, graphify, mutation-testing) | `bash "${SETUP_SCRIPT}" --update` |
+| Change config (level, sdd_mode, tdd-mode, execution_profile, annotations, graphify, mutation-testing) | `bash "${SETUP_SCRIPT}" --update` |
 
 **`--update` re-asks all preference questions** and overwrites the existing `.agents/uncle-dev-setup.yaml` preferences. Tool detection is always re-run. Use it whenever the user says "change my SDD mode", "switch to lid-ears", or "update my uncle-dev config".
 
@@ -181,10 +181,21 @@ Before writing the config, ask the user the following preference questions. Acce
    [lid-ears] elicit requirements via LID EARS first, OpenSpec tracks them after (default)
    → sdd_mode: ___
 
-2. Spec annotations — require @spec IDs linking code to specs? [Y/n]
+2. TDD mode — how strict should test workflow be?
+   [strict] full red-green-refactor and prove-it for bugs
+   [lite] focused tests for complex/critical logic (default)
+   → tdd-mode: ___
+
+3. Execution profile — speed vs guardrails?
+   [fast] fastest inner loop, advisory non-critical checks
+   [balanced] targeted checks during build, full checks before merge (default)
+   [strict] full checks and blocking guards
+   → execution_profile: ___
+
+4. Spec annotations — require @spec IDs linking code to specs? [Y/n]
    → spec_annotations: true/false
 
-3. Graphify — have you run `graphify .` on this project? [y/N]
+5. Graphify — have you run `graphify .` on this project? [y/N]
    → graphify: true/false
 ```
 
@@ -194,8 +205,10 @@ Write `.agents/uncle-dev-setup.yaml` from the colocated template (`uncle-dev-set
 - `tool.active` ← list of detected tools from Step 1 (e.g., `[claude-code, codex]`)
 - `tool.agent_skills_root` ← the `AGENT_SKILLS_ROOT` path found in Step 2
 - `preferences.sdd_mode` ← answer from question 1 (default: `lid-ears`)
-- `preferences.spec_annotations` ← answer from question 2 (default: `true`)
-- `preferences.graphify` ← answer from question 3 (default: `false`)
+- `preferences.tdd-mode` ← answer from question 2 (default: `lite`)
+- `preferences.execution_profile` ← answer from question 3 (default: `balanced`)
+- `preferences.spec_annotations` ← answer from question 4 (default: `true`)
+- `preferences.graphify` ← answer from question 5 (default: `false`)
 
 Validate the written config before finishing:
 

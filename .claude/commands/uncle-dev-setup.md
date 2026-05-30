@@ -5,7 +5,7 @@ Load and execute the `uncle-dev-setup` skill located at `skills/uncle-dev-setup/
 | Argument | Behaviour |
 |---|---|
 | _(none)_ | First-time setup — scaffolds directories, writes config, injects CLAUDE.md block. Skips preference questions if `.agents/uncle-dev-setup.yaml` already exists. |
-| `update` | Reconfigure — re-asks preference questions (including level/sdd/tdd/annotations/graphify) and overwrites existing preferences. Tool detection always re-runs. |
+| `update` | Reconfigure — re-asks preference questions (including level/sdd/tdd/execution_profile/annotations/graphify) and overwrites existing preferences. Tool detection always re-runs. |
 
 ## Execution
 

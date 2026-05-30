@@ -68,6 +68,7 @@ skills:
 # ── Workflow preferences ──────────────────────────────────────────────────────
 preferences:
   level: "strict"            # strict | lite (shared strictness level for dev/test skills)
+  execution_profile: "balanced" # fast | balanced | strict (workflow speed vs guardrail strictness)
   sdd_required: true          # require /uncle-dev-spec (OpenSpec artifact) before coding
   sdd_mode: "lid-ears"        # openspec | lid-ears
                               #   openspec  → scaffold OpenSpec change first, EARS near end
@@ -77,7 +78,7 @@ preferences:
   graphify: false             # set true after running: graphify . (creates graphify-out/)
   knowledge_capture: true     # enable post-test nudge to run /uncle-dev-knowledge-capture
   destructive_guard: true     # block dangerous git/db commands via hook
-  mutation-testing: true      # set to false to disable uncle-dev-mutation-testing skill entirely
+  mutation-testing: false     # set to true to enable uncle-dev-mutation-testing skill
   wrap_trigger:
     enabled: true             # enable /uncle-dev-wrap nudge when token/context thresholds are high
     context_window_percent: 70
