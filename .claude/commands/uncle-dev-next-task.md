@@ -84,7 +84,15 @@ NEXT ACTION: pick recommended, or pass --story <id> to override.
 
 **If sdd_mode is `openspec` or missing: follow this path.**
 
-Invoke the agent-skills:uncle-dev-next-task skill.
+Resolve the active skill and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-next-task
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
 
 ## Arguments
 

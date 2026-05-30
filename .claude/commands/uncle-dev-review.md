@@ -38,7 +38,15 @@ echo "$SDD_MODE"
 - **`lid-ears` mode** — Read `docs/hld/<slug>.md` (goals, non-goals), `docs/lld/<slug>.md` (constraints, key decisions), and `docs/ears/<slug>.md` (EARS requirements the code must satisfy). Use these as the intent source for verifying correctness. Do NOT run any `openspec` command.
 - **`openspec` mode** — Check if the OpenSpec CLI is available (`openspec --version`). When available: `openspec show <change-id>` to read proposal and design, `openspec validate <change-id>` to check artifact consistency. If not installed, recommend `npm install -g openspec` and read change artifacts directly.
 
-Invoke the agent-skills:uncle-dev-code-review-and-quality skill.
+Resolve the active skill and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-code-review-and-quality
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
 
 Read execution profile to choose default review depth:
 

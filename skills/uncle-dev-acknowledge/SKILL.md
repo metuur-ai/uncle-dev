@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-acknowledge
 description: Captures design-decision notes — as gating openspec/acknowledge/ entries in openspec mode, or as ADRs in lid-ears mode. Use when the user pastes a list of "decisions worth checking", when /uncle-dev-spec surfaces decisions worth confirming, or when knowledge-capture detects a design decision. Also handles ack/reject/supersede on existing decision IDs (openspec mode only).

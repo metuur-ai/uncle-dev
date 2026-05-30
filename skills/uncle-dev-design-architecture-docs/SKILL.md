@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-design-architecture-docs
 description: Authors durable HLD and LLD documents that partition product intent into segments and feed EARS specs. Use when starting a new product, adding a new behavior segment, scoping segment boundaries, or when an LLD has drifted from its EARS specs.

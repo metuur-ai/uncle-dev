@@ -36,32 +36,49 @@ tool:
 
 # ── Skill configuration ───────────────────────────────────────────────────────
 # All uncle-dev skills are always available — there is no opt-in/opt-out list.
+# To customize a skill, see /uncle-dev-custom-me and the uncle-dev-custom-me skill.
 skills:
-  # Per-skill overrides for project-specific behaviour.
-  # Only specify settings that differ from the skill's own defaults.
-  overrides:
-    uncle-dev-test-driven-development:
-      test_runner: "" # vitest | jest | pytest | go-test (blank = auto-detect)
-      coverage_threshold: 80
-
-  # Companion skills — EXTERNAL skills not included in uncle-dev.
-  # Loaded alongside uncle-dev for a given phase. Use for project-specific or
-  # third-party skills your team has authored.
+  # Per-skill OVERRIDES — replace an uncle-dev skill with your own SKILL.md.
   #
-  # Format:
-  #   <phase>:
-  #     - path: <relative path to SKILL.md from project root>
-  #       name: <short name used in prompts>
-  #
-  # Supported phases: define | plan | build | verify | review | ship | capture | maintain
+  # Form (loaded by the runtime in v1):
+  #   <uncle-dev-skill-name>:
+  #     path: <relative path to your SKILL.md from project root>
+  #     name: <short name used in prompts>
   #
   # Example:
-  #   build:
-  #     - path: .agents/skills/my-design-system/SKILL.md
-  #       name: my-design-system
-  #   ship:
-  #     - path: .agents/skills/openapi-doc-generator/SKILL.md
-  #       name: openapi-doc-generator
+  #   uncle-dev-test-driven-development:
+  #     path: .agents/skills/tdd-plus/SKILL.md
+  #     name: tdd-plus
+  #
+  # The override replaces the base skill FULLY — your SKILL.md must include
+  # every standard section (see docs/skill-anatomy.md). Authored via
+  # /uncle-dev-custom-me override <base> <new-name>.
+  #
+  # Note: free-form per-skill knobs (e.g., test_runner) are also tolerated
+  # here as additional keys, but no command reads them today.
+  overrides: {}
+
+  # COMPANION skills — augment an uncle-dev skill without duplicating its content.
+  #
+  # Form (loaded by the runtime in v1 — per-skill, keyed by base skill name):
+  #   <uncle-dev-skill-name>:
+  #     - path: <relative path to your companion SKILL.md from project root>
+  #       name: <short name used in prompts>
+  #
+  # Example:
+  #   uncle-dev-test-driven-development:
+  #     - path: .agents/skills/team-tdd-rules/SKILL.md
+  #       name: team-tdd-rules
+  #
+  # A companion SKILL.md contains ONLY the delta: a ## Companion Additions
+  # section (plus optional ## Additional Red Flags, ## Project-Specific
+  # Patterns, ## Local Verification Steps). It MUST declare
+  # `companion_to: <base-skill>` in its frontmatter. Authored via
+  # /uncle-dev-custom-me companion <base> <new-name>.
+  #
+  # v2 — not loaded yet: a per-phase form (define / plan / build / verify /
+  # review / ship / capture / maintain) is permitted by the schema but
+  # ignored by the v1 runtime. Use the per-skill form above.
   companions: {}
 
 # ── Workflow preferences ──────────────────────────────────────────────────────

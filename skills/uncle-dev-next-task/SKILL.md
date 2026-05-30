@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-next-task
 description: Picks the next actionable task — from docs/tasks/ in lid-ears mode, or from OpenSpec changes in openspec mode. Computes a parallel-safe ready set and surfaces conflicts. Use when starting or resuming work, when the user asks "what's next", when `/uncle-dev-build continue` runs, or when multiple agents need to coordinate on which story to pick.

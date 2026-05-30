@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-code-context
 description: "CONVERTED TO RULE. This skill's enforcement logic now lives as the 'Code Context' rule in the uncle-dev section of CLAUDE.md. Install that rule in any project that uses uncle-dev. See uncle-dev-context-engineering for the full context hierarchy strategy and agents-md-guide.md for the AGENTS.md authoring template."

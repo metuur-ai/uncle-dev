@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-spec-annotations
 description: Connects durable product behavior to specs, tests, and code via `@spec` annotations. Use when adding behavior that should be traceable from intent to implementation, when specs need stable IDs, or when running coherence checks across HLD/LLD/EARS/tests/code.

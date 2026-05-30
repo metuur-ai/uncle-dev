@@ -11,18 +11,23 @@ description: Run TDD workflow — write failing tests, implement, verify. For bu
 
 ---
 
-Invoke the agent-skills:uncle-dev-test-driven-development skill.
-
-Read runtime preferences first:
+Resolve the active skill (and any project overrides/companions) first, then read runtime preferences:
 
 ```bash
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
+
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-test-driven-development
+
 TDD_MODE=$(bash "$_cfg" preferences.tdd-mode lite 2>/dev/null || echo "lite")
 EXECUTION_PROFILE=$(bash "$_cfg" preferences.execution_profile balanced 2>/dev/null || echo "balanced")
 echo "$TDD_MODE"
 echo "$EXECUTION_PROFILE"
 ```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
 
 For new features:
 1. Write tests that describe the expected behavior (they should FAIL)
@@ -41,4 +46,12 @@ For bug fixes (Prove-It pattern):
 
 When `tdd-mode: lite`, red-first and prove-it are recommended but not mandatory for minor/trivial fixes.
 
-For browser-related issues, also invoke agent-skills:uncle-dev-browser-testing-with-devtools to verify with Chrome DevTools MCP.
+For browser-related issues, also resolve the browser-testing skill and honor its `SKILL:`/`COMPANION:` lines:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-browser-testing-with-devtools
+```
+
+Then verify in the browser via Chrome DevTools MCP.

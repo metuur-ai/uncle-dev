@@ -45,12 +45,31 @@
       "required": ["overrides", "companions"],
       "additionalProperties": true,
       "properties": {
-        "overrides": { "type": "object" },
+        "overrides": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "path": { "type": "string" },
+              "name": { "type": "string" }
+            }
+          }
+        },
         "companions": {
-          "oneOf": [
-            { "type": "object" },
-            { "type": "array" }
-          ]
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["path"],
+              "additionalProperties": true,
+              "properties": {
+                "path": { "type": "string" },
+                "name": { "type": "string" }
+              }
+            }
+          }
         }
       }
     },

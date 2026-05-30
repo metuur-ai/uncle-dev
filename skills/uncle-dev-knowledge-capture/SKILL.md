@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-knowledge-capture
 description: Captures recently solved problems as searchable documentation in .uncle-dev/learns/, compounding team knowledge over time. Coordinates parallel subagents to research context, extract solutions, find related docs, and assemble one structured file. Use when a problem has just been solved, when you hear "that worked", "it's fixed", "working now", or "problem solved", or when the user runs /uncle-dev-knowledge-capture or wants to document a recent debugging session.

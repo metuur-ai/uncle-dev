@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-planning-and-task-breakdown
 description: Breaks an OpenSpec change into ordered shared stories and execution notes. Use when you have an approved proposal/design and need shared implementable units. Use when a task feels too large to start, when you need to estimate scope, or when parallel work is possible.

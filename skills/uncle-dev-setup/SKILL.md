@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-setup
 description: Wires uncle-dev fully into a target project for Claude Code, Codex, and/or OpenCode. Installs the plugin for each detected tool, scaffolds required directories, writes the project config file, injects hooks into .claude/settings.json (Claude Code only), and adds uncle-dev rules to CLAUDE.md or AGENTS.md. Use when setting up uncle-dev in a new or existing project, when hooks are not firing, or when the session does not load the Skill Discovery flowchart on start.
@@ -359,13 +363,17 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 - OpenSpec artifacts tracked in `openspec/changes/<change-id>/` (proposal, design, tasks, execution, handoff)
 - Personal scratchpad in `.devlocal/<user>/` (gitignored, not shared)
 - Team learnings captured in `.uncle-dev/learns/`
-- Companion skills defined in `.agents/uncle-dev-setup.yaml` under `skills.companions`
+- Override and companion skills are defined in `.agents/uncle-dev-setup.yaml` (`skills.overrides`, `skills.companions`) and authored via `/uncle-dev-custom-me`
+
+### Skill loading
+
+When a command prints `SKILL: <ref>` lines, read each `<ref>` as the active skill — if `<ref>` is `agent-skills:<name>`, use the bundled skill; if it is a file path, read that file instead. When a command also prints `COMPANION: <path>` lines, read each companion file **after** the active skill and merge its `## Companion Additions` (plus any optional `## Additional Red Flags`, `## Project-Specific Patterns`, `## Local Verification Steps`) into your working context. (Claude Code only — Codex and OpenCode commands do not emit these lines today; they fall back to the base skill.)
 
 ### Workflow rules
 
 - Run `/uncle-dev-spec` before any non-trivial feature (`preferences.sdd_required: true`)
 - Run `/uncle-dev-plan` after spec, before coding
-- Check `.agents/uncle-dev-setup.yaml` for project-specific skill overrides and companion skills
+- Run `/uncle-dev-custom-me` to add a project-specific override or companion skill, then verify with `bash scripts/uncle-dev-config.sh --validate` and `bash scripts/uncle-dev-load-skill.sh <base-skill>`
 <!-- /uncle-dev -->
 ```
 

@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-senior
 description: Senior principal engineer in two modes — Challenge (structured analysis + verdict on a proposed approach) and Duck (rubber duck conversation that leads the developer to their own insight). Trigger when someone proposes how to build something, a design feels heavier than the problem warrants, a new abstraction or framework is being introduced, constraints haven't been verified, or a developer is stuck and needs a thinking partner. Also trigger for "help me think through this", "is this over-engineered?", "am I solving the right problem?", "should we use X or Y?", "talk me through this", or any design decision not yet committed to code.

@@ -12,7 +12,15 @@ argument-hint: "What will the next session focus on?"
 
 ---
 
-Invoke the agent-skills:uncle-dev-wrap skill.
+Resolve the active skill and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-wrap
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
 
 Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save it to `.devlocal/handoffs/handoff-<UTC-timestamp>.md` (relative to the project root). `.devlocal/` is gitignored — handoffs are personal scratchpad, not shared artifacts.
 

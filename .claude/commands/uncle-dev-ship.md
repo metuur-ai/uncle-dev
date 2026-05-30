@@ -41,7 +41,15 @@ echo "$SDD_MODE"
 
 **If sdd_mode is `lid-ears`: follow this path. Do NOT run any `openspec` command.**
 
-Invoke the agent-skills:uncle-dev-shipping-and-launch skill.
+Resolve the active skill and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-shipping-and-launch
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
 
 Pre-ship verification (run before the checklist):
 
@@ -67,7 +75,15 @@ Define the rollback plan before proceeding.
 
 **If sdd_mode is `openspec` or missing: follow this path.**
 
-Invoke the agent-skills:uncle-dev-shipping-and-launch skill.
+Resolve the active skill and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-shipping-and-launch
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
 
 Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to verify the change is ready to ship:
 

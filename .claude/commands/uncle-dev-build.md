@@ -52,11 +52,21 @@ If `uncle-dev-next-task` reports the ready set is empty or there is no tracked w
 
 **If sdd_mode is `lid-ears`: follow this path.**
 
-Invoke the agent-skills:uncle-dev-incremental-implementation skill alongside agent-skills:uncle-dev-test-driven-development.
+Resolve the active skills and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-incremental-implementation
+bash "$_loader" uncle-dev-test-driven-development
+bash "$_loader" uncle-dev-code-context
+```
+
+Honor every `SKILL:` and `COMPANION:` line emitted above per the skill-loading directive in your project CLAUDE.md.
 
 For the chosen story:
 
-0. Apply agent-skills:uncle-dev-code-context — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
+0. Use the code-context skill — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
 1. Read the story's acceptance criteria from `docs/tasks/<slug>.md`
 2. Look up the full EARS statement in `docs/ears/<slug>.md` using the referenced requirement ID (e.g. R-1.1)
 3. Load relevant context (existing code, patterns, types) and consult `docs/lld/<slug>.md` for design constraints
@@ -75,7 +85,13 @@ For the chosen story:
 10. Commit with a descriptive message
 11. Mark the story complete in `docs/tasks/<slug>.md` (change `- [ ]` to `- [x]`) and move to the next
 
-If any step fails, follow the agent-skills:uncle-dev-debug-error skill.
+If any step fails, resolve and follow the debug-error skill:
+
+```bash
+bash "$_loader" uncle-dev-debug-error
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above before debugging.
 
 ---
 
@@ -83,11 +99,21 @@ If any step fails, follow the agent-skills:uncle-dev-debug-error skill.
 
 **If sdd_mode is `openspec` or missing: follow this path.**
 
-Invoke the agent-skills:uncle-dev-incremental-implementation skill alongside agent-skills:uncle-dev-test-driven-development.
+Resolve the active skills and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-incremental-implementation
+bash "$_loader" uncle-dev-test-driven-development
+bash "$_loader" uncle-dev-code-context
+```
+
+Honor every `SKILL:` and `COMPANION:` line emitted above per the skill-loading directive in your project CLAUDE.md.
 
 For the chosen story:
 
-0. Apply agent-skills:uncle-dev-code-context — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
+0. Use the code-context skill — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
 1. Read the story's acceptance criteria and dependencies
 2. Load relevant context (existing code, patterns, types)
 3. If useful, break the implementation into private technical steps in `.devlocal/<user>/<story-id>/scratchpad.md`
@@ -107,4 +133,10 @@ For the chosen story:
 
 If `uncle-dev-next-task` reports `BLOCKED: pending acknowledgements`, do not proceed. Print the block message verbatim. The user must run `/uncle-dev-acknowledge ack <ids>` (or `reject` / `supersede` / hand-edit `openspec/acknowledge/<scope>.md`) and then re-invoke `/uncle-dev-build` before any code is written. This gate is **non-bypassable**.
 
-If any step fails, follow the agent-skills:uncle-dev-debug-error skill.
+If any step fails, resolve and follow the debug-error skill:
+
+```bash
+bash "$_loader" uncle-dev-debug-error
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above before debugging.

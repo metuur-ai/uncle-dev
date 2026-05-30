@@ -11,7 +11,15 @@ description: Review and refresh .uncle-dev/learns/ for accuracy — update stale
 
 ---
 
-Invoke the agent-skills:uncle-dev-knowledge-maintenance skill.
+Resolve the active skill and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-knowledge-maintenance
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
 
 Pass a scope argument when possible to narrow the review:
 

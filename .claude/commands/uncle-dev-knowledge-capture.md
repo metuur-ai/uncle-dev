@@ -11,7 +11,15 @@ description: Document a recently solved problem into .uncle-dev/learns/ while co
 
 ---
 
-Invoke the agent-skills:uncle-dev-knowledge-capture skill.
+Resolve the active skill and honor any project overrides/companions:
+
+```bash
+_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
+[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+bash "$_loader" uncle-dev-knowledge-capture
+```
+
+Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
 
 Ask the user for Full or Lightweight mode before proceeding. In Full mode, also ask whether to
 search session history for relevant prior context.

@@ -24,7 +24,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 **Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-ci-cd-and-automation, uncle-dev-deprecation-and-migration, uncle-dev-documentation-and-adrs, uncle-dev-shipping-and-launch
 **Capture:** uncle-dev-knowledge-capture
 **Handoff:** uncle-dev-wrap
-**Maintain:** uncle-dev-knowledge-maintenance
+**Maintain:** uncle-dev-knowledge-maintenance, uncle-dev-custom-me
 
 ## Conventions
 
@@ -79,7 +79,7 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 **Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-documentation-and-adrs
 **Capture:** uncle-dev-knowledge-capture
 **Handoff:** uncle-dev-wrap
-**Maintain:** uncle-dev-knowledge-maintenance
+**Maintain:** uncle-dev-knowledge-maintenance, uncle-dev-custom-me
 
 ### Conventions
 - Architecture flows HLD → LLD → EARS specs → tests → code

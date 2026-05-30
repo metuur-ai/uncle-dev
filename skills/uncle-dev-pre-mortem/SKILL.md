@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://agentskills.io/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 ---
 name: uncle-dev-pre-mortem
 description: Pre-mortem analysis that imagines a plan has failed, then works backward to identify causes and preventions. Use before launches, major decisions, or risky initiatives to surface hidden risks.
