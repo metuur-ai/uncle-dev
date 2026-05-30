@@ -30,13 +30,13 @@ Design is the single source of truth. Intent flows downstream: **HLD → LLD →
 **Run this first, before any other tool call:**
 
 ```bash
-CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/uncle-dev-config.sh"
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.3.1/scripts/uncle-dev-config.sh"
 bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec
 ```
 
-| Result | Path |
-|--------|------|
-| `lid-ears` | Follow **Phase 0-LID** below. Never touch OpenSpec. |
+| Result                | Path                                                            |
+| --------------------- | --------------------------------------------------------------- |
+| `lid-ears`            | Follow **Phase 0-LID** below. Never touch OpenSpec.             |
 | `openspec` or missing | Read `references/openspec-workflow.md` and follow that process. |
 
 ---
@@ -50,40 +50,48 @@ bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec
 ### Step 1 — Elicit (ask all three layers before writing anything)
 
 **L — Lenses** (feeds HLD)
+
 - Who are the users or systems affected by this change?
 - What is their current pain? What changes for them after this ships?
 - Any secondary consumers (other services, agents, hooks)?
 
 **I — Intent** (feeds HLD + LLD)
+
 - What must be observable/true when this ships?
 - What currently broken or missing behaviour gets fixed?
 - What must NOT change (invariants)?
 
 **D — Details** (feeds LLD)
+
 - Platform, tool, or stack constraints
 - Compliance or security requirements
 - Explicit out-of-scope items already decided
 
 ### Step 2 — Write `docs/hld/<slug>.md`
 
-Broad conceptual map. Audience: anyone who needs to understand *what* and *why*, not *how*.
+Broad conceptual map. Audience: anyone who needs to understand _what_ and _why_, not _how_.
 
 ```markdown
 # <Feature Title> — High-Level Design
 
 ## Overview
+
 <one-paragraph summary of the change and its purpose>
 
 ## Stakeholders & Impact
+
 <who is affected, current pain, what changes after shipping>
 
 ## Goals
+
 <what must be observable/true when this ships>
 
 ## Non-Goals
+
 <what must NOT change; explicit out-of-scope decisions>
 
 ## Success Criteria
+
 <observable outcomes — how we know this is done>
 ```
 
@@ -95,15 +103,19 @@ Detailed modular breakdown. Audience: engineers implementing or reviewing the ch
 # <Feature Title> — Low-Level Design
 
 ## Architecture
+
 <components, data flow, interfaces>
 
 ## Constraints
+
 <hard technical constraints, platform limits, compliance rules>
 
 ## Key Decisions
+
 <decisions and tradeoffs; rejected alternatives>
 
 ## Out of Scope
+
 <items explicitly deferred>
 ```
 
@@ -112,6 +124,7 @@ Detailed modular breakdown. Audience: engineers implementing or reviewing the ch
 Exact, structured behavioral requirements. Agents use these to generate tests and implementation. One table per logical unit of work.
 
 EARS keywords — use exactly as written:
+
 - `THE SYSTEM SHALL` — always-on behaviour
 - `WHEN <trigger>, THE SYSTEM SHALL` — event-driven
 - `WHILE <state>, THE SYSTEM SHALL` — continuous during a condition
@@ -123,10 +136,10 @@ EARS keywords — use exactly as written:
 
 ## Unit 1: <name>
 
-| ID    | EARS statement |
-|-------|----------------|
+| ID    | EARS statement            |
+| ----- | ------------------------- |
 | R-1.1 | WHEN … THE SYSTEM SHALL … |
-| R-1.2 | IF … THE SYSTEM SHALL … |
+| R-1.2 | IF … THE SYSTEM SHALL …   |
 ```
 
 ### Step 4.5 — Pre-mortem Risk Check

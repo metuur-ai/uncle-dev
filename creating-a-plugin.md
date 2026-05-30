@@ -22,7 +22,7 @@ That's the minimum. Add Python modules, sub-packages, or data files as needed.
 
 ```yaml
 name: my-plugin
-version: 1.0.0
+version: 1.3.1
 description: "One-line description of what this plugin does."
 
 # Optional: pip packages to auto-install on first use
@@ -36,19 +36,19 @@ requires_env:
 
 # Optional: lifecycle hooks the plugin registers
 hooks:
-  - on_session_end   # called when a conversation session ends
+  - on_session_end # called when a conversation session ends
 ```
 
 **Fields:**
 
-| Field | Required | Description |
-|-------|----------|-------------|
-| `name` | Yes | Unique identifier, matches the directory name |
-| `version` | Yes | Semantic version string |
-| `description` | Yes | Short description shown in `hermes plugins` |
-| `pip_dependencies` | No | Packages installed automatically via `uv` |
-| `requires_env` | No | Env vars the user must provide |
-| `hooks` | No | Lifecycle hooks to register |
+| Field              | Required | Description                                   |
+| ------------------ | -------- | --------------------------------------------- |
+| `name`             | Yes      | Unique identifier, matches the directory name |
+| `version`          | Yes      | Semantic version string                       |
+| `description`      | Yes      | Short description shown in `hermes plugins`   |
+| `pip_dependencies` | No       | Packages installed automatically via `uv`     |
+| `requires_env`     | No       | Env vars the user must provide                |
+| `hooks`            | No       | Lifecycle hooks to register                   |
 
 ---
 
@@ -66,7 +66,7 @@ touch plugins/my-skill-pack/__init__.py
 ```yaml
 # plugins/my-skill-pack/plugin.yaml
 name: my-skill-pack
-version: 1.0.0
+version: 1.3.1
 description: "Domain-specific skills for [purpose]."
 ```
 
@@ -88,7 +88,7 @@ skills/
 name: my-skill
 description: >
   Use when [specific trigger condition]. Does [what it accomplishes].
-version: 1.0.0
+version: 1.3.1
 author: Your Name
 license: MIT
 metadata:
@@ -104,29 +104,36 @@ metadata:
 # Skill Title
 
 ## Overview
+
 One or two sentences. What it does and the core principle behind it.
 
 ## When to Use
+
 - Specific triggering conditions
 - **Not** for: exclusions that prevent misuse
 
 ## The Process
+
 Step-by-step workflow. Use numbered lists, code blocks, and ASCII
 diagrams for decision points.
 
 ## Common Rationalizations
-| Excuse | Why It's Wrong |
-|--------|----------------|
+
+| Excuse                     | Why It's Wrong          |
+| -------------------------- | ----------------------- |
 | "I'll skip just this once" | That's rationalization. |
 
 ## Red Flags
+
 Behavioral signals that mean stop and restart correctly.
 
 ## Verification Checklist
+
 - [ ] Exit criterion one
 - [ ] Exit criterion two
 
 ## Hermes Agent Integration
+
 How to invoke this skill from the agent loop, with code examples.
 ```
 
@@ -153,10 +160,10 @@ plugins/
 
 ```yaml
 name: my-memory
-version: 1.0.0
+version: 1.3.1
 description: "Long-term memory via [backend]."
 pip_dependencies:
-  - my-memory-client>=1.0.0
+  - my-memory-client>=1.3.1
 requires_env:
   - MY_MEMORY_API_KEY
 hooks:
@@ -249,9 +256,9 @@ Config stored in `~/.hermes/config.yaml`:
 
 ```yaml
 skills:
-  disabled: [skill-a, skill-b]        # globally disabled
+  disabled: [skill-a, skill-b] # globally disabled
   platform_disabled:
-    telegram: [skill-c]               # disabled only on Telegram
+    telegram: [skill-c] # disabled only on Telegram
     cli: []
 ```
 
@@ -273,8 +280,8 @@ hermes config set my_plugin.option value
 
 ## Lifecycle Hooks
 
-| Hook | When it fires |
-|------|---------------|
+| Hook             | When it fires                         |
+| ---------------- | ------------------------------------- |
 | `on_session_end` | After every conversation session ends |
 
 Implement a hook by defining a function with the hook name in `__init__.py`:
@@ -325,7 +332,7 @@ skills/software-development/
 ```yaml
 # plugins/uncle-dev/plugin.yaml
 name: uncle-dev
-version: 1.0.0
+version: 1.3.1
 description: "Production-grade engineering skills — spec-driven development from idea to shipped feature."
 ```
 

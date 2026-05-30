@@ -33,7 +33,7 @@ The script ships inside the plugin cache after `install-claude.sh` runs. Locate 
 
 ```bash
 # Preferred: plugin cache (always present after install)
-SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.0.0/scripts/setup-project.sh"
+SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.3.1/scripts/setup-project.sh"
 
 # Fallback: local repo clone
 [ -f "${SETUP_SCRIPT}" ] || SETUP_SCRIPT="$(
@@ -46,9 +46,9 @@ SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-age
 
 Run from the **target project root** — the user's terminal, not a subshell:
 
-| Situation | Command |
-|---|---|
-| First-time setup | `bash "${SETUP_SCRIPT}"` |
+| Situation                                                                                             | Command                           |
+| ----------------------------------------------------------------------------------------------------- | --------------------------------- |
+| First-time setup                                                                                      | `bash "${SETUP_SCRIPT}"`          |
 | Change config (level, sdd_mode, tdd-mode, execution_profile, annotations, graphify, mutation-testing) | `bash "${SETUP_SCRIPT}" --update` |
 
 **`--update` re-asks all preference questions** and overwrites the existing `.agents/uncle-dev-setup.yaml` preferences. Tool detection is always re-run. Use it whenever the user says "change my SDD mode", "switch to lid-ears", or "update my uncle-dev config".
@@ -58,10 +58,12 @@ Run from the **target project root** — the user's terminal, not a subshell:
 The agent must NOT answer these on the user's behalf. If the script cannot run interactively, ask the user each question explicitly before writing any config.
 
 After the script completes, only **Step 2** (plugin installation) may need manual attention:
+
 ```bash
 jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
   ~/.claude/plugins/installed_plugins.json
 ```
+
 If `false`: `bash <AGENT_SKILLS_ROOT>/scripts/install-claude.sh`, then restart Claude Code.
 
 **Proceed with the manual steps below only if `setup-project.sh` fails or bash is unavailable.**
@@ -119,16 +121,19 @@ Record the path as `AGENT_SKILLS_ROOT`. If not found, guide the user to clone it
 #### Claude Code
 
 Check if already installed:
+
 ```bash
 jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
   ~/.claude/plugins/installed_plugins.json 2>/dev/null || echo "false"
 ```
 
 If not installed:
+
 - With local clone: `bash "${AGENT_SKILLS_ROOT}/scripts/install-claude.sh"`
 - Without clone: `/plugin install uncle-dev@uncle-dev-agent-skills`
 
 Re-verify:
+
 ```bash
 jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
   ~/.claude/plugins/installed_plugins.json
@@ -138,6 +143,7 @@ jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
 #### Codex
 
 Check if already installed:
+
 ```bash
 [ -f ~/plugins/uncle-dev/.codex-plugin/plugin.json ] && echo "installed" || echo "not-installed"
 # or for local scope:
@@ -145,6 +151,7 @@ Check if already installed:
 ```
 
 If not installed:
+
 - User scope: `bash "${AGENT_SKILLS_ROOT}/scripts/install-codex.sh"`
 - Local scope: `bash "${AGENT_SKILLS_ROOT}/scripts/install-codex.sh --scope local ."`
 
@@ -153,6 +160,7 @@ The script handles marketplace registration in `.agents/plugins/marketplace.json
 #### OpenCode
 
 Check if already installed:
+
 ```bash
 [ -f ~/.config/opencode/AGENTS.md ] && echo "global installed" || echo "not installed globally"
 [ -f AGENTS.md ] && echo "local AGENTS.md exists" || echo "no local AGENTS.md"
@@ -160,6 +168,7 @@ Check if already installed:
 ```
 
 If not installed:
+
 - Global: `bash "${AGENT_SKILLS_ROOT}/scripts/install-opencode.sh --scope global"`
 - Local: `bash "${AGENT_SKILLS_ROOT}/scripts/install-opencode.sh --scope local ."`
 
@@ -200,6 +209,7 @@ Before writing the config, ask the user the following preference questions. Acce
 ```
 
 Write `.agents/uncle-dev-setup.yaml` from the colocated template (`uncle-dev-setup.template.yaml`), substituting:
+
 - `project.name` ← `$(basename $(pwd))`
 - `setup_date` ← today's date (YYYY-MM-DD)
 - `tool.active` ← list of detected tools from Step 1 (e.g., `[claude-code, codex]`)
@@ -236,7 +246,10 @@ Full hook set (include only those whose toggle is `true`):
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh" }
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+          }
         ]
       }
     ],
@@ -244,17 +257,35 @@ Full hook set (include only those whose toggle is `true`):
       {
         "matcher": "Edit|Write",
         "hooks": [
-          { "type": "command", "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/check-agents-md.sh" },
-          { "type": "command", "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/openspec-guard.sh" },
-          { "type": "command", "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh" }
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/check-agents-md.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/openspec-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh"
+          }
         ]
       },
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/pre-commit-guard.sh" },
-          { "type": "command", "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/destructive-command-guard.sh" },
-          { "type": "command", "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh" }
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/pre-commit-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/destructive-command-guard.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh"
+          }
         ]
       }
     ],
@@ -262,7 +293,10 @@ Full hook set (include only those whose toggle is `true`):
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/knowledge-capture-nudge.sh" }
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/knowledge-capture-nudge.sh"
+          }
         ]
       }
     ]
@@ -282,6 +316,7 @@ Hook-to-toggle mapping:
 | `wrap-nudge.sh` | `hooks.wrap_nudge` |
 
 `wrap-nudge.sh` reads thresholds from `.agents/uncle-dev-setup.yaml`:
+
 - `preferences.wrap_trigger.context_window_percent` (default `70`)
 - `preferences.wrap_trigger.total_tokens` (default `130000`)
 
@@ -301,11 +336,13 @@ If `CLAUDE.md` does not exist, create it. Then append:
 
 ```markdown
 <!-- uncle-dev -->
+
 ## uncle-dev
 
 This project uses uncle-dev engineering skills for structured AI-assisted development.
 
 ### Skills by Phase
+
 **Define:** uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
 **Plan:** uncle-dev-planning-and-task-breakdown
 **Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-spec-annotations, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
@@ -316,6 +353,7 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 **Maintain:** uncle-dev-knowledge-maintenance
 
 ### Conventions
+
 - Architecture flows HLD → LLD → EARS specs → tests → code
 - Code and tests reference durable behavior via `@spec` annotations
 - OpenSpec artifacts tracked in `openspec/changes/<change-id>/` (proposal, design, tasks, execution, handoff)
@@ -324,6 +362,7 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 - Companion skills defined in `.agents/uncle-dev-setup.yaml` under `skills.companions`
 
 ### Workflow rules
+
 - Run `/uncle-dev-spec` before any non-trivial feature (`preferences.sdd_required: true`)
 - Run `/uncle-dev-plan` after spec, before coding
 - Check `.agents/uncle-dev-setup.yaml` for project-specific skill overrides and companion skills
@@ -399,14 +438,14 @@ Next steps:
 
 ## Common Rationalizations
 
-| Rationalization | Reality |
-|---|---|
-| "install-claude.sh already set everything up" | The install script copies plugin files globally — it never writes to your project's `.claude/settings.json`, CLAUDE.md, or directory structure |
-| "I only need one tool, skip the others" | The skill checks what is installed and skips tools that aren't detected — no manual skipping needed |
-| "Codex doesn't need hooks, so setup is pointless for it" | The shared directories (`openspec/`, `.uncle-dev/`) and `.agents/uncle-dev-setup.yaml` config apply to all tools regardless of hooks |
-| "AGENTS.md is already there from the repo" | The project AGENTS.md (if it exists) may be a generic placeholder — this step ensures the `/uncle-dev-setup` command entry is registered |
-| "The hooks are optional — the skill still works" | Without hooks, commits bypass quality checks, the session never loads the Skill Discovery flowchart, and spec coherence is never enforced |
-| "I'll add the CLAUDE.md rules manually later" | Without the rules block, the agent starts each session with no awareness of uncle-dev workflows and will skip the SDD gate |
+| Rationalization                                          | Reality                                                                                                                                        |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| "install-claude.sh already set everything up"            | The install script copies plugin files globally — it never writes to your project's `.claude/settings.json`, CLAUDE.md, or directory structure |
+| "I only need one tool, skip the others"                  | The skill checks what is installed and skips tools that aren't detected — no manual skipping needed                                            |
+| "Codex doesn't need hooks, so setup is pointless for it" | The shared directories (`openspec/`, `.uncle-dev/`) and `.agents/uncle-dev-setup.yaml` config apply to all tools regardless of hooks           |
+| "AGENTS.md is already there from the repo"               | The project AGENTS.md (if it exists) may be a generic placeholder — this step ensures the `/uncle-dev-setup` command entry is registered       |
+| "The hooks are optional — the skill still works"         | Without hooks, commits bypass quality checks, the session never loads the Skill Discovery flowchart, and spec coherence is never enforced      |
+| "I'll add the CLAUDE.md rules manually later"            | Without the rules block, the agent starts each session with no awareness of uncle-dev workflows and will skip the SDD gate                     |
 
 ## Red Flags
 
@@ -426,6 +465,7 @@ Next steps:
 - [ ] `git check-ignore .devlocal/` returns `.devlocal/`
 
 **Claude Code:**
+
 - [ ] `jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' ~/.claude/plugins/installed_plugins.json` returns `true`
 - [ ] `.claude/settings.json` contains `session-start.sh` in a SessionStart hook
 - [ ] `CLAUDE.md` contains `<!-- uncle-dev -->` and `<!-- /uncle-dev -->`
@@ -433,10 +473,12 @@ Next steps:
 - [ ] Run `git commit -m "x"` — `pre-commit-guard.sh` blocks it
 
 **Codex:**
+
 - [ ] `plugins/uncle-dev/.codex-plugin/plugin.json` exists (local) or `~/plugins/uncle-dev/` exists (user)
 - [ ] `.agents/plugins/marketplace.json` contains an uncle-dev entry
 
 **OpenCode:**
+
 - [ ] `AGENTS.md` exists at project root or `~/.config/opencode/AGENTS.md` exists
 - [ ] `.opencode/skills/` is populated (local) or `~/.config/opencode/skills/` (global)
 - [ ] Verify with: `opencode agent list` or check that `/uncle-dev-spec` is recognized in a session

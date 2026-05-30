@@ -10,16 +10,16 @@
 #   - Companion skills: reference them by path when prompting (/uncle-dev-build, /uncle-dev-review)
 #   - Preferences: agents read this file at the start of each session
 
-version: "1.0.0"
+version: "1.3.1"
 
 # ── Project metadata ──────────────────────────────────────────────────────────
 # Inferred from directory name on first run. Edit to match your project.
 project:
   name: "__PROJECT_NAME__"
   setup_date: "__SETUP_DATE__"
-  type: "web-app"       # web-app | api | mobile | library | cli | monorepo
-  language: ""          # typescript | javascript | python | go | rust | etc.
-  framework: ""         # react | nextjs | express | fastapi | etc. (blank if none)
+  type: "web-app" # web-app | api | mobile | library | cli | monorepo
+  language: "" # typescript | javascript | python | go | rust | etc.
+  framework: "" # react | nextjs | express | fastapi | etc. (blank if none)
 
 # ── Tool configuration ────────────────────────────────────────────────────────
 # Populated automatically by /uncle-dev-setup based on detected tools.
@@ -37,12 +37,11 @@ tool:
 # ── Skill configuration ───────────────────────────────────────────────────────
 # All uncle-dev skills are always available — there is no opt-in/opt-out list.
 skills:
-
   # Per-skill overrides for project-specific behaviour.
   # Only specify settings that differ from the skill's own defaults.
   overrides:
     uncle-dev-test-driven-development:
-      test_runner: ""          # vitest | jest | pytest | go-test (blank = auto-detect)
+      test_runner: "" # vitest | jest | pytest | go-test (blank = auto-detect)
       coverage_threshold: 80
 
   # Companion skills — EXTERNAL skills not included in uncle-dev.
@@ -67,20 +66,21 @@ skills:
 
 # ── Workflow preferences ──────────────────────────────────────────────────────
 preferences:
-  level: "strict"            # strict | lite (shared strictness level for dev/test skills)
+  level: "strict" # strict | lite (shared strictness level for dev/test skills)
   execution_profile: "balanced" # fast | balanced | strict (workflow speed vs guardrail strictness)
-  sdd_required: true          # require /uncle-dev-spec (OpenSpec artifact) before coding
-  sdd_mode: "lid-ears"        # openspec | lid-ears
-                              #   openspec  → scaffold OpenSpec change first, EARS near end
-                              #   lid-ears  → elicit requirements via LID EARS first, OpenSpec tracks them after (default)
-  tdd-mode: lite              # strict | lite
-  spec_annotations: true      # require @spec IDs linking code to specs
-  graphify: false             # set true after running: graphify . (creates graphify-out/)
-  knowledge_capture: true     # enable post-test nudge to run /uncle-dev-knowledge-capture
-  destructive_guard: true     # block dangerous git/db commands via hook
-  mutation-testing: false     # set to true to enable uncle-dev-mutation-testing skill
+  sdd_required: true # require /uncle-dev-spec (OpenSpec artifact) before coding
+  sdd_mode:
+    "lid-ears" # openspec | lid-ears
+    #   openspec  → scaffold OpenSpec change first, EARS near end
+    #   lid-ears  → elicit requirements via LID EARS first, OpenSpec tracks them after (default)
+  tdd-mode: lite # strict | lite
+  spec_annotations: true # require @spec IDs linking code to specs
+  graphify: false # set true after running: graphify . (creates graphify-out/)
+  knowledge_capture: true # enable post-test nudge to run /uncle-dev-knowledge-capture
+  destructive_guard: true # block dangerous git/db commands via hook
+  mutation-testing: false # set to true to enable uncle-dev-mutation-testing skill
   wrap_trigger:
-    enabled: true             # enable /uncle-dev-wrap nudge when token/context thresholds are high
+    enabled: true # enable /uncle-dev-wrap nudge when token/context thresholds are high
     context_window_percent: 70
     total_tokens: 130000
 
@@ -88,17 +88,17 @@ preferences:
 # All hooks default to on. Set to false to disable a specific guard.
 # After changing toggles, re-run /uncle-dev-setup to sync into .claude/settings.json.
 hooks:
-  session_start: true            # injects Skill Discovery flowchart on every session start
-  pre_commit: true               # validates commit message quality and scans for debug artifacts
-  spec_coherence: true           # blocks edits/commits that cite undefined @spec IDs
-  openspec_guard: true           # validates OpenSpec change artifact structure on write
-  destructive_command_guard: true  # warns before destructive git/db shell commands
-  knowledge_capture_nudge: true  # nudges to capture learnings after test/build success
-  wrap_nudge: true               # nudges to run /uncle-dev-wrap near token/context limits
+  session_start: true # injects Skill Discovery flowchart on every session start
+  pre_commit: true # validates commit message quality and scans for debug artifacts
+  spec_coherence: true # blocks edits/commits that cite undefined @spec IDs
+  openspec_guard: true # validates OpenSpec change artifact structure on write
+  destructive_command_guard: true # warns before destructive git/db shell commands
+  knowledge_capture_nudge: true # nudges to capture learnings after test/build success
+  wrap_nudge: true # nudges to run /uncle-dev-wrap near token/context limits
 
 # ── OpenSpec conventions ──────────────────────────────────────────────────────
 openspec:
-  change_id_format: "NNN-slug"   # e.g. 001-user-auth, 042-payment-refactor
+  change_id_format: "NNN-slug" # e.g. 001-user-auth, 042-payment-refactor
   required_artifacts:
     - proposal.md
     - design.md

@@ -16,7 +16,7 @@ INSTALLED_FILE="${PLUGINS_DIR}/installed_plugins.json"
 MARKETPLACE_ID="uncle-dev-agent-skills"
 PLUGIN_NAME="uncle-dev-agent-skills"
 PLUGIN_KEY="${PLUGIN_NAME}@${MARKETPLACE_ID}"
-VERSION="1.0.0"
+VERSION="1.3.1"
 CACHE_PATH="${PLUGINS_DIR}/cache/${MARKETPLACE_ID}/${PLUGIN_NAME}/${VERSION}"
 DIST_DIR="${REPO_ROOT}/dist"
 
