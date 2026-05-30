@@ -177,8 +177,8 @@ Before writing the config, ask the user the following preference questions. Acce
 
 ```
 1. SDD mode — how should /uncle-dev-spec start requirements work?
-   [openspec] scaffold OpenSpec change first, EARS near end (default)
-   [lid-ears] elicit requirements via LID EARS first, OpenSpec tracks them after
+   [openspec] scaffold OpenSpec change first, EARS near end
+   [lid-ears] elicit requirements via LID EARS first, OpenSpec tracks them after (default)
    → sdd_mode: ___
 
 2. Spec annotations — require @spec IDs linking code to specs? [Y/n]
@@ -193,7 +193,7 @@ Write `.agents/uncle-dev-setup.yaml` from the colocated template (`uncle-dev-set
 - `setup_date` ← today's date (YYYY-MM-DD)
 - `tool.active` ← list of detected tools from Step 1 (e.g., `[claude-code, codex]`)
 - `tool.agent_skills_root` ← the `AGENT_SKILLS_ROOT` path found in Step 2
-- `preferences.sdd_mode` ← answer from question 1 (default: `openspec`)
+- `preferences.sdd_mode` ← answer from question 1 (default: `lid-ears`)
 - `preferences.spec_annotations` ← answer from question 2 (default: `true`)
 - `preferences.graphify` ← answer from question 3 (default: `false`)
 

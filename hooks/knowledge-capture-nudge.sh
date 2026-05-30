@@ -32,7 +32,8 @@ case "$OUTPUT" in
 esac
 
 # Cooldown: fire at most once per hour using a timestamp file
-NUDGE_FILE="${CLAUDE_PROJECT_DIR:-.}/.claude/.knowledge-capture-nudged"
+NUDGE_FILE="${CLAUDE_PROJECT_DIR:-.}/.devlocal/knowledge-nudge/.knowledge-capture-nudged"
+mkdir -p "$(dirname "$NUDGE_FILE")" 2>/dev/null || true
 if [ -f "$NUDGE_FILE" ]; then
   # Skip if nudged within the last 60 minutes
   if [ -n "$(find "$NUDGE_FILE" -mmin -60 2>/dev/null)" ]; then

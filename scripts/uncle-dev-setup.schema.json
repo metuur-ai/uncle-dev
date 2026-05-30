@@ -68,7 +68,7 @@
         "mutation-testing",
         "wrap_trigger"
       ],
-      "additionalProperties": true,
+      "additionalProperties": false,
       "properties": {
         "level": {
           "type": "string",
@@ -91,7 +91,7 @@
         "wrap_trigger": {
           "type": "object",
           "required": ["enabled", "context_window_percent", "total_tokens"],
-          "additionalProperties": true,
+          "additionalProperties": false,
           "properties": {
             "enabled": { "type": "boolean" },
             "context_window_percent": {

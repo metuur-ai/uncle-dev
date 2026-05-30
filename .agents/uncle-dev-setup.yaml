@@ -70,10 +70,10 @@ preferences:
   level: "strict"            # shared strictness level for dev/test skills via: preferences.level
   sdd_required: true          # require /uncle-dev-spec (OpenSpec artifact) before coding
   sdd_mode: "lid-ears"        # openspec | lid-ears
-                              #   openspec  → scaffold OpenSpec change first, EARS near end (default)
-                              #   lid-ears  → elicit requirements via LID EARS first, OpenSpec tracks them after
-  tdd-mode: strict            # strict | lite
-                              #   strict → full red-green-refactor, Prove-It for bugs, @spec annotations (default)
+                              #   openspec  → scaffold OpenSpec change first, EARS near end
+                              #   lid-ears  → elicit requirements via LID EARS first, OpenSpec tracks them after (default)
+  tdd-mode: lite              # strict | lite
+                              #   strict → full red-green-refactor, Prove-It for bugs, @spec annotations
                               #   lite   → tests only for complex/critical logic; no red-first requirement;
                               #            no Prove-It required for minor fixes; coverage not enforced
   spec_annotations: true      # require @spec IDs linking code to specs

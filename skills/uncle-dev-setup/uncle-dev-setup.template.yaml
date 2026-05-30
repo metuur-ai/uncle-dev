@@ -69,10 +69,10 @@ skills:
 preferences:
   level: "strict"            # strict | lite (shared strictness level for dev/test skills)
   sdd_required: true          # require /uncle-dev-spec (OpenSpec artifact) before coding
-  sdd_mode: "openspec"        # openspec | lid-ears
-                              #   openspec  → scaffold OpenSpec change first, EARS near end (default)
-                              #   lid-ears  → elicit requirements via LID EARS first, OpenSpec tracks them after
-  tdd-mode: strict            # strict | lite
+  sdd_mode: "lid-ears"        # openspec | lid-ears
+                              #   openspec  → scaffold OpenSpec change first, EARS near end
+                              #   lid-ears  → elicit requirements via LID EARS first, OpenSpec tracks them after (default)
+  tdd-mode: lite              # strict | lite
   spec_annotations: true      # require @spec IDs linking code to specs
   graphify: false             # set true after running: graphify . (creates graphify-out/)
   knowledge_capture: true     # enable post-test nudge to run /uncle-dev-knowledge-capture

@@ -11,7 +11,7 @@
       "name": "uncle-dev-agent-skills",
       "description": "Production-grade engineering skills covering every phase of software development: spec, plan, build, verify, review, and ship.",
       "source": "./",
-      "strict": false,
+      "strict": true,
       "skills": [
         "./skills/uncle-dev-acknowledge",
         "./skills/uncle-dev-api-and-interface-design",

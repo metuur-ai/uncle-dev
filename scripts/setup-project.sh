@@ -126,11 +126,11 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
   echo ""
 
   echo "  SDD mode — how should /uncle-dev-spec start?"
-  echo "    openspec  → scaffold OpenSpec change first (default)"
-  echo "    lid-ears  → elicit requirements via LID EARS first"
-  SDD_MODE="$(ask "sdd_mode" "openspec")"
+  echo "    openspec  → scaffold OpenSpec change first"
+  echo "    lid-ears  → elicit requirements via LID EARS first (default)"
+  SDD_MODE="$(ask "sdd_mode" "lid-ears")"
   [[ "${SDD_MODE}" == "openspec" || "${SDD_MODE}" == "lid-ears" ]] \
-    || { warn "Unknown sdd_mode '${SDD_MODE}', defaulting to openspec"; SDD_MODE="openspec"; }
+    || { warn "Unknown sdd_mode '${SDD_MODE}', defaulting to lid-ears"; SDD_MODE="lid-ears"; }
 
   echo ""
   SPEC_ANNOTATIONS="$(ask_yn "Require @spec IDs linking code to specs?" "y")"
@@ -139,7 +139,7 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
   GRAPHIFY="$(ask_yn "Have you run 'graphify .' on this project?" "n")"
 else
   # Read existing values (best-effort via grep, no yq dependency)
-  SDD_MODE="$(grep 'sdd_mode:' "${CONFIG_FILE}" 2>/dev/null | awk -F'"' '{print $2}' || echo "openspec")"
+  SDD_MODE="$(grep 'sdd_mode:' "${CONFIG_FILE}" 2>/dev/null | awk -F'"' '{print $2}' || echo "lid-ears")"
   SPEC_ANNOTATIONS="$(grep 'spec_annotations:' "${CONFIG_FILE}" 2>/dev/null | awk '{print $2}' || echo "true")"
   GRAPHIFY="$(grep 'graphify:' "${CONFIG_FILE}" 2>/dev/null | awk '{print $2}' || echo "false")"
 fi
@@ -181,7 +181,7 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
     -e "s|__SETUP_DATE__|${TODAY}|g" \
     -e "s|active: \[\]|active: ${ACTIVE_TOOLS_YAML}|g" \
     -e "s|agent_skills_root: \"\"|agent_skills_root: \"${REPO_ROOT}\"|g" \
-    -e "s|sdd_mode: \"openspec\"|sdd_mode: \"${SDD_MODE}\"|g" \
+    -e "s|sdd_mode: \"lid-ears\"|sdd_mode: \"${SDD_MODE}\"|g" \
     -e "s|spec_annotations: true|spec_annotations: ${SPEC_ANNOTATIONS}|g" \
     -e "s|graphify: false|graphify: ${GRAPHIFY}|g" \
     "${TEMPLATE}" > "${CONFIG_FILE}"
