@@ -13,12 +13,10 @@ description: Conduct a five-axis code review — correctness, readability, archi
 
 Invoke `uncle-dev-code-review-and-quality`.
 
-Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to load change context before reviewing:
+Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` first (single source of truth).
 
-- `openspec show <change-id>` to read the change's proposal and design for intent verification
-- `openspec validate <change-id>` to check artifact consistency alongside the code review
-
-If not installed, recommend `npm install -g openspec` and read change artifacts directly.
+If `sdd_mode=openspec`, use OpenSpec artifacts/validation for intent verification.
+If `sdd_mode=lid-ears`, use LID/EARS docs and task artifacts for intent verification.
 
 Detect the review mode from the user's input and dispatch accordingly:
 

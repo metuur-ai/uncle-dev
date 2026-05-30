@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-knowledge-maintenance
 description: Maintains accuracy of .uncle-dev/learns/ over time by reviewing, updating, consolidating, replacing, or deleting learning docs against the current codebase. Use after refactors, migrations, dependency upgrades, when a retrieved learning feels wrong, when a recently solved problem contradicts existing docs, when pattern docs no longer reflect current code, or when multiple docs seem to cover the same topic.

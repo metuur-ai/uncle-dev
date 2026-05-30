@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-custom-me
 description: Authors and registers user-defined override or companion skills that the uncle-dev runtime loads in place of (or alongside) bundled skills. Use when you want to replace `uncle-dev-<X>` with your own version, or layer team-specific rules on top of an uncle-dev skill without duplicating its content.
@@ -54,7 +50,7 @@ Add a delta on top of an uncle-dev skill. The base skill loads first, then the c
 ```
 
 1. Pick the base skill name and a short new name (e.g., `team-tdd-rules`).
-2. The slash command scaffolds `.agents/skills/<new-name>/SKILL.md` from `templates/companion-skill.md` — a strict template containing **only** the Documentation Index header, frontmatter, and `## Companion Additions`. There is no Overview, no Process placeholder, not even commented-out.
+2. The slash command scaffolds `.agents/skills/<new-name>/SKILL.md` from `templates/companion-skill.md` — a strict template containing **only** the frontmatter and a `## Companion Additions` heading. There is no Overview, no Process placeholder, not even commented-out.
 3. The slash command prints the YAML block. Paste it into `.agents/uncle-dev-setup.yaml` under `skills.companions`.
 4. Validate: `bash scripts/uncle-dev-config.sh --validate` → exit 0.
 5. Edit `.agents/skills/<new-name>/SKILL.md` and add your delta inside `## Companion Additions`. Optionally add `## Additional Red Flags`, `## Project-Specific Patterns`, or `## Local Verification Steps` — these are the only other sections allowed.
@@ -120,7 +116,7 @@ Multiple companions on the same base are allowed; the loader emits one `COMPANIO
 
 - Your companion SKILL.md contains a `## Overview`, `## When to Use`, or `## Process` heading. Anti-duplication violation — those belong to the base.
 - Your companion frontmatter lacks `companion_to: <base-skill>`. Orphan companion — readers can't tell which base it augments.
-- Your override SKILL.md is missing one of the 6 standard sections (or the Documentation Index header). Incomplete replacement.
+- Your override SKILL.md is missing one of the 6 standard sections. Incomplete replacement — the agent will see a skill without a Process or Verification step.
 - `bash scripts/uncle-dev-load-skill.sh <base>` emits `WARN: missing skill file <path>` on stderr. Your `path` is wrong or the file isn't on disk.
 - You hand-edited `.agents/uncle-dev-setup.yaml` and didn't run `--validate`. Schema drift is silent until a downstream command fails to read the key.
 - You registered the same base under both `skills.overrides` AND `skills.companions`. That's legal (override + companion compose), but it's also the most common source of "why is the agent reading the wrong skill" — verify the loader output matches your intent.
@@ -131,7 +127,6 @@ Multiple companions on the same base are allowed; the loader emits one `COMPANIO
 After authoring a customization, confirm each item before considering it shipped:
 
 - [ ] `.agents/skills/<new-name>/SKILL.md` exists.
-- [ ] The first line is the Documentation Index block (override and companion both).
 - [ ] For overrides: all 6 standard sections present per `docs/skill-anatomy.md`. Frontmatter has `overrides: <base-skill>`.
 - [ ] For companions: **only** `## Companion Additions` plus any of the four allowed optional sections. Frontmatter has `companion_to: <base-skill>`. `grep -E "^## (Overview|When to Use|Process|Common Rationalizations|Red Flags|Verification)" .agents/skills/<new-name>/SKILL.md` returns nothing.
 - [ ] `bash scripts/uncle-dev-config.sh --validate` → exit 0.

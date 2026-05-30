@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-spec-driven-development
 description: >
@@ -35,13 +31,13 @@ Design is the single source of truth. Intent flows downstream: **HLD → LLD →
 
 ```bash
 CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.3.1/scripts/uncle-dev-config.sh"
-bash "${CONFIG_LOOKUP}" preferences.sdd_mode openspec
+bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
 ```
 
 | Result                | Path                                                            |
 | --------------------- | --------------------------------------------------------------- |
 | `lid-ears`            | Follow **Phase 0-LID** below. Never touch OpenSpec.             |
-| `openspec` or missing | Read `references/openspec-workflow.md` and follow that process. |
+| `openspec`            | Read `references/openspec-workflow.md` and follow that process. |
 
 ---
 
@@ -197,7 +193,7 @@ Then **immediately invoke `/uncle-dev-plan` in the same turn**. The YES at Step 
 
 ## OpenSpec Mode
 
-When `sdd_mode` is `openspec` (or missing), read and follow **`references/openspec-workflow.md`**. It covers:
+When `sdd_mode` is `openspec`, read and follow **`references/openspec-workflow.md`**. It covers:
 
 - Graphify baseline check
 - Reading current OpenSpec truth

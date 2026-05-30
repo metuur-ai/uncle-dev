@@ -1,5 +1,5 @@
 ---
-description: Start spec-driven development — define an OpenSpec change before writing code
+description: Start spec-driven development — define the mode-specific spec artifacts before writing code
 ---
 
 ## Working Principles
@@ -13,24 +13,19 @@ description: Start spec-driven development — define an OpenSpec change before 
 
 Invoke the `uncle-dev-spec-driven-development` skill.
 
-Begin by checking if the OpenSpec CLI is available (`openspec --version`). If installed:
+Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` first (single source of truth).
 
-- If `openspec/` does not exist, run `openspec init` to scaffold the project
-- Use `openspec list --specs` and `openspec list` to read current specs and open changes
-- Use `openspec schemas` to discover available workflow schemas
+If `sdd_mode=openspec`, use OpenSpec workflow and CLI/file operations.
+If `sdd_mode=lid-ears`, do not run OpenSpec commands; follow LID/EARS docs workflow.
 
-If not installed, recommend `npm install -g openspec` and proceed manually.
-
-Inspect `openspec/specs/` and any relevant open changes so the new change starts from current tracked truth.
-
-Require a `<change-id>` for the work. Derive the next sequential ID as follows:
+When `sdd_mode=openspec`, require a `<change-id>` for the work. Derive the next sequential ID as follows:
 
 1. Scan `openspec/changes/` for directories matching `NNN-*` (three-digit prefix)
 2. Extract the highest `NNN` found; next number = highest + 1 (use `001` if none exist)
 3. Propose the next ID to the user: `"Next change ID: 003-<descriptive-slug> — enter a slug or accept"`
 4. Validate any user-provided ID against the pattern `^\d{3}-.+`; reject and re-prompt if it does not match (for example reject `my-feature`, accept `003-my-feature`)
 
-Then scaffold the change. First check if the OpenSpec CLI is available (`openspec --version`):
+When `sdd_mode=openspec`, scaffold the change. First check if the OpenSpec CLI is available (`openspec --version`):
 
 **If installed**, use the CLI:
 
@@ -53,7 +48,7 @@ Ask clarifying questions about:
 3. Tech stack preferences and constraints
 4. Known boundaries: what to always do, ask first about, and never do
 
-Then populate the shared OpenSpec artifacts:
+Then populate the shared tracked artifacts for the active mode:
 
 - `proposal.md` for objective, problem framing, success criteria, scope, and boundaries
 - `design.md` for architecture, constraints, commands, project structure, testing approach, and technical decisions

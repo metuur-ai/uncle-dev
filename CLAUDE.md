@@ -44,6 +44,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 ## Boundaries
 
 - Always: Follow the skill-anatomy.md format for new skills
+- Always: Read project configuration through `scripts/uncle-dev-config.sh` (scalar or `--list` mode). No script, command, hook, or helper may open `.agents/uncle-dev-setup.yaml` directly. If the existing API doesn't expose a shape you need (e.g., iterating an array), extend `uncle-dev-config.sh` — never bypass it. This is the single source of truth for config semantics, validation, and future schema migrations. Audit guard: `grep -rn 'open.*setup\.yaml\|cat.*setup\.yaml\|yq.*setup\.yaml' scripts/ .claude/ hooks/` should return empty (only the helper itself reads the YAML).
 - Never: Add skills that are vague advice instead of actionable processes
 - Never: Duplicate content between skills — reference other skills instead
 

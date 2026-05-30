@@ -13,15 +13,12 @@ description: Implement the next task incrementally — build, test, verify, comm
 
 Invoke `uncle-dev-incremental-implementation` alongside `uncle-dev-test-driven-development`.
 
-Check if the OpenSpec CLI is available (`openspec --version`). When available:
+Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` first (single source of truth).
 
-- `openspec list` to find the active change
-- `openspec show <change-id>` to read the change and its tasks
-- `openspec status <change-id>` to check which artifacts are complete
+If `sdd_mode=openspec`, use OpenSpec tasks as shared source of truth.
+If `sdd_mode=lid-ears`, use `docs/tasks/` and LID/EARS docs as shared source of truth.
 
-If not installed, recommend `npm install -g openspec` and read files directly.
-
-Pick the next pending shared story from the active change's `tasks.md`. For each story:
+Pick the next pending shared story from the active mode's planning artifact. For each story:
 
 0. Apply `uncle-dev-code-context` to identify all directories to be edited, read their `AGENTS.md` files, and validate architecture boundary compliance before writing code
 1. Read the story's acceptance criteria and dependencies

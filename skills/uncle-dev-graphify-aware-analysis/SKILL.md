@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-graphify-aware-analysis
 description: Shared protocol for querying the graphify semantic knowledge graph inside uncle-dev skills. Not invoked directly — referenced by research, spec, planning, debug, and review skills when graphify-out/graph.json is present. Defines availability check, command patterns, confidence interpretation, and fallback rules.

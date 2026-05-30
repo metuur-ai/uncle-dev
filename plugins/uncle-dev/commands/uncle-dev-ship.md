@@ -13,14 +13,10 @@ description: Run the pre-launch checklist and prepare for production deployment
 
 Invoke `uncle-dev-shipping-and-launch`.
 
-Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to verify the change is ready to ship:
+Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` first (single source of truth).
 
-- `openspec validate <change-id>` to confirm all artifacts are well-formed
-- `openspec status <change-id>` to verify all artifacts are complete
-- After successful launch, `openspec archive <change-id>` to finalize the change and reconcile into main specs
-- `openspec list --specs` to verify specs were updated after archiving
-
-If not installed, recommend `npm install -g openspec` and proceed with manual checks.
+If `sdd_mode=openspec`, use OpenSpec validation/archive checks.
+If `sdd_mode=lid-ears`, use LID/EARS artifact checks and ADR/docs reconciliation.
 
 Run through the complete pre-launch checklist:
 

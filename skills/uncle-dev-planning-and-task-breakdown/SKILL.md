@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-planning-and-task-breakdown
 description: Breaks an OpenSpec change into ordered shared stories and execution notes. Use when you have an approved proposal/design and need shared implementable units. Use when a task feels too large to start, when you need to estimate scope, or when parallel work is possible.
@@ -30,14 +26,14 @@ Decompose an approved OpenSpec change into shared story-level work and shared ex
 ```bash
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode openspec 2>/dev/null || echo "openspec")
+SDD_MODE=$(bash "$_cfg" preferences.sdd_mode "" 2>/dev/null || true)
 echo "$SDD_MODE"
 ```
 
 **Route based on result:**
 
 - **`lid-ears`** → Skip to **Step 1-LID** below. Do NOT run any `openspec` command.
-- **`openspec` or missing** → Continue with **Step 1-OpenSpec** below.
+- **`openspec`** → Continue with **Step 1-OpenSpec** below.
 
 ---
 

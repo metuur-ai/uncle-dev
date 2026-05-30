@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-setup
 description: Wires uncle-dev fully into a target project for Claude Code, Codex, and/or OpenCode. Installs the plugin for each detected tool, scaffolds required directories, writes the project config file, injects hooks into .claude/settings.json (Claude Code only), and adds uncle-dev rules to CLAUDE.md or AGENTS.md. Use when setting up uncle-dev in a new or existing project, when hooks are not firing, or when the session does not load the Skill Discovery flowchart on start.

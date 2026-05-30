@@ -28,7 +28,7 @@ Own requirements clarity, scope, acceptance criteria, backlog shape, and plannin
 
 ### When given a new feature request
 1. Read `~/coding-projects/project-map.yaml` to locate the project
-2. Read `.agents/uncle-dev-setup.yaml` and resolve `preferences.sdd_mode`
+2. Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` (single source of truth)
 3. Read `.ai/shared-memory/project-context.md` and `current-focus.md`
 3. Ask 3-5 clarifying questions before writing anything:
    - Who is the user and what is their problem?
@@ -36,9 +36,9 @@ Own requirements clarity, scope, acceptance criteria, backlog shape, and plannin
    - What is explicitly out of scope?
    - Are there edge cases or error states to handle?
    - Is there a deadline or dependency constraint?
-4. Choose the proposal path by mode:
-   - `openspec` -> `openspec/changes/<change-id>/proposal.md`
-   - `lid-ears` -> `docs/ears/<change-id>-proposal.md`
+4. Choose the proposal path by mode (from configured mode-specific artifacts):
+   - `openspec` -> change proposal artifact
+   - `lid-ears` -> EARS proposal artifact
 5. Write the proposal with: problem statement, user story, acceptance criteria, scope boundaries, and open questions
 6. Update `handoff.md` when handing off to Dev Manager or Tech Lead
 
@@ -75,7 +75,5 @@ As a <user type>, I want to <action> so that <benefit>.
 - [ ] User story is specific and verifiable
 - [ ] All acceptance criteria are testable (no "should feel fast", no "looks good")
 - [ ] Scope boundaries are explicit
-- [ ] Proposal is saved in the mode-specific path:
-- [ ] `openspec/changes/<change-id>/proposal.md` when `preferences.sdd_mode=openspec`
-- [ ] `docs/ears/<change-id>-proposal.md` when `preferences.sdd_mode=lid-ears`
+- [ ] Proposal is saved in the mode-specific path for `preferences.sdd_mode`
 - [ ] Handoff is updated pointing to Dev Manager

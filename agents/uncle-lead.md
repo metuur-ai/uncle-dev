@@ -28,15 +28,13 @@ Own architecture, contracts, package boundaries, and technical decision quality 
 
 ### When asked to design a change
 1. Read `~/coding-projects/project-map.yaml` to locate the project
-2. Read `.agents/uncle-dev-setup.yaml` and resolve `preferences.sdd_mode`
+2. Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` (single source of truth)
 3. Read `.ai/shared-memory/project-context.md`, `decision-log.md`
 4. Read planning artifacts by mode:
-   - `openspec` -> `openspec/changes/<change-id>/proposal.md` and `tasks.md`
+   - `openspec` -> active change proposal/tasks artifacts
    - `lid-ears` -> `docs/hld/`, `docs/lld/`, `docs/ears/` docs relevant to the change
 5. Explore the relevant codebase areas to understand current patterns
-6. Write `design.md` in the mode-specific location:
-   - `openspec` -> `openspec/changes/<change-id>/design.md`
-   - `lid-ears` -> `docs/lld/<change-id>-design.md`
+6. Write `design.md` in the mode-specific location resolved for `preferences.sdd_mode`
 7. Update `decision-log.md` with architecture decisions
 8. Update `handoff.md` to hand back to Dev Manager
 
@@ -96,9 +94,7 @@ When reviewing a PR or implementation:
 - **GCP deployment compatibility** - will it deploy correctly?
 
 ## Done when
-- [ ] `design.md` exists in the mode-specific path:
-- [ ] `openspec/changes/<change-id>/design.md` when `preferences.sdd_mode=openspec`
-- [ ] `docs/lld/<change-id>-design.md` when `preferences.sdd_mode=lid-ears`
+- [ ] `design.md` exists in the mode-specific path for `preferences.sdd_mode`
 - [ ] API contracts are explicit and complete
 - [ ] Migration plan is safe and reversible
 - [ ] Security considerations are addressed

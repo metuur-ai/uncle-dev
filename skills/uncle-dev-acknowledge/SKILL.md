@@ -1,10 +1,7 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-acknowledge
-description: Captures design-decision notes — as gating openspec/acknowledge/ entries in openspec mode, or as ADRs in lid-ears mode. Use when the user pastes a list of "decisions worth checking", when /uncle-dev-spec surfaces decisions worth confirming, or when knowledge-capture detects a design decision. Also handles ack/reject/supersede on existing decision IDs (openspec mode only).
+description: Captures design-decision notes — as gating sdd-mode, or as ADRs in lid-ears mode. Use when the user pastes a list of "decisions worth checking", when /uncle-dev-spec surfaces decisions worth confirming, or when knowledge-capture detects a design decision. Also handles ack/reject/supersede on existing decision IDs (openspec mode only).
+
 ---
 
 # Acknowledge
@@ -14,14 +11,14 @@ description: Captures design-decision notes — as gating openspec/acknowledge/ 
 ```bash
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode openspec 2>/dev/null || echo "openspec")
+SDD_MODE=$(bash "$_cfg" preferences.sdd_mode "" 2>/dev/null || true)
 echo "$SDD_MODE"
 ```
 
-| Result | Path |
-|--------|------|
-| `lid-ears` | **Exit immediately.** Tell the user: "This project uses lid-ears mode. Design decisions are captured as ADRs in `docs/decisions/`. Run `/uncle-dev-documentation-and-adrs` to write one." Do NOT create any `openspec/acknowledge/` files. |
-| `openspec` or missing | Continue with the full process below. |
+| Result                | Path                                                                                                                                                                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `lid-ears`            | **Exit immediately.** Tell the user: "This project uses lid-ears mode. Design decisions are captured as ADRs in `docs/decisions/`. Run `/uncle-dev-documentation-and-adrs` to write one." Do NOT create any `openspec/acknowledge/` files. |
+| `openspec`            | Continue with the full process below.                                                                                                                                                                                                      |
 
 ---
 
@@ -40,10 +37,11 @@ Once acknowledged, notes stay in place with `status: acknowledged` as citation h
 - A human wants to write notes by hand — read `note-schema.yaml` and edit the scope file directly.
 
 **When NOT to use:**
+
 - `sdd_mode: lid-ears` — use `/uncle-dev-documentation-and-adrs` instead.
 - A bug was just solved → `uncle-dev-knowledge-capture` (writes to `.uncle-dev/learns/`).
 - A repo-wide architectural decision needs a narrative record → `uncle-dev-documentation-and-adrs` (writes `docs/decisions/ADR-NNN-*.md`). Cross-link both ways when both apply.
-- The note is just an inline code comment about *what* the code does → don't capture it; the code is the truth.
+- The note is just an inline code comment about _what_ the code does → don't capture it; the code is the truth.
 
 ## Process
 
@@ -75,16 +73,16 @@ All workflow operations are sed-style **status-line rewrites only** — they tou
 
 Source of truth is `inference-rules.md`. Quick summary table (read the reference file for the precise grammar and edge cases):
 
-| Signal in note text | Route to |
-|---|---|
-| Endpoint paths (`/auth/*`, `/api/*`), HTTP verbs, controller/route names | `api` |
-| `migration`, `schema`, `prisma`, `table`, `column`, `nullable`, `index` | `api` + `share` |
-| `render`, `route`, `page`, component names, `useEffect`, `tailwind`, `<Component>` | `web` |
-| Type names, DTO, `interface`, `Zod`, contract, shared util | `share` |
-| Path mention `apps/<x>/`, `packages/<x>/` | scope `<x>` (lazy create) |
-| Negation pattern (`No /me endpoint`, `not introducing X`) | `general` + every scope the negated thing would have lived in |
-| Cross-cutting concerns (security, perf budget, observability, error envelope, naming) | `general` (always) |
-| Nothing matched | `general` only (fallback) |
+| Signal in note text                                                                   | Route to                                                      |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Endpoint paths (`/auth/*`, `/api/*`), HTTP verbs, controller/route names              | `api`                                                         |
+| `migration`, `schema`, `prisma`, `table`, `column`, `nullable`, `index`               | `api` + `share`                                               |
+| `render`, `route`, `page`, component names, `useEffect`, `tailwind`, `<Component>`    | `web`                                                         |
+| Type names, DTO, `interface`, `Zod`, contract, shared util                            | `share`                                                       |
+| Path mention `apps/<x>/`, `packages/<x>/`                                             | scope `<x>` (lazy create)                                     |
+| Negation pattern (`No /me endpoint`, `not introducing X`)                             | `general` + every scope the negated thing would have lived in |
+| Cross-cutting concerns (security, perf budget, observability, error envelope, naming) | `general` (always)                                            |
+| Nothing matched                                                                       | `general` only (fallback)                                     |
 
 **Duplication rule.** A note lands in every scope its signals match. It additionally lands in `general` when it's cross-cutting OR a negation. Duplicates share **one global D-id** so ack on any copy propagates to all (the workflow walks every scope file looking for that id).
 
@@ -94,14 +92,14 @@ See `acknowledge-workflow.md` for the propagation algorithm, lock handling, and 
 
 ## Common Rationalizations
 
-| Rationalization | Reality |
-|---|---|
-| "I'll just remember to confirm the decisions later" | Memory fails. The whole point of the gate is to make `/uncle-dev-build` refuse to start until the human has actually said yes. |
-| "Let me put everything in `general.md`" | Defeats per-package review. `web` reviewers shouldn't have to scan every cross-cutting decision to find the ones that affect the frontend. |
-| "I'll write it as an ADR instead" | ADRs are repo-wide, durable, narrative — written once, kept forever. Acknowledge notes are per-package, lightweight, and ephemerally-blocking. They serve different purposes; both can apply to the same decision (cross-link). |
-| "The decision is obvious — skip the gate" | If it were obvious, no one would have written a note about it. The gate enforces deliberate sign-off, not paperwork. |
-| "I'll use `--ignore-acknowledgements` to unblock" | There is no such flag. The gate is non-bypassable by design. To unblock: ack, reject, or supersede. |
-| "I'll just delete the section if I want to revoke an ack" | Don't. Use `reject` or `supersede`. Deleted history is lost history. |
+| Rationalization                                           | Reality                                                                                                                                                                                                                         |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "I'll just remember to confirm the decisions later"       | Memory fails. The whole point of the gate is to make `/uncle-dev-build` refuse to start until the human has actually said yes.                                                                                                  |
+| "Let me put everything in `general.md`"                   | Defeats per-package review. `web` reviewers shouldn't have to scan every cross-cutting decision to find the ones that affect the frontend.                                                                                      |
+| "I'll write it as an ADR instead"                         | ADRs are repo-wide, durable, narrative — written once, kept forever. Acknowledge notes are per-package, lightweight, and ephemerally-blocking. They serve different purposes; both can apply to the same decision (cross-link). |
+| "The decision is obvious — skip the gate"                 | If it were obvious, no one would have written a note about it. The gate enforces deliberate sign-off, not paperwork.                                                                                                            |
+| "I'll use `--ignore-acknowledgements` to unblock"         | There is no such flag. The gate is non-bypassable by design. To unblock: ack, reject, or supersede.                                                                                                                             |
+| "I'll just delete the section if I want to revoke an ack" | Don't. Use `reject` or `supersede`. Deleted history is lost history.                                                                                                                                                            |
 
 ## Red Flags
 

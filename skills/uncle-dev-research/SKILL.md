@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-research
 description: Documents the codebase as it exists today by spawning parallel subagents to explore structure, patterns, and history, then writing a research document to .uncle-dev/research/. Use when starting work on an unfamiliar codebase, when you need to understand existing implementation before speccing a change, or when asked "how does X work?" about something in the repo.

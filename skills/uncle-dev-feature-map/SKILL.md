@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-feature-map
 description: Discovers and catalogs product features by reading backend routes, controllers, service logic, and frontend pages/components. Outputs a feature map document focused on what users can do — not how the code works. Use when you need a product-level inventory of an unfamiliar codebase, before speccing new features, or when building a requirements doc from existing behavior.

@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: <NEW_SKILL_NAME>
 description: <TODO one-liner: what this companion adds>. Companion to <BASE_SKILL>. Use when <TODO trigger conditions>.

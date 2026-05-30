@@ -15,9 +15,9 @@ Mutation testing measures whether the test suite would actually catch bugs — n
 
 **Config check — run this first:**
 ```bash
-grep "mutation-testing" .agents/uncle-dev-setup.yaml 2>/dev/null || echo "not set (default: enabled)"
+bash scripts/uncle-dev-config.sh preferences.mutation-testing true
 ```
-If `.agents/uncle-dev-setup.yaml` contains `mutation-testing: false`, stop immediately and tell the user that mutation testing is disabled for this project. Do not proceed.
+If config resolves to `false`, stop immediately and tell the user that mutation testing is disabled for this project. Do not proceed.
 
 ## When to Use
 
@@ -30,7 +30,7 @@ If `.agents/uncle-dev-setup.yaml` contains `mutation-testing: false`, stop immed
 
 **When NOT to use:**
 - On generated or boilerplate code with no meaningful logic (config, accessors, type declarations)
-- When `.agents/uncle-dev-setup.yaml` has `mutation-testing: false`
+- When project config has `preferences.mutation-testing: false`
 - On test files themselves — only mutate production code
 - When the test suite is already failing — fix it first
 
@@ -38,7 +38,7 @@ If `.agents/uncle-dev-setup.yaml` contains `mutation-testing: false`, stop immed
 
 Before mutating anything:
 
-1. **Check the config.** Read `.agents/uncle-dev-setup.yaml`. If `preferences.mutation-testing` is `false`, stop.
+1. **Check the config.** Run `bash scripts/uncle-dev-config.sh preferences.mutation-testing true`. If the resolved value is `false`, stop.
 2. **Clean working tree.** Run `git status` on the files in scope. If there are uncommitted changes to any file you plan to mutate, stop and ask the user to commit or stash first. Every mutation must be revertable cleanly with `git checkout -- <file>`.
 3. **Find the test runner.** Look for `pytest.ini`, `pyproject.toml [tool.pytest]`, `package.json` test script, `Makefile` test target, or a `tests/` directory. Ask the user if uncertain. Confirm the test suite passes on unmodified code before starting — if it doesn't, stop.
 4. **Agree on scope.** If no scope was given, look at the project's source layout and ask the user to pick a module. Do not try to mutate everything at once. Prioritise code with meaningful logic (branching, arithmetic, state changes) over config or trivial accessors.

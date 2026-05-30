@@ -15,13 +15,13 @@ Write a failing test before writing the code that makes it pass. For bug fixes, 
 
 **Config check — run this first:**
 ```bash
-grep "tdd-mode" .agents/uncle-dev-setup.yaml 2>/dev/null || echo "not set (default: strict)"
+bash scripts/uncle-dev-config.sh preferences.tdd-mode strict
 ```
-If `.agents/uncle-dev-setup.yaml` has `tdd-mode: lite`, follow the **Lite Mode** section below instead of the full TDD cycle.
+If the resolved value is `lite`, follow the **Lite Mode** section below instead of the full TDD cycle.
 
 ## Lite Mode
 
-Use when `tdd-mode: lite` is set in `.agents/uncle-dev-setup.yaml`. Designed for rapid iteration on low-criticality code where full TDD overhead isn't justified.
+Use when `tdd-mode: lite` is set in project config. Designed for rapid iteration on low-criticality code where full TDD overhead isn't justified.
 
 **What changes in lite mode:**
 

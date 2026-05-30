@@ -13,16 +13,12 @@ description: Break work into small verifiable tasks with acceptance criteria and
 
 Invoke the `uncle-dev-planning-and-task-breakdown` skill.
 
-Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to read the active change:
+Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` first (single source of truth).
 
-- `openspec list` to find active changes
-- `openspec show <change-id>` to read the change's proposal and design
-- `openspec status <change-id>` to check current artifact completion
-- `openspec instructions tasks.md` to get enriched guidance for writing task breakdowns
+If `sdd_mode=openspec`, use the OpenSpec workflow and commands below.
+If `sdd_mode=lid-ears`, skip OpenSpec commands and use the LID/EARS planning path.
 
-If not installed, recommend `npm install -g openspec` and read `proposal.md` and `design.md` directly.
-
-Read the active OpenSpec change's `proposal.md` and `design.md`, plus the relevant codebase sections. Apply `uncle-dev-code-context` to read `AGENTS.md` files in all directories the plan will touch so architecture boundaries are established before task ordering begins. Then:
+Read the active mode's proposal/design artifacts, plus the relevant codebase sections. Apply `uncle-dev-code-context` to read `AGENTS.md` files in all directories the plan will touch so architecture boundaries are established before task ordering begins. Then:
 
 1. Enter plan mode and stay read-only
 2. Identify the dependency graph between components
@@ -33,4 +29,4 @@ Read the active OpenSpec change's `proposal.md` and `design.md`, plus the releva
 7. When CLI is available, run `openspec validate <change-id>` to verify artifacts
 8. Present the plan for human review
 
-Do not write `tasks/uncle-dev-plan.md` or `tasks/todo.md`. The tracked outputs are `openspec/changes/<change-id>/tasks.md` and `openspec/changes/<change-id>/execution.md`.
+Do not write `tasks/uncle-dev-plan.md` or `tasks/todo.md`. The tracked outputs must be written to the active mode's shared planning artifacts.

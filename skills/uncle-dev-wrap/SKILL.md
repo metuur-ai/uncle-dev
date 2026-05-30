@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-wrap
 description: Compacts the current conversation into a handoff document so a fresh agent or session can continue the work without context loss. Writes the doc to `.devlocal/handoffs/handoff-<UTC-timestamp>.md` (gitignored personal scratchpad), references existing artifacts by path/URL instead of duplicating them, redacts sensitive data, and lists suggested skills for the next session to invoke. Use when the user says "wrap this up", "hand this off", "context is getting full", "summarize for the next session", or runs /uncle-dev-wrap.

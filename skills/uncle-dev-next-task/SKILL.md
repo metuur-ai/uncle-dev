@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-next-task
 description: Picks the next actionable task — from docs/tasks/ in lid-ears mode, or from OpenSpec changes in openspec mode. Computes a parallel-safe ready set and surfaces conflicts. Use when starting or resuming work, when the user asks "what's next", when `/uncle-dev-build continue` runs, or when multiple agents need to coordinate on which story to pick.
@@ -95,14 +91,14 @@ Callers (`/uncle-dev-build`, `/uncle-dev-test`, etc.) MUST surface this output v
 ```bash
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode openspec 2>/dev/null || echo "openspec")
+SDD_MODE=$(bash "$_cfg" preferences.sdd_mode "" 2>/dev/null || true)
 echo "$SDD_MODE"
 ```
 
 | Result | Path |
 |--------|------|
 | `lid-ears` | Follow **Path A — LID-EARS** below. Never check for `openspec/`. |
-| `openspec` or missing | Follow **Path B — OpenSpec** below. |
+| `openspec` | Follow **Path B — OpenSpec** below. |
 
 ---
 
@@ -180,7 +176,7 @@ NEXT ACTION: pick recommended, or pass --story <id> to override.
 
 ### Path B — OpenSpec Resolution
 
-**Only when `sdd_mode: openspec` or missing.**
+**Only when `sdd_mode: openspec`.**
 
 ```
    ┌─────────────────────────────────────────────────┐

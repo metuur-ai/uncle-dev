@@ -19,42 +19,14 @@ WRAP_ENABLED="true"
 THRESHOLD_PERCENT="70"
 THRESHOLD_TOKENS="130000"
 
-if [[ -f "$CONFIG_FILE" ]]; then
-  CFG_RAW=$(python3 - "$CONFIG_FILE" <<'PYEOF'
-import sys
-import yaml
+CFG_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
+[[ -f "$CFG_SCRIPT" ]] || CFG_SCRIPT="$PROJECT_DIR/scripts/uncle-dev-config.sh"
 
-path = sys.argv[1]
-with open(path, "r", encoding="utf-8") as f:
-    data = yaml.safe_load(f) or {}
-
-hooks = data.get("hooks", {})
-prefs = data.get("preferences", {})
-wrap = prefs.get("wrap_trigger", {}) if isinstance(prefs, dict) else {}
-
-def sval(v, d):
-    if v is None:
-        return d
-    if isinstance(v, bool):
-        return "true" if v else "false"
-    return str(v)
-
-print(sval(hooks.get("wrap_nudge"), "true"))
-print(sval(wrap.get("enabled"), "true"))
-print(sval(wrap.get("context_window_percent"), "70"))
-print(sval(wrap.get("total_tokens"), "130000"))
-PYEOF
-)
-
-  CFG0=$(printf '%s\n' "$CFG_RAW" | sed -n '1p')
-  CFG1=$(printf '%s\n' "$CFG_RAW" | sed -n '2p')
-  CFG2=$(printf '%s\n' "$CFG_RAW" | sed -n '3p')
-  CFG3=$(printf '%s\n' "$CFG_RAW" | sed -n '4p')
-
-  HOOK_ENABLED="${CFG0:-true}"
-  WRAP_ENABLED="${CFG1:-true}"
-  THRESHOLD_PERCENT="${CFG2:-70}"
-  THRESHOLD_TOKENS="${CFG3:-130000}"
+if [[ -f "$CFG_SCRIPT" ]]; then
+  HOOK_ENABLED="$(bash "$CFG_SCRIPT" hooks.wrap_nudge true 2>/dev/null || echo true)"
+  WRAP_ENABLED="$(bash "$CFG_SCRIPT" preferences.wrap_trigger.enabled true 2>/dev/null || echo true)"
+  THRESHOLD_PERCENT="$(bash "$CFG_SCRIPT" preferences.wrap_trigger.context_window_percent 70 2>/dev/null || echo 70)"
+  THRESHOLD_TOKENS="$(bash "$CFG_SCRIPT" preferences.wrap_trigger.total_tokens 130000 2>/dev/null || echo 130000)"
 fi
 
 [[ "$HOOK_ENABLED" == "true" ]] || exit 0
