@@ -49,14 +49,11 @@ Run from the **target project root** — the user's terminal, not a subshell:
 | Situation | Command |
 |---|---|
 | First-time setup | `bash "${SETUP_SCRIPT}"` |
-| Change config (sdd_mode, annotations, graphify) | `bash "${SETUP_SCRIPT}" --update` |
+| Change config (level, sdd_mode, tdd-mode, annotations, graphify, mutation-testing) | `bash "${SETUP_SCRIPT}" --update` |
 
 **`--update` re-asks all preference questions** and overwrites the existing `.agents/uncle-dev-setup.yaml` preferences. Tool detection is always re-run. Use it whenever the user says "change my SDD mode", "switch to lid-ears", or "update my uncle-dev config".
 
-**Wait for the script to finish.** The script will prompt the user for:
-1. `sdd_mode` — openspec or lid-ears
-2. `spec_annotations` — yes/no
-3. `graphify` — yes/no
+**Wait for the script to finish.** The script prompts the user for workflow preferences (including `sdd_mode`, testing strictness, annotations, and graph usage).
 
 The agent must NOT answer these on the user's behalf. If the script cannot run interactively, ask the user each question explicitly before writing any config.
 
@@ -200,6 +197,14 @@ Write `.agents/uncle-dev-setup.yaml` from the colocated template (`uncle-dev-set
 - `preferences.spec_annotations` ← answer from question 2 (default: `true`)
 - `preferences.graphify` ← answer from question 3 (default: `false`)
 
+Validate the written config before finishing:
+
+```bash
+bash scripts/uncle-dev-config.sh --validate
+```
+
+If validation fails, fix `.agents/uncle-dev-setup.yaml` using the schema in `scripts/uncle-dev-setup.schema.json` and re-run validation.
+
 If `.agents/uncle-dev-setup.yaml` already exists, read it first and preserve fields that are already customized. Only update `tool.*` fields and any preference whose current value is still the template default.
 
 ---
@@ -261,6 +266,13 @@ Hook-to-toggle mapping:
 | `openspec-guard.sh` | `hooks.openspec_guard` |
 | `destructive-command-guard.sh` | `hooks.destructive_command_guard` |
 | `knowledge-capture-nudge.sh` | `hooks.knowledge_capture_nudge` |
+| `wrap-nudge.sh` | `hooks.wrap_nudge` |
+
+`wrap-nudge.sh` reads thresholds from `.agents/uncle-dev-setup.yaml`:
+- `preferences.wrap_trigger.context_window_percent` (default `70`)
+- `preferences.wrap_trigger.total_tokens` (default `130000`)
+
+When either threshold is reached, it nudges the user to run `/uncle-dev-wrap` and create a resumable handoff.
 
 Codex and OpenCode do not have a hook system — the install scripts handle all configuration for those tools.
 
@@ -346,6 +358,7 @@ Common (all tools)
  [✓/✗] .devlocal/          exists
  [✓/✗] .agents/            exists
  [✓/✗] .agents/uncle-dev-setup.yaml  written
+ [✓/✗] .agents/uncle-dev-setup.yaml  schema-valid (`bash scripts/uncle-dev-config.sh --validate`)
  [✓/✗] .gitignore          contains .devlocal/
 
 Claude Code

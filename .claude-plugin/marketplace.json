@@ -33,9 +33,11 @@
         "./skills/uncle-dev-incremental-implementation",
         "./skills/uncle-dev-knowledge-capture",
         "./skills/uncle-dev-knowledge-maintenance",
+        "./skills/uncle-dev-mutation-testing",
         "./skills/uncle-dev-next-task",
         "./skills/uncle-dev-performance-optimization",
         "./skills/uncle-dev-planning-and-task-breakdown",
+        "./skills/uncle-dev-pre-mortem",
         "./skills/uncle-dev-research",
         "./skills/uncle-dev-security-and-hardening",
         "./skills/uncle-dev-setup",
@@ -45,10 +47,23 @@
         "./skills/uncle-dev-spec-driven-development",
         "./skills/uncle-dev-test-driven-development",
         "./skills/uncle-dev-using-agent-skills",
+        "./skills/uncle-dev-wrap",
+        "./skills/uncle-senior",
         "./.claude/skills/openspec-apply-change",
         "./.claude/skills/openspec-archive-change",
         "./.claude/skills/openspec-explore",
         "./.claude/skills/openspec-propose"
+      ],
+      "agents": [
+        "./agents/uncle-dev-ag-code-reviewer.md",
+        "./agents/uncle-dev-ag-graph-analyst.md",
+        "./agents/uncle-dev-ag-repo-research-analyst.md",
+        "./agents/uncle-dev-ag-review-synthesizer.md",
+        "./agents/uncle-dev-ag-security-auditor.md",
+        "./agents/uncle-dev-ag-test-engineer.md",
+        "./agents/uncle-lead.md",
+        "./agents/uncle-po.md",
+        "./agents/uncle-senior.md"
       ]
     }
   ]

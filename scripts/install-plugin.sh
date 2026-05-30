@@ -207,6 +207,12 @@ install_copilot() {
   copy_file \
     "$REPO_ROOT/agents/uncle-dev-ag-security-auditor.md" \
     "$workspace/.github/agents/uncle-dev-ag-security-auditor.md"
+  copy_file \
+    "$REPO_ROOT/agents/uncle-lead.md" \
+    "$workspace/.github/agents/uncle-lead.md"
+  copy_file \
+    "$REPO_ROOT/agents/uncle-po.md" \
+    "$workspace/.github/agents/uncle-po.md"
 }
 
 install_cursor() {

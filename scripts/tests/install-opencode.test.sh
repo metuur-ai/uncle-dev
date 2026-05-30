@@ -49,7 +49,7 @@ done
 
 # agents
 assert_dir  "${INSTALL_ROOT}/agents"
-assert_count "${INSTALL_ROOT}/agents" 6 "agents"
+assert_count "${INSTALL_ROOT}/agents" 8 "agents"
 
 # rules
 for rule in "${ASSET_RULES[@]}"; do
@@ -75,7 +75,7 @@ assert_file "${FAKE_WS}/AGENTS.md"
 assert_dir  "${FAKE_WS}/.opencode/skills"
 assert_count "${FAKE_WS}/.opencode/skills" 36 "skills total (local)"
 assert_dir  "${FAKE_WS}/.opencode/agents"
-assert_count "${FAKE_WS}/.opencode/agents" 6 "agents (local)"
+assert_count "${FAKE_WS}/.opencode/agents" 8 "agents (local)"
 
 for rule in "${ASSET_RULES[@]}"; do
   assert_file "${FAKE_WS}/${rule}"

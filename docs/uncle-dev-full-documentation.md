@@ -73,7 +73,7 @@ Copilot reads agent personas from `.github/` directories.
 ```bash
 ./scripts/install-plugin.sh copilot ~/path/to/your/project
 ```
-This registers the Uncle Dev personas like `@uncle-dev-ag-code-reviewer` and `@uncle-dev-ag-security-auditor` into your repositories so that Copilot Chat can roleplay as these senior engineers.
+This registers the Uncle Dev personas like `@code-reviewer`, `@security-auditor`, and `@uncle-lead` into your repositories so that Copilot Chat can roleplay as these senior engineers.
 
 ## Gemini CLI
 You can natively install skills to your Gemini CLI.

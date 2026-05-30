@@ -48,7 +48,7 @@ done
 
 # agents
 assert_dir  "${PLUGIN_ROOT}/agents"
-assert_count "${PLUGIN_ROOT}/agents" 6 "agents"
+assert_count "${PLUGIN_ROOT}/agents" 8 "agents"
 
 # commands: all from .claude/commands/ (19 top-level + opsx/)
 assert_dir  "${PLUGIN_ROOT}/commands"

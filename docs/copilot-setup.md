@@ -30,6 +30,8 @@ Invoke agents in Copilot Chat:
 - `@code-reviewer Review this PR`
 - `@test-engineer Analyze test coverage for this module`
 - `@security-auditor Check this endpoint for vulnerabilities`
+- `@uncle-lead Produce design.md for this change and assess migration risk`
+- `@uncle-po Draft proposal.md and Given/When/Then acceptance criteria`
 
 ### Custom Instructions (User Level)
 
@@ -76,6 +78,6 @@ Use the agents for targeted review workflows in Copilot Chat.
 ## Usage Tips
 
 1. **Keep instructions concise** — Copilot instructions work best when focused. Summarize the key rules rather than including full skill files.
-2. **Use agents for review** — The code-reviewer, test-engineer, and security-auditor agents are designed for Copilot's agent model.
+2. **Use agents for review** — The code-reviewer, test-engineer, security-auditor, uncle-lead, and uncle-po agents are designed for Copilot's agent model.
 3. **Reference in chat** — When working on a specific phase, paste the relevant skill content into Copilot Chat for context.
 4. **Combine with PR reviews** — Set up Copilot to review PRs using the code-reviewer agent persona.

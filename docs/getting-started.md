@@ -104,6 +104,8 @@ The `agents/` directory contains pre-configured agent personas:
 | `uncle-dev-ag-code-reviewer.md` | Five-axis code review |
 | `uncle-dev-ag-test-engineer.md` | Test strategy and writing |
 | `uncle-dev-ag-security-auditor.md` | Vulnerability detection |
+| `uncle-lead.md` | Technical lead persona for architecture/design ownership |
+| `uncle-po.md` | Product owner persona for requirements and acceptance criteria |
 | `uncle-dev-ag-repo-research-analyst.md` | Structured repo exploration — spawned by the research skill |
 | `uncle-dev-ag-graph-analyst.md` | Multi-hop semantic graph traversal — spawned by research and review skills when `graphify-out/graph.json` exists |
 

@@ -58,7 +58,7 @@ done
 
 # agents
 assert_dir  "${CACHE}/agents"
-assert_count "${CACHE}/agents" 6 "agents"
+assert_count "${CACHE}/agents" 8 "agents"
 
 # commands: 19 top-level + opsx/ subdir with 4
 assert_dir "${CACHE}/commands"

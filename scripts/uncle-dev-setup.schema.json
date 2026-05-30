@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uncle-dev.local/schemas/uncle-dev-setup.schema.json",
+  "title": "Uncle Dev Setup Config",
+  "type": "object",
+  "required": ["version", "project", "tool", "skills", "preferences", "hooks", "openspec"],
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "project": {
+      "type": "object",
+      "required": ["name", "setup_date", "type", "language", "framework"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "setup_date": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["web-app", "api", "mobile", "library", "cli", "monorepo"]
+        },
+        "language": { "type": "string" },
+        "framework": { "type": "string" }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "required": ["active", "agent_skills_root"],
+      "additionalProperties": true,
+      "properties": {
+        "active": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["claude-code", "codex", "opencode"]
+          },
+          "uniqueItems": true
+        },
+        "agent_skills_root": { "type": "string" }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "required": ["overrides", "companions"],
+      "additionalProperties": true,
+      "properties": {
+        "overrides": { "type": "object" },
+        "companions": {
+          "oneOf": [
+            { "type": "object" },
+            { "type": "array" }
+          ]
+        }
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "required": [
+        "level",
+        "sdd_required",
+        "sdd_mode",
+        "tdd-mode",
+        "spec_annotations",
+        "graphify",
+        "knowledge_capture",
+        "destructive_guard",
+        "mutation-testing",
+        "wrap_trigger"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["strict", "lite"]
+        },
+        "sdd_required": { "type": "boolean" },
+        "sdd_mode": {
+          "type": "string",
+          "enum": ["openspec", "lid-ears"]
+        },
+        "tdd-mode": {
+          "type": "string",
+          "enum": ["strict", "lite"]
+        },
+        "spec_annotations": { "type": "boolean" },
+        "graphify": { "type": "boolean" },
+        "knowledge_capture": { "type": "boolean" },
+        "destructive_guard": { "type": "boolean" },
+        "mutation-testing": { "type": "boolean" },
+        "wrap_trigger": {
+          "type": "object",
+          "required": ["enabled", "context_window_percent", "total_tokens"],
+          "additionalProperties": true,
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "context_window_percent": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            },
+            "total_tokens": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "hooks": {
+      "type": "object",
+      "required": [
+        "session_start",
+        "pre_commit",
+        "spec_coherence",
+        "openspec_guard",
+        "destructive_command_guard",
+        "knowledge_capture_nudge",
+        "wrap_nudge"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "session_start": { "type": "boolean" },
+        "pre_commit": { "type": "boolean" },
+        "spec_coherence": { "type": "boolean" },
+        "openspec_guard": { "type": "boolean" },
+        "destructive_command_guard": { "type": "boolean" },
+        "knowledge_capture_nudge": { "type": "boolean" },
+        "wrap_nudge": { "type": "boolean" }
+      }
+    },
+    "openspec": {
+      "type": "object",
+      "required": ["change_id_format", "required_artifacts"],
+      "additionalProperties": true,
+      "properties": {
+        "change_id_format": { "type": "string" },
+        "required_artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

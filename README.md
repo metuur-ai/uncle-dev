@@ -222,6 +222,8 @@ Pre-configured specialist personas for targeted reviews:
 | [code-reviewer](agents/uncle-dev-ag-code-reviewer.md)                 | Senior Staff Engineer      | Five-axis code review with "would a staff engineer approve this?" standard                                      |
 | [test-engineer](agents/uncle-dev-ag-test-engineer.md)                 | QA Specialist              | Test strategy, coverage analysis, and the Prove-It pattern                                                      |
 | [security-auditor](agents/uncle-dev-ag-security-auditor.md)           | Security Engineer          | Vulnerability detection, threat modeling, OWASP assessment                                                      |
+| [uncle-lead](agents/uncle-lead.md)                                     | Technical Lead             | Architecture decisions, API contracts, migration safety, and rollback-aware design reviews                     |
+| [uncle-po](agents/uncle-po.md)                                         | Product Owner              | Requirements clarity, proposal quality, scope boundaries, and Given/When/Then acceptance criteria              |
 | [graph-analyst](agents/uncle-dev-ag-graph-analyst.md)                 | Graph Traversal Specialist | Multi-hop semantic graph analysis — spawned by research and review skills when `graphify-out/graph.json` exists |
 | [repo-research-analyst](agents/uncle-dev-ag-repo-research-analyst.md) | Repository Analyst         | Structured repo exploration producing a handoff document — spawned by the research skill                        |
 
@@ -298,10 +300,13 @@ agent-skills/
 │   ├── shipping-and-launch/           #   Ship
 │   ├── graphify-aware-analysis/       #   Protocol: semantic graph search
 │   └── using-agent-skills/            #   Meta: how to use this pack
-├── agents/                            # 5 specialist personas
+├── agents/                            # 8 specialist personas
 │   ├── uncle-dev-ag-code-reviewer.md
 │   ├── uncle-dev-ag-test-engineer.md
 │   ├── uncle-dev-ag-security-auditor.md
+│   ├── uncle-lead.md                  #   Technical lead persona
+│   ├── uncle-po.md                    #   Product owner persona
+│   ├── uncle-dev-ag-review-synthesizer.md
 │   ├── uncle-dev-ag-graph-analyst.md  #   Graph traversal (spawned when graph exists)
 │   └── uncle-dev-ag-repo-research-analyst.md
 ├── references/                        # 4 supplementary checklists

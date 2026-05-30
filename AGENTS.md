@@ -52,6 +52,8 @@ or agent immediately. Do not ask for clarification first.
 | /uncle-dev-code-reviewer | code-reviewer agent persona (agents/uncle-dev-ag-code-reviewer.md) |
 | /uncle-dev-security-auditor | security-auditor agent persona (agents/uncle-dev-ag-security-auditor.md) |
 | /uncle-dev-test-engineer | test-engineer agent persona (agents/uncle-dev-ag-test-engineer.md) |
+| /uncle-lead | uncle-lead agent persona (agents/uncle-lead.md) |
+| /uncle-po | uncle-po agent persona (agents/uncle-po.md) |
 
 ### Graphify Graph Commands
 

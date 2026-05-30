@@ -9,7 +9,7 @@ ASSET_SKILLS_ROOT="skills"
 # .claude/skills/ (4 dirs) — OpenSpec lifecycle skills (apply/archive/explore/propose)
 ASSET_SKILLS_OPENSPEC=".claude/skills"
 
-# agents/ (6 .md) — reusable agent personas
+# agents/ (8 .md) — reusable agent personas
 ASSET_AGENTS="agents"
 
 # .claude/commands/ top-level .md (19 files)

@@ -40,8 +40,9 @@ cd agent-skills
 
 - `AGENTS.md` (root)
 - `skills/` directory
+- `.opencode/agents/` directory (or `~/.config/opencode/agents/` for global install)
 
-The installer above copies both into the target project. No additional installation is required.
+The installer above copies them into the target project. No additional installation is required.
 
 ---
 
@@ -69,7 +70,7 @@ Examples:
 
 - "build a feature" → `incremental-implementation` + `test-driven-development`
 - "design a system" → `spec-driven-development`
-- "fix a bug" → `debugging-and-error-recovery`
+- "fix a bug" → `uncle-dev-debug-error`
 - "review this code" → `code-review-and-quality`
 
 The user does **not** need to explicitly request skills.
@@ -81,7 +82,7 @@ The development lifecycle is encoded implicitly:
 - DEFINE → `spec-driven-development`
 - PLAN → `planning-and-task-breakdown`
 - BUILD → `incremental-implementation` + `test-driven-development`
-- VERIFY → `debugging-and-error-recovery`
+- VERIFY → `uncle-dev-debug-error`
 - REVIEW → `code-review-and-quality`
 - SHIP → `shipping-and-launch`
 
@@ -114,7 +115,7 @@ This endpoint is returning 500 errors
 ```
 
 Agent behavior:
-- Invokes `debugging-and-error-recovery`
+- Invokes `uncle-dev-debug-error`
 - Reproduces → localizes → fixes → adds guards
 
 ---
