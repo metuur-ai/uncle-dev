@@ -965,7 +965,7 @@ The agent only loads the full skill content when it actually needs it.[11](https
 ### SKILL.md Format
 
 ```
---- name: my-skill description: Brief description of what this skill does version: 1.3.1 platforms: [macos, linux]
+--- name: my-skill description: Brief description of what this skill does version: 1.4.0 platforms: [macos, linux]
 # Optional — restrict to OS platforms metadata:
 hermes:     tags: [python, automation]     category: devops     fallback_for_toolsets: [web]
 # Conditional activation     requires_toolsets: [terminal]

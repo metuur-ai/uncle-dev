@@ -10,7 +10,7 @@
 #   - Companion skills: reference them by path when prompting (/uncle-dev-build, /uncle-dev-review)
 #   - Preferences: agents read this file at the start of each session
 
-version: "1.3.1"
+version: "1.4.0"
 
 # ── Project metadata ──────────────────────────────────────────────────────────
 # Inferred from directory name on first run. Edit to match your project.

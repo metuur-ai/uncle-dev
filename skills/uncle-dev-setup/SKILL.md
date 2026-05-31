@@ -33,7 +33,7 @@ The script ships inside the plugin cache after `install-claude.sh` runs. Locate 
 
 ```bash
 # Preferred: plugin cache (always present after install)
-SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.3.1/scripts/setup-project.sh"
+SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.0/scripts/setup-project.sh"
 
 # Fallback: local repo clone
 [ -f "${SETUP_SCRIPT}" ] || SETUP_SCRIPT="$(

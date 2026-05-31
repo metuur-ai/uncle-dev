@@ -30,14 +30,14 @@ Design is the single source of truth. Intent flows downstream: **HLD → LLD →
 **Run this first, before any other tool call:**
 
 ```bash
-CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.3.1/scripts/uncle-dev-config.sh"
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.0/scripts/uncle-dev-config.sh"
 bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
 ```
 
-| Result                | Path                                                            |
-| --------------------- | --------------------------------------------------------------- |
-| `lid-ears`            | Follow **Phase 0-LID** below. Never touch OpenSpec.             |
-| `openspec`            | Read `references/openspec-workflow.md` and follow that process. |
+| Result     | Path                                                            |
+| ---------- | --------------------------------------------------------------- |
+| `lid-ears` | Follow **Phase 0-LID** below. Never touch OpenSpec.             |
+| `openspec` | Read `references/openspec-workflow.md` and follow that process. |
 
 ---
 
