@@ -1,0 +1,10 @@
+{
+  "label": "Agent Guide",
+  "position": 4,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Agent Guide",
+    "description": "The agent personas and specialist subagents Uncle Dev ships, and when each one is used."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "label": "Tool Setup",
+  "position": 7,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Tool Setup",
+    "description": "Configure Uncle Dev in a specific AI coding tool."
+  }
+}

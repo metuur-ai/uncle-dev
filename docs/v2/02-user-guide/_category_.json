@@ -1,0 +1,10 @@
+{
+  "label": "User Guide",
+  "position": 3,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "User Guide",
+    "description": "Concepts behind Uncle Dev and per-tool setup for daily use."
+  }
+}

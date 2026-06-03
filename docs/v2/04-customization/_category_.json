@@ -1,0 +1,10 @@
+{
+  "label": "Customization",
+  "position": 5,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Customization",
+    "description": "Author your own skills and wire spec-annotation tracing into a codebase."
+  }
+}
