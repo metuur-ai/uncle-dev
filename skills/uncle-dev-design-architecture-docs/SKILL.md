@@ -17,6 +17,8 @@ This skill owns the upstream half — the HLD (product intent) and per-segment L
 
 A well-designed HLD/LLD pair makes the spec graph stable. A poorly-scoped one leaves segments fuzzy, prefixes overlapping, and EARS specs orphaned from intent.
 
+**Stay the strategic architect; delegate the implementation.** You own the design layer — the interfaces, boundaries, and intent. The agent is the tactical programmer that fills the modules. Tier your attention by criticality: treat each module as a **gray box** — for critical or risky segments, design *and* review the interface rigorously and scrutinize the implementation; for low-risk segments, design the outer interface carefully and delegate the implementation blob to the agent. Investing in design every day (not divesting from it) is what keeps you ahead of the volume of code an agent produces. Define how interfaces change at the LLD level so you're always managing the high-level map, not drowning in line-by-line output.
+
 ## When to Use
 
 - Starting a new product or service from scratch
@@ -150,6 +152,8 @@ See `resources/lld-template.md` for the canonical template. One LLD per segment.
 - Where does the arrow doc live? (`docs/arrows/<segment>.md`)
 
 The LLD is the place where system-level approach decisions belong. It is NOT the place for code-level details (that's per-feature design in OpenSpec change folders) and NOT the place for product narrative (that's the HLD).
+
+When a segment's module boundary is genuinely uncertain — you can't yet tell which interface is right — explore it with the `dev-code-simplification` skill's `design-an-interface` reference ("Design It Twice": generate several radically different interface shapes and compare them by depth) before committing the boundary to the LLD.
 
 ## Cascade Rules
 

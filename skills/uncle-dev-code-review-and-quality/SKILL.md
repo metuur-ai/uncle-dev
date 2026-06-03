@@ -61,6 +61,7 @@ Does the change fit the system's design?
 - Is there code duplication that should be shared?
 - Are dependencies flowing in the right direction (no circular dependencies)?
 - Is the abstraction level appropriate (not over-engineered, not too coupled)?
+- **Module depth:** are new modules deep (small interface hiding real complexity) or shallow (interface ≈ implementation, pass-through wrappers, one accessor per field)? Flag shallow modules — they add surface area without hiding anything. See `api-and-interface-design` → Module Depth.
 
 **Graph-informed architecture checks** (if graphify is ON):
 

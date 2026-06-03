@@ -6,3 +6,4 @@ node_modules/
 .claude/.simplify-ignore-cache/
 .devlocal/
 dist/
+.claude/skills/ui-ux-pro-max/

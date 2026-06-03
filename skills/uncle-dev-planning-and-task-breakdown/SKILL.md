@@ -47,6 +47,8 @@ Read inputs in read-only mode:
 
 Apply agent-skills:uncle-dev-code-context to read `AGENTS.md` files in all affected directories.
 
+If `docs/ubiquitous-language.md` exists, load it and use its canonical terms in task titles and acceptance notes. Flag any new domain term introduced by a task that isn't in the glossary — propose adding it via `uncle-dev-ubiquitous-language` rather than coining a synonym.
+
 Write `docs/tasks/<slug>.md` using this format:
 ```markdown
 # <Feature Title> — Tasks
@@ -270,6 +272,8 @@ Use `.devlocal/` for technical substeps, personal TODOs, experiments, and prompt
 | **XL** | Cross-cutting initiative | **Too large — break it down further** |
 
 If a story is L or larger, break it down further before implementation. Shared tracked tasks should stay story-sized; code-level steps belong in `.devlocal/`.
+
+For a large **refactor** story specifically, detail it with the `dev-code-simplification` skill's `request-refactor-plan` reference — it interviews you and writes a tiny-commit plan to `.devlocal/refactor-plans/<slug>.md`. That plan is a personal planning aid (gitignored scratchpad), not a tracked artifact; the story itself still lives in the mode-appropriate tracked location (`docs/tasks/` in lid-ears, `openspec/changes/` in openspec).
 
 **When to break a story down further:**
 - It would take more than one focused session (roughly 2+ hours of agent work)

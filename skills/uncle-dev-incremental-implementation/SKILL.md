@@ -87,6 +87,10 @@ Slice 3: Add offline support and reconnection
 
 If Slice 1 fails, you discover it before investing in Slices 2 and 3.
 
+### Refactor Slicing
+
+When the work is a **refactor** too large to slice inline — many files, dependent steps, or it crosses the Rule of 500 — first produce a tiny-commit plan via the `dev-code-simplification` skill's `request-refactor-plan` reference (it interviews you and writes the plan to `.devlocal/refactor-plans/<slug>.md`). Then execute each planned commit as one increment, keeping the codebase working after every step.
+
 ## Implementation Rules
 
 ### Rule 0: Simplicity First
@@ -230,6 +234,7 @@ After each increment, verify:
 - Building abstractions before the third use case demands it
 - Touching files outside the task scope "while I'm here"
 - Creating new utility files for one-time operations
+- Adding a module whose interface is as complex as what it hides (shallow module) — reconsider the boundary; prefer fewer, deeper modules (see `api-and-interface-design` → Module Depth)
 
 ## `@spec` Annotations on Code
 

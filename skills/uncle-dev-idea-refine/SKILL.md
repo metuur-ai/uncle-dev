@@ -139,6 +139,8 @@ Produce a concrete artifact — a markdown one-pager that moves work forward:
 
 Ask the user if they'd like to save this to `docs/ideas/[idea-name].md` (or a location of their choosing). Only save if they confirm.
 
+**Handoff:** ideation chooses *which* direction; it does not pin down requirements. Once the user commits to a direction, point them to `uncle-dev-grill` to interrogate it into a PRD before `uncle-dev-spec`. (The 3–5 question cap above is deliberate — ideation explores breadth; the exhaustive design-tree interview belongs in the grill, not here.)
+
 ### Anti-patterns to Avoid
 
 - **Don't generate 20+ ideas.** Quality over quantity. 5-8 well-considered variations beat 20 shallow ones.

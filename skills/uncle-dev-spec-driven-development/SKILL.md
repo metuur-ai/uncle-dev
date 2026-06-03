@@ -49,6 +49,8 @@ bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
 
 ### Step 1 — Elicit (ask all three layers before writing anything)
 
+**Load upstream inputs first.** If a PRD exists at `docs/prd/<slug>.md` (produced by `uncle-dev-grill`), use it as the source for Lenses/Intent/Details rather than re-eliciting from scratch. If requirements still live only in the user's head and this is a non-trivial feature, run `uncle-dev-grill` first to build a shared design concept. And if `docs/ubiquitous-language.md` (or `.uncle-dev/ubiquitous-language.md`) exists, read it and use its canonical terms throughout the HLD/LLD/EARS; if the domain has meaningful terminology and no glossary exists yet, run `uncle-dev-ubiquitous-language` before writing — aligned terms now prevent expensive renames later.
+
 **L — Lenses** (feeds HLD)
 
 - Who are the users or systems affected by this change?

@@ -11,6 +11,8 @@ description: Simplifies code for clarity. Use when refactoring code for clarity 
 
 Simplify code by reducing complexity while preserving exact behavior. The goal is not fewer lines — it's code that is easier to read, understand, modify, and debug. Every simplification must pass a simple test: "Would a new team member understand this faster than the original?"
 
+**Bad code is more expensive than it has ever been.** Software tends toward entropy — left unchecked, isolated changes accumulate into a messy codebase that defeats *both* humans and AI agents. An agent navigates by reasoning over structure; a tangled codebase produces tangled (or wrong) output, compounding the mess. Resisting entropy isn't cleanup for its own sake — it's what keeps the codebase navigable enough for an agent to keep helping you.
+
 ## When to Use
 
 - After a feature is working and tests pass, but the implementation feels heavier than it needs to be
@@ -98,6 +100,8 @@ Simplification has a failure mode: over-simplification. Watch for these traps:
 - **Removing "unnecessary" abstraction** — some abstractions exist for extensibility or testability, not complexity
 - **Optimizing for line count** — fewer lines is not the goal; easier comprehension is
 
+**When the problem is the interface, not the internals:** if you find the code is hard to simplify because the module's *shape* is wrong — a shallow module (interface as complex as its body), an awkward boundary, or a "manager" that hides nothing — line-level simplification won't fix it. Stop and redesign the boundary: load `reference/design-an-interface-SKILL.md` to generate and compare radically different interface designs by depth (the **design-phase** path; see "Escalating Beyond Inline Simplification" below).
+
 ### 5. Scope to What Changed
 
 Default to simplifying recently modified code. Avoid drive-by refactors of unrelated code unless explicitly asked to broaden scope. Unscoped simplification creates noise in diffs and risks unintended regressions.
@@ -168,7 +172,7 @@ FOR EACH SIMPLIFICATION:
 
 Avoid batching multiple simplifications into a single untested change. If something breaks, you need to know which simplification caused it.
 
-**The Rule of 500:** If a refactoring would touch more than 500 lines, invest in automation (codemods, sed scripts, AST transforms) rather than making the changes by hand. Manual edits at that scale are error-prone and exhausting to review.
+**The Rule of 500:** If a refactoring would touch more than 500 lines, invest in automation (codemods, sed scripts, AST transforms) rather than making the changes by hand. Manual edits at that scale are error-prone and exhausting to review. **When the change is too large to land in one inline pass** — many files, a sequence of dependent steps, or anything that needs review before execution — stop simplifying inline and load `reference/request-refactor-plan-SKILL.md` to produce a tiny-commit refactor plan (the **build-phase** path; see "Escalating Beyond Inline Simplification" below).
 
 ### Step 4: Verify the Result
 
@@ -183,6 +187,21 @@ COMPARE BEFORE AND AFTER:
 ```
 
 If the "simplified" version is harder to understand or review, revert. Not every simplification attempt succeeds.
+
+## Escalating Beyond Inline Simplification
+
+Inline simplification (the process above) handles complexity *within* the current shape of the code. Two situations need a heavier tool — each has a bundled reference. Load the reference only when its trigger fires; otherwise ignore it.
+
+| Trigger (what you observe) | Phase | Load | What it gives you |
+|---|---|---|---|
+| The module's **interface/shape** is the problem — shallow module, awkward boundary, a wrapper that hides nothing. Line-level cleanup can't fix a wrong boundary. | **Design** | `reference/design-an-interface-SKILL.md` | "Design It Twice": spawn parallel sub-agents to generate radically different interface designs, then compare by depth (small interface / large hidden complexity) before committing to one. |
+| The simplification is **too large to land inline** — many files, dependent steps, crosses the Rule of 500, or needs review/sign-off before execution. | **Build** | `reference/request-refactor-plan-SKILL.md` | A tiny-commit refactor plan built via structured interview, written to `.devlocal/refactor-plans/<slug>.md` so the refactor lands as safe incremental steps instead of one risky pass. |
+
+**How to use them:**
+
+1. **Design first when the boundary is wrong.** If `design-an-interface` produces a new interface shape, treat that as the target. Don't hand-refactor toward it blindly.
+2. **Then plan the build when it's large.** Feed the chosen design (or the simplification goal) into `request-refactor-plan` to break it into reviewable, tiny commits. This connects to `uncle-dev-incremental-implementation` — each planned step is one increment.
+3. **Fall back to inline** for everything that fits in one pass with a clean diff — most simplifications never need to escalate.
 
 ## Language-Specific Guidance
 

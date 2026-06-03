@@ -34,6 +34,37 @@ This means: every public behavior — including undocumented quirks, error messa
 
 Avoid forcing consumers to choose between multiple versions of the same dependency or API. Diamond dependency problems arise when different consumers need different versions of the same thing. Design for a world where only one version exists at a time — extend rather than fork.
 
+### Module Depth (Deep vs Shallow)
+
+From Ousterhout's *A Philosophy of Software Design*: the best modules are **deep** — a small, simple interface hiding a large amount of functionality. The cost of a module is its interface (what callers must learn and depend on); the benefit is the functionality it provides. Maximize benefit per unit of interface.
+
+| | Interface | Hidden complexity | Verdict |
+|---|---|---|---|
+| **Deep module** | Small | Large | ✅ Good — high benefit, low cost |
+| **Shallow module** | Large | Small / none | ❌ Avoid — cost ≈ benefit |
+
+A **shallow module** is one whose interface is nearly as complex as its implementation — a pass-through wrapper, a class with a getter/setter per field, a "manager" that just forwards calls. It adds surface area without hiding anything.
+
+```typescript
+// Shallow: the interface restates the implementation, hides nothing
+class TaskStore {
+  setTitle(id: string, t: string) { this.db.update(id, { title: t }); }
+  setStatus(id: string, s: string) { this.db.update(id, { status: s }); }
+  getTitle(id: string) { return this.db.get(id).title; }
+  // ...one method per field. Caller still has to know the whole data model.
+}
+
+// Deep: one verb hides scheduling, retries, idempotency, persistence
+interface TaskService {
+  // Submits a task; survives restarts, dedupes by idempotencyKey, retries transient failures
+  submit(input: SubmitTaskInput): Promise<TaskReceipt>;
+}
+```
+
+**Why this matters more with AI agents:** an agent navigates a codebase by reasoning over interfaces and dependencies. Many tiny shallow modules force it to load and trace the whole web of internal calls to understand one behavior. A few deep modules with strict boundaries let it understand — and test — a behavior at the interface without holding the implementation in context. Deep modules are the units that make a codebase agent-navigable.
+
+When you have several plausible boundaries, design it twice — see the `dev-code-simplification` skill's `design-an-interface` reference for generating and comparing radically different interface shapes by depth.
+
 ### 1. Contract First
 
 Define the interface before implementing it. The contract is the spec — implementation follows.
@@ -270,6 +301,8 @@ function getTask(id: TaskId): Promise<Task> { ... }
 | "Nobody uses that undocumented behavior" | Hyrum's Law: if it's observable, somebody depends on it. Treat every public behavior as a commitment. |
 | "We can just maintain two versions" | Multiple versions multiply maintenance cost and create diamond dependency problems. Prefer the One-Version Rule. |
 | "Internal APIs don't need contracts" | Internal consumers are still consumers. Contracts prevent coupling and enable parallel work. |
+| "Splitting it into many small classes is cleaner" | Many shallow modules cost more interface than they hide. Prefer fewer deep modules — a small interface over large hidden complexity. |
+| "A thin wrapper makes it more flexible" | A pass-through that hides nothing is a shallow module: pure cost, no benefit. Add a layer only when it hides real complexity. |
 
 ## Red Flags
 
@@ -280,6 +313,7 @@ function getTask(id: TaskId): Promise<Task> { ... }
 - List endpoints without pagination
 - Verbs in REST URLs (`/api/createTask`, `/api/getUsers`)
 - Third-party API responses used without validation or sanitization
+- Shallow modules: interface surface ≈ implementation size, pass-through wrappers, or one accessor per field that hide nothing
 
 ## Verification
 
@@ -292,3 +326,4 @@ After designing an API:
 - [ ] New fields are additive and optional (backward compatible)
 - [ ] Naming follows consistent conventions across all endpoints
 - [ ] API documentation or types are committed alongside the implementation
+- [ ] Each module is deep — its interface is small relative to the complexity it hides; no shallow pass-through layers were introduced

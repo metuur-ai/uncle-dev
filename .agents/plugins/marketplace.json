@@ -34,6 +34,7 @@
         "uncle-dev-frontend-ui-engineering",
         "uncle-dev-git-workflow-and-versioning",
         "uncle-dev-graphify-aware-analysis",
+        "uncle-dev-grill",
         "uncle-dev-idea-refine",
         "uncle-dev-incremental-implementation",
         "uncle-dev-knowledge-capture",
@@ -51,6 +52,7 @@
         "uncle-dev-spec-annotations",
         "uncle-dev-spec-driven-development",
         "uncle-dev-test-driven-development",
+        "uncle-dev-ubiquitous-language",
         "uncle-dev-using-agent-skills",
         "uncle-dev-wrap",
         "uncle-senior"
