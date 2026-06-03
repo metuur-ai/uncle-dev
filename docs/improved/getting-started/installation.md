@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # 2. How to Install Uncle Dev
 
 Uncle Dev is modular and installs into several AI coding tools. This guide shows you how to set up the skills in each supported tool.

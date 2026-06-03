@@ -1,0 +1,10 @@
+{
+  "label": "Getting Started",
+  "position": 2,
+  "collapsed": false,
+  "link": {
+    "type": "generated-index",
+    "title": "Getting Started",
+    "description": "Understand what Uncle Dev is, install it in your tool, and run your first spec-driven workflow."
+  }
+}

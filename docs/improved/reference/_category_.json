@@ -1,0 +1,10 @@
+{
+  "label": "Reference",
+  "position": 5,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Reference",
+    "description": "Look up skills, commands, prompt templates, and the SKILL.md format."
+  }
+}

@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # How to Use agent-skills with Gemini CLI
 
 ## Prerequisites

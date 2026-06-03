@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # How to Use agent-skills with Cursor
 
 ## Prerequisites

@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # 1. What is Uncle Dev and Why it Works with SDD
 
 ## Overview

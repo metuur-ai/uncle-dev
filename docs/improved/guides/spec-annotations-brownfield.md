@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # How to Apply @spec Annotations to a Brownfield Codebase
 
 This guide shows you how to use uncle-dev to analyze existing source code and `.md` spec files, identify and classify LID feature labels, and apply `@spec` annotations in documentation and source code.
@@ -152,8 +156,8 @@ Exit code 0 = clean. Exit code 1 = broken links.
 | [skills/uncle-dev-spec-annotations/SKILL.md](skills/uncle-dev-spec-annotations/SKILL.md)                                                 | Full @spec annotation reference       |
 | [skills/uncle-dev-spec-annotations/resources/annotation-examples.md](skills/uncle-dev-spec-annotations/resources/annotation-examples.md) | Per-language syntax examples          |
 | [skills/uncle-dev-spec-driven-development/SKILL.md](skills/uncle-dev-spec-driven-development/SKILL.md)                                   | Full spec-driven development workflow |
-| [docs/lid-spec-annotation-simple-explanation.md](docs/lid-spec-annotation-simple-explanation.md)                                         | Simplified LID explanation            |
-| [docs/2026-05-09-implementing-spec-annotations-guide.md](docs/2026-05-09-implementing-spec-annotations-guide.md)                         | Step-by-step implementation guide     |
+| [Spec annotations, explained](../concepts/spec-annotations-explained.md)                                         | Simplified LID explanation            |
+| [Implement spec annotations](implement-spec-annotations.md)                         | Step-by-step implementation guide     |
 
 ---
 
@@ -326,4 +330,4 @@ Confirm your annotations are coherent:
 
 1. Run `/uncle-dev-spec-scan` (or `python3 scan-spec-coherence.py --root "$(pwd)"`) on a project with `docs/specs/`. A clean run exits with code 0 and reports no ORPHAN or MISSING TEST lines.
 2. Open [skills/uncle-dev-spec-annotations/SKILL.md](skills/uncle-dev-spec-annotations/SKILL.md) and confirm your annotations match the canonical reference.
-3. Check [docs/lid-spec-annotation-simple-explanation.md](docs/lid-spec-annotation-simple-explanation.md) for a beginner-friendly walkthrough.
+3. Check [Spec annotations, explained](../concepts/spec-annotations-explained.md) for a beginner-friendly walkthrough.

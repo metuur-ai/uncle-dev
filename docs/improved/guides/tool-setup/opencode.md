@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # How to Set Up agent-skills with OpenCode
 
 This guide shows you how to use agent skills with OpenCode in a way that mirrors the Claude Code experience: automatic skill selection, lifecycle-driven workflows, and strict process enforcement.

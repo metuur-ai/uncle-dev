@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # 3. Why Use Spec-Driven Development (SDD) & OpenSpec
 
 The foundation of the Uncle Dev workflow relies on **Spec-Driven Development (SDD)** and the **OpenSpec** standard.

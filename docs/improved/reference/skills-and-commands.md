@@ -1,8 +1,12 @@
+---
+sidebar_position: 1
+---
+
 # 8. Skill and Command Reference
 
 This reference lists every Uncle Dev skill and slash command, grouped by lifecycle phase. Use it to find which skill or command applies to a task.
 
-For copy-paste prompt templates, see [Prompts by Phase](06-prompts-by-phase.md) and [Prompts by Skill](07-prompts-by-skill.md). This page is the complete index; those pages hold the fill-in-the-blank prompts.
+For copy-paste prompt templates, see [Prompts by Phase](prompts-by-phase.md) and [Prompts by Skill](prompts-by-skill.md). This page is the complete index; those pages hold the fill-in-the-blank prompts.
 
 ## How to invoke
 

@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # How to Use agent-skills with GitHub Copilot
 
 ## Prerequisites

@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # 5. How to Take a Feature From Idea to Deploy
 
 The Uncle Dev lifecycle runs through seven phases in a fixed order. Complete each phase before moving to the next.

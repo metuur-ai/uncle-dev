@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # 7. Templates and Prompts: By Skill
 
 In the Uncle Dev plugin pack, you can invoke skills explicitly when you hit a specific problem that falls outside the main SDD lifecycle.

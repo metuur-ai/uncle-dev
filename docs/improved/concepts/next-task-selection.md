@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # uncle-dev-next-task — Summary
 
 A new skill that answers one question every "continue working" command needs to ask: **what should I work on right now?** It picks the next ready task from OpenSpec changes and `.devlocal/` scratchpads, with parallelism, locks, and conflict prompts built in.

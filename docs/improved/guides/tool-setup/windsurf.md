@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # How to Use agent-skills with Windsurf
 
 ## Prerequisites

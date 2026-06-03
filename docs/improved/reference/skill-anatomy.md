@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Skill Anatomy
 
 This document describes the structure and format of agent-skills skill files. Use this as a guide when contributing new skills or understanding existing ones.

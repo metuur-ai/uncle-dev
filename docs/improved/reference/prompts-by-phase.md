@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # 6. Templates and Prompts: By Phase
 
 Use these prompt templates to run the core Uncle Dev slash-command lifecycle inside your agent chat. Copy a template, then fill in the bracketed placeholders.

@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # How to Implement `@spec` Annotations for Product Behavior
 
 This guide shows you how to use `@spec` annotations to connect durable product behavior to specs, tests, and code.

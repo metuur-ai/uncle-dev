@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # 4. The `.devlocal` Directory
 
 The Uncle Dev workflow uses a `.devlocal/` workspace.

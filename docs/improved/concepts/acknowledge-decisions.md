@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # uncle-dev-acknowledge — Summary
 
 A new skill that fills the gap between *thinking about* a design decision and *being allowed to build* it. It captures design-decision notes as package-scoped acknowledgements under `openspec/acknowledge/`, marks them `pending` by default, and **blocks `/uncle-dev-build` from claiming any story in their scope** until a human has explicitly said yes, no, or "superseded by something else."

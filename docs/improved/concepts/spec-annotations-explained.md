@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # LID `@spec` Annotations Explained
 
 LID uses `@spec` as a pointer from code or tests back to the intent they implement. After reading this, you will understand what the annotation links, where it goes, and how the arrow graph uses it.

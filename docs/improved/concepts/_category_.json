@@ -1,0 +1,10 @@
+{
+  "label": "Concepts",
+  "position": 3,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Concepts",
+    "description": "Understand why Uncle Dev works the way it does: spec-driven development, the OpenSpec model, the .devlocal scratchpad, spec annotations, and decision tracking."
+  }
+}
