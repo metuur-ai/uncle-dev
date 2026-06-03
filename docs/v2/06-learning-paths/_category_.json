@@ -1,0 +1,10 @@
+{
+  "label": "Learning Paths",
+  "position": 7,
+  "collapsed": true,
+  "link": {
+    "type": "generated-index",
+    "title": "Learning Paths",
+    "description": "Role-based journeys through Uncle Dev. Each path maps real scenarios to the exact command, agent, or skill to use."
+  }
+}

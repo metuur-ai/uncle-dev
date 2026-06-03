@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 9
 ---
 
 # Documentation Roadmap
@@ -10,17 +10,12 @@ Each planned page maps to a real coverage gap. Contributions are welcome.
 
 ## Planned sections
 
-### Getting Started
-
-| Page | Why it is planned |
-|------|-------------------|
-| FAQ | Common first-run questions are not yet collected in one place. |
-
 ### User Guide
 
+[Troubleshooting](02-user-guide/troubleshooting.md) is written. Worked examples are still planned.
+
 | Page | Why it is planned |
 |------|-------------------|
-| Troubleshooting | No single guide exists for diagnosing failed installs, missing hooks, or skills that do not trigger. |
 | Worked examples | End-to-end example projects would show the workflow on real code. |
 
 ### Agent Guide

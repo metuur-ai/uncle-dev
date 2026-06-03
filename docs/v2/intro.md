@@ -46,3 +46,4 @@ Works with Claude Code, Codex, Cursor, OpenCode, GitHub Copilot, and Gemini CLI.
 - **[Agent Guide](03-agent-guide/available-agents.md)** — the agent personas and specialist subagents, and when to use each.
 - **[Customization](04-customization/authoring-skills.md)** — author your own skills and wire in spec annotations.
 - **[Reference](05-reference/commands-and-skills.md)** — every skill, command, and prompt template.
+- **[Learning Paths](06-learning-paths/product.md)** — role-based journeys for product and developer roles.

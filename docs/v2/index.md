@@ -1,5 +1,5 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Documentation Map
@@ -8,7 +8,7 @@ The complete list of pages, for when you want to see everything at once. If you 
 
 ## Documentation map
 
-The docs are grouped into five areas so you can find things without reading everything. Planned areas are listed in the [roadmap](roadmap.md).
+The docs are grouped into six areas so you can find things without reading everything. Planned areas are listed in the [roadmap](roadmap.md).
 
 ```text
 docs/
@@ -16,7 +16,8 @@ docs/
 │   ├── What is Uncle Dev?
 │   ├── Installation
 │   ├── First task
-│   └── Common workflows
+│   ├── Common workflows
+│   └── FAQ
 ├── 02-user-guide/        → concepts and per-tool setup
 │   ├── Concepts (overview)
 │   │   ├── SDD and OpenSpec
@@ -24,8 +25,9 @@ docs/
 │   │   ├── Spec annotations
 │   │   ├── Acknowledge: design-decision notes
 │   │   └── Next-task selection
-│   └── Tool Setup
-│       ├── Copilot · Cursor · Gemini CLI · OpenCode · Windsurf
+│   ├── Tool Setup
+│   │   ├── Copilot · Cursor · Gemini CLI · OpenCode · Windsurf
+│   └── Troubleshooting
 ├── 03-agent-guide/       → personas and specialist subagents
 │   └── Available agents
 ├── 04-customization/     → extend Uncle Dev
@@ -36,8 +38,11 @@ docs/
 │   ├── Commands and skills
 │   ├── Prompts by phase
 │   └── Prompts by skill
+├── 06-learning-paths/    → role-based journeys
+│   ├── Product path
+│   └── Developer path
 ├── all-in-one.md         → the full documentation on a single page
-└── roadmap.md            → planned sections (agent guide, architecture, examples, FAQ…)
+└── roadmap.md            → planned sections (architecture, worked examples…)
 ```
 
 ## Recommended path
@@ -60,6 +65,7 @@ Follow these in order the first time. Each step links to one document.
 | [Installation](01-getting-started/installation.md) | Install Uncle Dev in Claude Code, Codex, Cursor, OpenCode, Copilot, Gemini CLI, or Graphify. |
 | [First task](01-getting-started/first-task.md) | Set up and run your first Uncle Dev workflow from start to finish. |
 | [Common workflows](01-getting-started/common-workflows.md) | Take a feature through every lifecycle phase. |
+| [FAQ](01-getting-started/faq.md) | Short answers to common questions. |
 
 ### User Guide
 
@@ -72,6 +78,7 @@ Follow these in order the first time. Each step links to one document.
 | [Acknowledge: design-decision notes](02-user-guide/acknowledge-decisions.md) | How decision notes are captured, routed, and gated. |
 | [Next-task selection](02-user-guide/next-task-selection.md) | How the next-task skill picks and parallelizes work. |
 | [Tool setup](02-user-guide/tool-setup/copilot.md) | Per-tool configuration (Copilot, Cursor, Gemini CLI, OpenCode, Windsurf). |
+| [Troubleshooting](02-user-guide/troubleshooting.md) | Fixes for failed installs, missing hooks, and skills that do not trigger. |
 
 ### Agent Guide
 
@@ -94,6 +101,13 @@ Follow these in order the first time. Each step links to one document.
 | [Commands and skills](05-reference/commands-and-skills.md) | Every skill and command, grouped by phase. |
 | [Prompts by phase](05-reference/prompts-by-phase.md) | Copy-paste prompt templates for each lifecycle command. |
 | [Prompts by skill](05-reference/prompts-by-skill.md) | Copy-paste prompt templates for individual skills. |
+
+### Learning Paths
+
+| Document | Who it's for |
+|----------|--------------|
+| [Product path](06-learning-paths/product.md) | Product managers and owners — idea to approved spec, with the command/agent/skill for each step. |
+| [Developer path](06-learning-paths/developer.md) | Engineers — approved spec to shipped, reviewed code. |
 
 ## All in one page
 
