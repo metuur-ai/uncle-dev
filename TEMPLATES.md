@@ -3,6 +3,7 @@
 Copy-paste templates for every phase of the `uncle-dev-agent-skills` plugin. Fill in the brackets and send.
 
 **When to use which part:**
+
 - **Part 1 — Validate**: Challenge your idea, scope, and approach before writing any code.
 - **Part 2 — Per-Skill Validation**: Deeper grilling through the lens of each specific skill.
 - **Part 3 — Execute**: Phase commands for when you're actually writing code.
@@ -98,6 +99,7 @@ Do not be nice. I need to know if this idea is weak before I write code.
 ```
 
 **Example:**
+
 ```
 Grill me on this idea before I spec it.
 
@@ -163,6 +165,7 @@ Your job:
 ```
 
 **Example:**
+
 ```
 Grill me on this tech decision.
 
@@ -203,6 +206,7 @@ Your job:
 ```
 
 **Example:**
+
 ```
 Grill me on this architecture decision.
 
@@ -288,6 +292,7 @@ Your job:
 ```
 
 **Example:**
+
 ```
 Grill me on my bug hypothesis before I start investigating.
 
@@ -936,3 +941,5 @@ Pre-launch checks:
 
 Staged rollout: [5% → 25% → 100% OR full release]
 ```
+
+https://github.com/existential-birds/beagle
