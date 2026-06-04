@@ -82,7 +82,7 @@ def parse_specs(specs_dir: str, repo_root: str) -> Dict[str, SpecDef]:
 
 # --- File walking -----------------------------------------------------------
 
-DEFAULT_ROOTS = ["src", "tests", "test", "app", "lib", "pkg", "cmd", "internal", "templates"]
+DEFAULT_ROOTS = ["src", "tests", "test", "app", "lib", "pkg", "cmd", "internal", "templates", "packages"]
 EXCLUDE_DIRS = {
     "node_modules", ".git", "dist", "build", ".venv", "venv", "__pycache__",
     "target", "vendor", ".next", "coverage", ".tox", ".mypy_cache", ".pytest_cache",
