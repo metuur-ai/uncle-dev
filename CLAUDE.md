@@ -22,7 +22,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 **Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-spec-annotations, uncle-dev-context-engineering, uncle-dev-source-driven-development, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
 **Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debug-error, uncle-dev-mutation-testing
 **Review:** uncle-dev-code-review-and-quality, uncle-dev-dev-code-simplification, uncle-dev-security-and-hardening, uncle-dev-performance-optimization
-**Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-ci-cd-and-automation, uncle-dev-deprecation-and-migration, uncle-dev-documentation-and-adrs, uncle-dev-shipping-and-launch
+**Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-ci-cd-and-automation, uncle-dev-deprecation-and-migration, uncle-dev-documentation-and-adrs, uncle-dev-speech, uncle-dev-shipping-and-launch
 **Capture:** uncle-dev-knowledge-capture
 **Handoff:** uncle-dev-wrap
 **Maintain:** uncle-dev-knowledge-maintenance, uncle-dev-custom-me
@@ -79,7 +79,7 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 **Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-spec-annotations, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
 **Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debug-error, uncle-dev-mutation-testing
 **Review:** uncle-dev-code-review-and-quality, uncle-dev-security-and-hardening, uncle-dev-performance-optimization
-**Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-documentation-and-adrs
+**Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-documentation-and-adrs, uncle-dev-speech
 **Capture:** uncle-dev-knowledge-capture
 **Handoff:** uncle-dev-wrap
 **Maintain:** uncle-dev-knowledge-maintenance, uncle-dev-custom-me
