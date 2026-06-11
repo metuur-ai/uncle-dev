@@ -26,6 +26,10 @@ for test_script in "${TESTS[@]}"; do
 done
 
 echo ""
+echo "══ lint-skills.sh (nori-lint, report-only) ═══════════════"
+bash "${SCRIPT_DIR}/../lint-skills.sh" | tail -3 || true
+
+echo ""
 echo "══ All tests complete ════════════════════════════════════"
 if [[ "$TOTAL_FAIL" -eq 0 ]]; then
   echo "  All test suites passed."

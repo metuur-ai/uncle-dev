@@ -1,0 +1,38 @@
+name: Lint skills
+
+on:
+  pull_request:
+    paths:
+      - "skills/**"
+      - "scripts/lint-skills.sh"
+      - "scripts/nori-lint.config.json"
+      - ".github/workflows/lint-skills.yml"
+  push:
+    branches: [main]
+    paths:
+      - "skills/**"
+      - "scripts/lint-skills.sh"
+      - "scripts/nori-lint.config.json"
+      - ".github/workflows/lint-skills.yml"
+
+jobs:
+  nori-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Report-only while the baseline is triaged: the script exits 0 even
+      # with violations. Switch to `--enforce` to gate merges.
+      - name: Lint SKILL.md files (nori-lint, static rules)
+        run: |
+          bash scripts/lint-skills.sh | tee /tmp/nori-lint-report.txt
+          {
+            echo "## nori-lint report (report-only)"
+            echo '```'
+            tail -n 200 /tmp/nori-lint-report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

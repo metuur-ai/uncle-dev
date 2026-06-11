@@ -1,7 +1,3 @@
-> ## Documentation Index
-> Fetch the complete documentation index at: https://agentskills.io/llms.txt
-> Use this file to discover all available pages before exploring further.
-
 ---
 name: uncle-dev-mutation-testing
 description: Assesses test suite strength by introducing deliberate bugs one at a time and checking whether the test suite catches each one. Use after writing or refactoring tests to verify they would catch real defects. Use when test coverage looks adequate but confidence in the suite is low. Use when preparing to ship or before a major refactor.

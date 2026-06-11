@@ -66,4 +66,23 @@ if [ -n "$ISSUES" ]; then
   fi
 fi
 
+# --- SKILL.md lint (advisory, report-only) ---
+# Opt-in: only fires in repos that author skills and carry the nori-lint rule
+# config at scripts/nori-lint.config.json (not in end-user plugin installs).
+if [ -f "$REPO_ROOT/scripts/nori-lint.config.json" ] && [ -f "$REPO_ROOT/scripts/lint-skills.sh" ] \
+   && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  STAGED_SKILLS=$(git diff --cached --name-only 2>/dev/null | grep -E '(^|/)skills/[^/]+/SKILL\.md$' || true)
+  if [ -n "$STAGED_SKILLS" ]; then
+    LINT_OUT=$(bash "$REPO_ROOT/scripts/lint-skills.sh" --enforce $STAGED_SKILLS 2>/dev/null) || {
+      SUMMARY=$(printf '%s\n' "$LINT_OUT" | tail -40)
+      jq -n --arg msg "skill-lint (advisory): staged SKILL.md files have nori-lint violations:
+
+${SUMMARY}
+
+Report-only: commit not blocked. Run bash scripts/lint-skills.sh for the full report." \
+        '{"priority": "INFO", "message": $msg}'
+    }
+  fi
+fi
+
 exit 0
