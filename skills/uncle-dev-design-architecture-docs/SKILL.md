@@ -2,9 +2,6 @@
 name: uncle-dev-design-architecture-docs
 description: Authors durable HLD and LLD documents that partition product intent into segments and feed EARS specs. Use when starting a new product, adding a new behavior segment, scoping segment boundaries, or when an LLD has drifted from its EARS specs.
 ---
-
-# Design Architecture Docs (HLD / LLD)
-
 ## Overview
 
 Architecture intent flows in one direction:
@@ -17,17 +14,7 @@ This skill owns the upstream half — the HLD (product intent) and per-segment L
 
 A well-designed HLD/LLD pair makes the spec graph stable. A poorly-scoped one leaves segments fuzzy, prefixes overlapping, and EARS specs orphaned from intent.
 
-**Stay the strategic architect; delegate the implementation.** You own the design layer — the interfaces, boundaries, and intent. The agent is the tactical programmer that fills the modules. Tier your attention by criticality: treat each module as a **gray box** — for critical or risky segments, design *and* review the interface rigorously and scrutinize the implementation; for low-risk segments, design the outer interface carefully and delegate the implementation blob to the agent. Investing in design every day (not divesting from it) is what keeps you ahead of the volume of code an agent produces. Define how interfaces change at the LLD level so you're always managing the high-level map, not drowning in line-by-line output.
-
-## When to Use
-
-- Starting a new product or service from scratch
-- Adding a new behavior segment to an existing product (e.g., introducing `billing` alongside an existing `auth` segment)
-- An LLD's behaviors no longer match its EARS specs (cascade drift)
-- A segment has grown too large and needs to be split into sub-segments with compound prefixes
-- Two segments are starting to share specs — boundaries need redrawing
-
-**When NOT to use:** A single EARS spec needs to be added to an existing segment (just edit `docs/specs/<segment>-specs.md`), code-only refactors with no behavior change, or fixes to existing behavior.
+Stay the strategic architect; delegate the implementation. You own the design layer — the interfaces, boundaries, and intent. The agent is the tactical programmer that fills the modules. Tier your attention by criticality: treat each module as a gray box — for critical or risky segments, design and review the interface rigorously and scrutinize the implementation; for low-risk segments, design the outer interface carefully and delegate the implementation blob to the agent. Investing in design every day (not divesting from it) is what keeps you ahead of the volume of code an agent produces. Define how interfaces change at the LLD level so you're always managing the high-level map, not drowning in line-by-line output.
 
 ## The Authorship Order
 
@@ -57,7 +44,7 @@ The downstream half (EARS → Tests → Code) is owned by `uncle-dev-spec-annota
 
 ## Segment Selection Rules
 
-A **segment** is one product-behavior area owned by one LLD. The segment is the unit of cascade — changes inside one segment move through that segment quickly; changes that cross segments must pause for confirmation.
+A segment is one product-behavior area owned by one LLD. The segment is the unit of cascade — changes inside one segment move through that segment quickly; changes that cross segments must pause for confirmation.
 
 ### Choose by product intent, not file location
 
@@ -157,7 +144,7 @@ When a segment's module boundary is genuinely uncertain — you can't yet tell w
 
 ## Cascade Rules
 
-When intent changes, walk **down** the graph:
+When intent changes, walk down the graph:
 
 ```
 1. Update HLD or LLD (whichever changed)
@@ -168,7 +155,7 @@ When intent changes, walk **down** the graph:
 6. Run /uncle-dev-spec-graph to refresh the graph artifact
 ```
 
-When code changes first, walk **up** the graph:
+When code changes first, walk up the graph:
 
 ```
 1. Note the @spec ID(s) on the changed code

@@ -2,27 +2,9 @@
 name: uncle-dev-source-driven-development
 description: Grounds every implementation decision in official documentation. Use when you want authoritative, source-cited code free from outdated patterns. Use when building with any framework or library where correctness matters.
 ---
-
-# Source-Driven Development
-
 ## Overview
 
 Every framework-specific code decision must be backed by official documentation. Don't implement from memory — verify, cite, and let the user see your sources. Training data goes stale, APIs get deprecated, best practices evolve. This skill ensures the user gets code they can trust because every pattern traces back to an authoritative source they can check.
-
-## When to Use
-
-- The user wants code that follows current best practices for a given framework
-- Building boilerplate, starter code, or patterns that will be copied across a project
-- The user explicitly asks for documented, verified, or "correct" implementation
-- Implementing features where the framework's recommended approach matters (forms, routing, data fetching, state management, auth)
-- Reviewing or improving code that uses framework-specific patterns
-- Any time you are about to write framework-specific code from memory
-
-**When NOT to use:**
-
-- Correctness does not depend on a specific version (renaming variables, fixing typos, moving files)
-- Pure logic that works the same across all versions (loops, conditionals, data structures)
-- The user explicitly wants speed over verification ("just do it quickly")
 
 ## The Process
 
@@ -58,13 +40,13 @@ STACK DETECTED:
 → Fetching official docs for the relevant patterns.
 ```
 
-If versions are missing or ambiguous, **ask the user**. Don't guess — the version determines which patterns are correct.
+If versions are missing or ambiguous, ask the user. Don't guess — the version determines which patterns are correct.
 
 ### Step 2: Fetch Official Documentation
 
 Fetch the specific documentation page for the feature you're implementing. Not the homepage, not the full docs — the relevant page.
 
-**Source hierarchy (in order of authority):**
+Source hierarchy (in order of authority):
 
 | Priority | Source | Example |
 |----------|--------|---------|
@@ -73,14 +55,14 @@ Fetch the specific documentation page for the feature you're implementing. Not t
 | 3 | Web standards references | MDN, web.dev, html.spec.whatwg.org |
 | 4 | Browser/runtime compatibility | caniuse.com, node.green |
 
-**Not authoritative — never cite as primary sources:**
+Not authoritative — never cite as primary sources:
 
 - Stack Overflow answers
 - Blog posts or tutorials (even popular ones)
 - AI-generated documentation or summaries
 - Your own training data (that is the whole point — verify it)
 
-**Be precise with what you fetch:**
+Be precise with what you fetch:
 
 ```
 BAD:  Fetch the React homepage
@@ -103,7 +85,7 @@ Write code that matches what the documentation shows:
 - If the docs deprecate a pattern, don't use the deprecated version
 - If the docs don't cover something, flag it as unverified
 
-**When docs conflict with existing project code:**
+When docs conflict with existing project code:
 
 ```
 CONFLICT DETECTED:
@@ -123,7 +105,7 @@ Surface the conflict. Don't silently pick one.
 
 Every framework-specific pattern gets a citation. The user must be able to verify every decision.
 
-**In code comments:**
+In code comments:
 
 ```typescript
 // React 19 form handling with useActionState
@@ -131,7 +113,7 @@ Every framework-specific pattern gets a citation. The user must be able to verif
 const [state, formAction, isPending] = useActionState(submitOrder, initialState);
 ```
 
-**In conversation:**
+In conversation:
 
 ```
 I'm using useActionState instead of manual useState for the
@@ -143,7 +125,7 @@ Source: https://react.dev/blog/2024/12/05/react-19#actions
 pending states automatically"
 ```
 
-**Citation rules:**
+Citation rules:
 
 - Full URLs, not shortened
 - Prefer deep links with anchors where possible (e.g. `/useActionState#usage` over `/useActionState`) — anchors survive doc restructuring better than top-level pages

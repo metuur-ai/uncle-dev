@@ -2,9 +2,6 @@
 name: uncle-dev-spec-annotations
 description: Connects durable product behavior to specs, tests, and code via `@spec` annotations. Use when adding behavior that should be traceable from intent to implementation, when specs need stable IDs, or when running coherence checks across HLD/LLD/EARS/tests/code.
 ---
-
-# Spec Annotations
-
 ## Overview
 
 `@spec` is one edge in a graph that connects durable product intent to the code that implements it. The graph flows in one direction:
@@ -13,19 +10,9 @@ description: Connects durable product behavior to specs, tests, and code via `@s
 HLD ──▶ LLD ──▶ EARS spec ──▶ Test ──▶ Code
 ```
 
-`@spec` is **not** a changelog marker. It does not mean "this code changed in this task." It means "this code implements this product behavior." A spec ID is stable: it survives renames, refactors, and OpenSpec change archival.
+`@spec` is not a changelog marker. It does not mean "this code changed in this task." It means "this code implements this product behavior." A spec ID is stable: it survives renames, refactors, and OpenSpec change archival.
 
 Pair this skill with `uncle-dev-spec-driven-development` (which owns the transient OpenSpec change workflow) and `uncle-dev-design-architecture-docs` (which owns HLD/LLD authorship). This skill owns the spec-to-code edge.
-
-## When to Use
-
-- You are about to write code or a test that implements a durable product behavior
-- You are reviewing code and want to verify every behavior entry point cites a real spec
-- You are reading code that has no `@spec` annotation and need to decide whether to add one
-- You are about to commit and want to confirm no broken spec links exist
-- You are designing a new feature and need to introduce new EARS spec IDs
-
-**When NOT to use:** Pure formatting changes, dependency bumps, build-tool config edits, or one-shot scripts that don't implement product behavior.
 
 ## The Graph
 
@@ -82,10 +69,10 @@ Status markers: `[x]` implemented · `[ ]` active gap · `[D]` deferred.
 
 Good specs are:
 
-- **Stable** — the ID survives when the wording gets sharper
-- **Product-facing** — describes behavior, not implementation details
-- **Testable** — a test can prove whether the behavior exists
-- **Grep-friendly** — the ID is easy to search across the repo
+- Stable — the ID survives when the wording gets sharper
+- Product-facing — describes behavior, not implementation details
+- Testable — a test can prove whether the behavior exists
+- Grep-friendly — the ID is easy to search across the repo
 
 Do not make specs for temporary implementation tasks:
 
@@ -162,7 +149,7 @@ it("does not expose raw authentication failure details", async () => {
 
 ## Segment & Prefix Conventions
 
-A **segment** is one product-behavior area owned by one LLD. The spec prefix marks its boundary.
+A segment is one product-behavior area owned by one LLD. The spec prefix marks its boundary.
 
 ```
 auth segment       → AUTH-*
@@ -178,7 +165,7 @@ AUTH-API-001
 AUTH-SESSION-001
 ```
 
-Choose segments by **product intent**, not file location:
+Choose segments by product intent, not file location:
 
 ```
 Good: auth = login, logout, sessions, auth errors
@@ -217,7 +204,7 @@ The `spec-coherence-guard.sh` hook runs this scanner before edits and commits �
 
 For full algorithm details, see `resources/scanner-design.md`.
 
-When intent changes, walk **down** the graph:
+When intent changes, walk down the graph:
 
 ```
 Update HLD or LLD
@@ -235,7 +222,7 @@ Update code with @spec
 Run coherence check
 ```
 
-When code changes first, walk **up** the graph:
+When code changes first, walk up the graph:
 
 ```
 Code changed

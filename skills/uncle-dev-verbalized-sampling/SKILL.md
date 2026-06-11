@@ -10,24 +10,21 @@ description: >
   the first answer is likely the conventional one and the valuable answer is in the tail.
 user-invocable: true
 ---
-
-# Verbalized Sampling
-
 ## Overview
 
 RLHF training rewards the conventional, safe answer. Ask a model for edge cases and it
 lists the three obvious ones; ask for design alternatives and it backfills strawmen after
-already choosing. This is **mode collapse**, and in spec work it has a price: the missed
+already choosing. This is mode collapse, and in spec work it has a price: the missed
 edge case becomes a production bug discovered after the spec is locked, and the LLD's
 "rejected alternatives" section becomes theater.
 
-**Verbalized Sampling (VS)** breaks the collapse by asking for the *distribution* instead
-of the instance: generate N **distinct** options and tag each by **typicality** — how
+Verbalized Sampling (VS) breaks the collapse by asking for the distribution instead
+of the instance: generate N distinct options and tag each by typicality — how
 likely a typical answer to this prompt would include it. Forcing the tag pushes the model
 past its first (modal) answer into the tail of its knowledge, where the missed edge cases
 and genuine alternatives live.
 
-uncle-dev is a **diverge → converge funnel** (`idea-refine → grill → spec → plan → build`).
+uncle-dev is a diverge → converge funnel (`idea-refine → grill → spec → plan → build`).
 VS amplifies the diverge steps only. The iron rule:
 
 > **Tags drive divergence, then die at convergence. Nothing locked — EARS tables, PRDs,
@@ -36,39 +33,21 @@ VS amplifies the diverge steps only. The iron rule:
 `uncle-dev-pre-mortem` is the existing proof this pattern works here: it already generates
 8–12 unfiltered failure causes and scores them — VS with domain framing.
 
-## When to Use
-
-- Enumerating **edge cases / failure modes** during a grill or spec session
-- Generating **design alternatives** before committing an LLD "Key Decisions" entry
-- Running a **completeness check** on a drafted EARS spec before the HARD GATE
-- Producing **idea variations** during ideation
-- Generating **root-cause hypotheses** while debugging
-- Any analysis step where you catch yourself accepting the first plausible enumeration
-
-**When NOT to use:**
-
-- Writing or editing **locked artifacts**: EARS statements, PRD decisions, committed tasks
-- `uncle-dev-research` documentation passes — a documentarian describes what IS; the sole
-  exception is reporting a genuinely ambiguous code path as "N possible readings"
-- `uncle-dev-ubiquitous-language` — its job is convergence to one canonical term
-- When options are externally fixed (config enums, API contracts) — there is no
-  distribution to sample
-
 ## The Core Protocol
 
 Every application follows the same four steps:
 
-1. **Diverge** — "Generate N **distinct** {options} for {target}. Span different
+1. Diverge — "Generate N distinct {options} for {target}. Span different
    categories; do not stop at the obvious ones." Default N=4–6. Distinctness beats
    volume: 5 genuinely different options beat 12 paraphrases.
-2. **Tag** — label each option `typical` / `less common` / `rare`: how likely a typical
-   answer would include it. Use ordinal tags, **not numbers** — the model's
+2. Tag — label each option `typical` / `less common` / `rare`: how likely a typical
+   answer would include it. Use ordinal tags, not numbers — the model's
    self-estimates are uncalibrated, and `0.85` is false precision (see Gotchas).
-3. **Converge** — the tags direct attention, they don't decide. Interrogate or
+3. Converge — the tags direct attention, they don't decide. Interrogate or
    stress-test the `rare` options explicitly — they are the ones mode collapse was
    hiding. Then let the existing skill's convergence mechanism (depth-first interview,
    stress-test, pre-mortem, HARD GATE) judge on merit.
-4. **Discard** — the survivors enter the downstream artifact *without their tags*.
+4. Discard — the survivors enter the downstream artifact without their tags.
    Audit: `grep -ri "typical\|less common\|rare\|probability" docs/ears/ docs/prd/`
    should return nothing VS-shaped.
 
@@ -80,8 +59,8 @@ is ready to use verbatim.
 
 ### 1. `uncle-dev-grill` — edge cases & failure modes (highest value)
 
-**Where:** design-tree branch 5 ("Edge cases & failure modes"), before the depth-first walk.
-**What improves:** the spec gaps. The depth-first interview is excellent at *resolving*
+Where: design-tree branch 5 ("Edge cases & failure modes"), before the depth-first walk.
+What improves: the spec gaps. The depth-first interview is excellent at resolving
 branches but only walks branches that get enumerated — and unaided enumeration is modal.
 
 > Generate 6 distinct failure modes for this flow — span input, state, integration,
@@ -94,9 +73,9 @@ branches turns a 40-question grill into interview fatigue.
 
 ### 2. `uncle-dev-spec-driven-development` / `uncle-dev-design-architecture-docs` — LLD alternatives
 
-**Where:** before writing the LLD "Key Decisions" section; this gives the
+Where: before writing the LLD "Key Decisions" section; this gives the
 "Design It Twice" guidance a concrete mechanism (and a third and fourth design).
-**What improves:** decisions get tested against real competitors generated *before*
+What improves: decisions get tested against real competitors generated before
 commitment, and the rejected-alternatives record becomes genuine instead of backfilled.
 
 > Generate 4 distinct architectures satisfying these EARS requirements. Tag each
@@ -107,10 +86,10 @@ commitment, and the rejected-alternatives record becomes genuine instead of back
 
 ### 3. EARS gap-check — completeness pass before the HARD GATE
 
-**Where:** `uncle-dev-spec-driven-development`, after the EARS draft, alongside the
+Where: `uncle-dev-spec-driven-development`, after the EARS draft, alongside the
 pre-mortem at the gate. The EARS statements themselves stay deterministic — VS aims
-*at* the spec, not into it.
-**What improves:** the omissions. This is the purest anti-mode-collapse move: it asks
+at the spec, not into it.
+What improves: the omissions. This is the purest anti-mode-collapse move: it asks
 directly "what did the safe answer leave out?"
 
 > Read the drafted EARS spec. Generate 5 requirements that a typical spec for this kind
@@ -119,8 +98,8 @@ directly "what did the safe answer leave out?"
 
 ### 4. `uncle-dev-idea-refine` — tag the existing divergence
 
-**Where:** Phase 1 already generates 5–8 lensed variations; it just doesn't tag them.
-**What improves:** Phase 2's convergence gains a signal for which variation is the
+Where: Phase 1 already generates 5–8 lensed variations; it just doesn't tag them.
+What improves: Phase 2's convergence gains a signal for which variation is the
 mode-collapsed default vs genuinely novel — and one rule: deliberately stress-test at
 least one `rare` direction instead of converging on the safest cluster. Keep the
 existing 5–8 cap; VS wants distinct, not many.
@@ -144,12 +123,12 @@ require that the causes span the typicality range —
 
 ## Gotchas
 
-- **The tags are uncalibrated.** A verbalized "probability" is a model self-estimate,
+- The tags are uncalibrated. A verbalized "probability" is a model self-estimate,
   not a measured frequency — its only legitimate jobs are (a) forcing generation past
   the mode and (b) showing the human which options are safe defaults vs unexplored tail.
   This is why the protocol mandates ordinal tags over numbers.
-- **Diversity is not quality.** A `rare` option is not a good option; it is an
-  *unexamined* one. VS only works because uncle-dev's convergence gates exist to judge
+- Diversity is not quality. A `rare` option is not a good option; it is an
+  unexamined one. VS only works because uncle-dev's convergence gates exist to judge
   what it surfaces. Never skip the converge step.
 
 ## Common Rationalizations
@@ -180,7 +159,7 @@ After applying VS at any injection point:
 - [ ] Each generated option set spans distinct categories (not paraphrases)
 - [ ] Tags are ordinal (`typical` / `less common` / `rare`), not numeric probabilities
 - [ ] At least one `rare` option was explicitly interrogated or stress-tested
-- [ ] The downstream artifact (EARS, PRD, LLD decision, task) contains **zero**
+- [ ] The downstream artifact (EARS, PRD, LLD decision, task) contains zero
       typicality/probability language — survivors entered untagged
 - [ ] The existing skill's own convergence gate (depth-first resolution, stress-test,
       pre-mortem, HARD GATE) still ran — VS supplemented it, never replaced it

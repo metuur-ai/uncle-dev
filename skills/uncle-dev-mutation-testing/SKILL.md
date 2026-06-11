@@ -2,42 +2,24 @@
 name: uncle-dev-mutation-testing
 description: Assesses test suite strength by introducing deliberate bugs one at a time and checking whether the test suite catches each one. Use after writing or refactoring tests to verify they would catch real defects. Use when test coverage looks adequate but confidence in the suite is low. Use when preparing to ship or before a major refactor.
 ---
-
-# Mutation Testing
-
 ## Overview
 
 Mutation testing measures whether the test suite would actually catch bugs — not just whether tests exist. It works by applying small, deliberate code changes (mutations) one at a time, running the tests, then reverting. A mutation the tests fail to catch is a gap in the suite. The output is a mutation score (killed/total) and a prioritised list of missing tests.
 
-**Config check — run this first:**
+Config check — run this first:
 ```bash
 bash scripts/uncle-dev-config.sh preferences.mutation-testing true
 ```
 If config resolves to `false`, stop immediately and tell the user that mutation testing is disabled for this project. Do not proceed.
 
-## When to Use
-
-- After completing a TDD cycle — verify the tests you wrote are strong enough to catch regressions
-- Before a major refactor — confirm the test suite is a reliable safety net
-- When coverage metrics look good but suite confidence is low
-- After a bug slip through code review that tests should have caught
-- On pull requests where test adequacy is flagged as a concern
-- Periodically on critical modules (auth, billing, data pipelines)
-
-**When NOT to use:**
-- On generated or boilerplate code with no meaningful logic (config, accessors, type declarations)
-- When project config has `preferences.mutation-testing: false`
-- On test files themselves — only mutate production code
-- When the test suite is already failing — fix it first
-
 ## Pre-flight
 
 Before mutating anything:
 
-1. **Check the config.** Run `bash scripts/uncle-dev-config.sh preferences.mutation-testing true`. If the resolved value is `false`, stop.
-2. **Clean working tree.** Run `git status` on the files in scope. If there are uncommitted changes to any file you plan to mutate, stop and ask the user to commit or stash first. Every mutation must be revertable cleanly with `git checkout -- <file>`.
-3. **Find the test runner.** Look for `pytest.ini`, `pyproject.toml [tool.pytest]`, `package.json` test script, `Makefile` test target, or a `tests/` directory. Ask the user if uncertain. Confirm the test suite passes on unmodified code before starting — if it doesn't, stop.
-4. **Agree on scope.** If no scope was given, look at the project's source layout and ask the user to pick a module. Do not try to mutate everything at once. Prioritise code with meaningful logic (branching, arithmetic, state changes) over config or trivial accessors.
+1. Check the config. Run `bash scripts/uncle-dev-config.sh preferences.mutation-testing true`. If the resolved value is `false`, stop.
+2. Clean working tree. Run `git status` on the files in scope. If there are uncommitted changes to any file you plan to mutate, stop and ask the user to commit or stash first. Every mutation must be revertable cleanly with `git checkout -- <file>`.
+3. Find the test runner. Look for `pytest.ini`, `pyproject.toml [tool.pytest]`, `package.json` test script, `Makefile` test target, or a `tests/` directory. Ask the user if uncertain. Confirm the test suite passes on unmodified code before starting — if it doesn't, stop.
+4. Agree on scope. If no scope was given, look at the project's source layout and ask the user to pick a module. Do not try to mutate everything at once. Prioritise code with meaningful logic (branching, arithmetic, state changes) over config or trivial accessors.
 
 ## Process
 
@@ -45,27 +27,27 @@ Work through the files in scope one at a time.
 
 ### For each file
 
-**Step 1 — Choose mutations.**
+Step 1 — Choose mutations.
 Read the file. Identify 3–8 candidate mutations from the catalogue in `mutation-catalogue.md`. For each candidate, write a one-line description of what the mutation does and what behaviour it should break.
 
-**Step 2 — Apply → test → revert.**
+Step 2 — Apply → test → revert.
 
 For each mutation:
 
-a. **Apply** using `Edit`. Change as little as possible — usually one line.
+a. Apply using `Edit`. Change as little as possible — usually one line.
 
-b. **Run tests.** Use the test runner identified in pre-flight. If the suite is large, run the relevant subset. Use a timeout — if tests hang, that counts as "killed".
+b. Run tests. Use the test runner identified in pre-flight. If the suite is large, run the relevant subset. Use a timeout — if tests hang, that counts as "killed".
 
-c. **Record the result:**
-- **Killed** — a test failed. Note which test. Rate the diagnostic quality:
-  - *Clear* — failure message immediately points to the bug. A developer would fix it in minutes.
-  - *Indirect* — a test failed but the message describes a symptom, not the cause. A developer would need to investigate.
-  - *Cascading* — many tests failed, making root cause hard to locate. Suggests the code lacks focused unit tests of its own.
-- **Survived** — no test failed. This is a gap. Note what behaviour is untested.
+c. Record the result:
+- Killed — a test failed. Note which test. Rate the diagnostic quality:
+  - Clear — failure message immediately points to the bug. A developer would fix it in minutes.
+  - Indirect — a test failed but the message describes a symptom, not the cause. A developer would need to investigate.
+  - Cascading — many tests failed, making root cause hard to locate. Suggests the code lacks focused unit tests of its own.
+- Survived — no test failed. This is a gap. Note what behaviour is untested.
 
-d. **Revert immediately:** `git checkout -- <file>`. Run `git diff <file>` to confirm the file is clean before moving on. Never stack mutations.
+d. Revert immediately: `git checkout -- <file>`. Run `git diff <file>` to confirm the file is clean before moving on. Never stack mutations.
 
-**Step 3 — Never leave a mutation in place.** If something goes wrong and the file state is uncertain, run `git diff <file>` to check, then `git checkout -- <file>` to restore.
+Step 3 — Never leave a mutation in place. If something goes wrong and the file state is uncertain, run `git diff <file>` to check, then `git checkout -- <file>` to restore.
 
 Use `TaskCreate` to track progress when there are more than a handful of files.
 
@@ -83,19 +65,19 @@ After completing all mutations for the scope, produce a summary table:
 
 Then provide:
 
-1. **Mutation score:** killed / total (e.g. 6/8 = 75%).
-2. **Uncaught mutations:** each survived mutation with a sentence explaining what behaviour is untested and why it matters.
-3. **Diagnostic quality:** note any killed mutations where the failure message was Indirect or Cascading, and suggest how the test could be sharpened.
-4. **Recommended tests:** for each survived mutation, describe a test that would catch it. Group by theme when several gaps point to the same missing area.
+1. Mutation score: killed / total (e.g. 6/8 = 75%).
+2. Uncaught mutations: each survived mutation with a sentence explaining what behaviour is untested and why it matters.
+3. Diagnostic quality: note any killed mutations where the failure message was Indirect or Cascading, and suggest how the test could be sharpened.
+4. Recommended tests: for each survived mutation, describe a test that would catch it. Group by theme when several gaps point to the same missing area.
 
 ## Implementing Missing Tests
 
 After presenting the report, ask the user whether they'd like the recommended tests implemented. If yes:
 
-1. **Locate the right test file.** Follow the project's existing test layout. Don't create a new test file when an existing one covers the same module.
-2. **Write focused tests.** Each test targets one survived mutation. Name the test after the behaviour it verifies, not the mutation: `test_cache_is_populated_after_first_call`, not `test_mutation_2`.
-3. **Verify.** Run the test suite to confirm new tests pass on unmodified code. Then re-apply each corresponding mutation and confirm the new test catches it.
-4. **Don't over-test.** If one well-designed test would catch multiple survived mutations, write one test, not several.
+1. Locate the right test file. Follow the project's existing test layout. Don't create a new test file when an existing one covers the same module.
+2. Write focused tests. Each test targets one survived mutation. Name the test after the behaviour it verifies, not the mutation: `test_cache_is_populated_after_first_call`, not `test_mutation_2`.
+3. Verify. Run the test suite to confirm new tests pass on unmodified code. Then re-apply each corresponding mutation and confirm the new test catches it.
+4. Don't over-test. If one well-designed test would catch multiple survived mutations, write one test, not several.
 
 ## Common Rationalizations
 

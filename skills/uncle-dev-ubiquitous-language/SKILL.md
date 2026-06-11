@@ -8,25 +8,11 @@ description: >
   same word means two things, before writing a spec or PRD, or when the user mentions
   "domain model", "DDD", "glossary", "terminology", or "ubiquitous language".
 ---
-
-# Ubiquitous Language
-
 ## Overview
 
 A ubiquitous language is a single, shared vocabulary for the domain — used identically in conversation, specs, PRDs, and code. Without it, the human and the AI talk past each other: the same word means two things, two words mean the same thing, and the agent generates verbose code that drifts from the intended model. This skill extracts that vocabulary into a maintained `docs/ubiquitous-language.md`, then feeds it into planning so every downstream artifact speaks the same language.
 
-**Why this matters more with AI:** an agent has no implicit shared context with you. It will happily invent "account" for what you call "customer" and "user" interchangeably. A canonical glossary, loaded as context during specs and planning, makes the agent think in your terms and produces code that aligns with the model you planned.
-
-## When to Use
-
-- Starting work in a new or unfamiliar domain
-- The agent and user keep using different words for the same thing (or the same word for different things)
-- Before writing a spec (`uncle-dev-spec`) or PRD — the glossary seeds consistent terminology
-- During planning — to flag any new term not yet in the glossary
-- Terminology has drifted: code, docs, and conversation disagree on names
-- The user asks for a domain model, glossary, or "ubiquitous language"
-
-**NOT for:** generic programming vocabulary (array, endpoint, function) — only terms with domain-specific meaning. Skip for trivial single-file changes with no domain concepts.
+Why this matters more with AI: an agent has no implicit shared context with you. It will happily invent "account" for what you call "customer" and "user" interchangeably. A canonical glossary, loaded as context during specs and planning, makes the agent think in your terms and produces code that aligns with the model you planned.
 
 ## Modes
 
@@ -34,8 +20,8 @@ Pick based on what exists:
 
 | Mode | Source | Use when |
 |---|---|---|
-| **Codebase-scan** | Existing source code | A codebase exists; you want terms grounded in what's already built |
-| **Conversation** | The active discussion | Greenfield, or refining terms mid-design before code exists |
+| Codebase-scan | Existing source code | A codebase exists; you want terms grounded in what's already built |
+| Conversation | The active discussion | Greenfield, or refining terms mid-design before code exists |
 
 Run both when refining an existing system from a new discussion — scan first, then layer in conversation terms.
 
@@ -43,11 +29,11 @@ Run both when refining an existing system from a new discussion — scan first, 
 
 ### 1. Choose the output location
 
-Default: `docs/ubiquitous-language.md`. If the project has no `docs/` tree (common in OpenSpec projects), use `.uncle-dev/ubiquitous-language.md`. If a glossary file already exists, **read it first** and update in place — never silently overwrite curated terms.
+Default: `docs/ubiquitous-language.md`. If the project has no `docs/` tree (common in OpenSpec projects), use `.uncle-dev/ubiquitous-language.md`. If a glossary file already exists, read it first and update in place — never silently overwrite curated terms.
 
 ### 2. Gather candidate terms
 
-**Codebase-scan mode** — prefer the cheapest high-signal source first:
+Codebase-scan mode — prefer the cheapest high-signal source first:
 
 ```bash
 # If a graphify knowledge graph exists, god nodes + communities ARE your domain terms:
@@ -61,17 +47,17 @@ rg -o '\b[A-Z][a-zA-Z]+(Service|Repository|Aggregate|Event|Command|Status|State)
 
 Cluster the survivors by subdomain (e.g. `Order lifecycle`, `Billing`, `Identity`). Skip framework/infra names that carry no domain meaning.
 
-**Conversation mode** — extract domain-relevant nouns, verbs, and concepts from the active discussion.
+Conversation mode — extract domain-relevant nouns, verbs, and concepts from the active discussion.
 
 ### 3. Identify problems
 
-- **Ambiguity:** one word, two concepts (e.g. "account" = both Customer and User)
-- **Synonyms:** two words, one concept (e.g. "buyer" / "client" / "customer")
-- **Vague/overloaded terms:** words that mean nothing precise
+- Ambiguity: one word, two concepts (e.g. "account" = both Customer and User)
+- Synonyms: two words, one concept (e.g. "buyer" / "client" / "customer")
+- Vague/overloaded terms: words that mean nothing precise
 
 ### 4. Propose a canonical glossary (be opinionated)
 
-When several words exist for one concept, **pick the best one** and list the rest as aliases to avoid. Write the file using the format below.
+When several words exist for one concept, pick the best one and list the rest as aliases to avoid. Write the file using the format below.
 
 ### 5. Validate → fix → re-validate
 
@@ -117,18 +103,18 @@ After writing, confirm against the Verification checklist. If a term is still am
 
 A glossary nobody reads is dead weight. Wire it in:
 
-- **Spec / PRD:** before writing, load `docs/ubiquitous-language.md` and use its canonical terms throughout. `uncle-dev-spec-driven-development` and the PRD flow read it when present.
-- **Planning:** `uncle-dev-planning-and-task-breakdown` checks tasks against the glossary and flags any new term not yet defined.
-- **Review:** code review may flag identifiers that contradict the glossary (a `Buyer` class where the canon is `Customer`).
+- Spec / PRD: before writing, load `docs/ubiquitous-language.md` and use its canonical terms throughout. `uncle-dev-spec-driven-development` and the PRD flow read it when present.
+- Planning: `uncle-dev-planning-and-task-breakdown` checks tasks against the glossary and flags any new term not yet defined.
+- Review: code review may flag identifiers that contradict the glossary (a `Buyer` class where the canon is `Customer`).
 
 ## Rules
 
-- **Be opinionated.** One canonical term per concept; everything else is an alias to avoid.
-- **Flag conflicts explicitly.** Every ambiguous term gets a "Flagged ambiguities" entry with a recommendation.
-- **Keep definitions tight.** One sentence. Define what it IS, not what it does.
-- **Domain terms only.** Skip generic programming concepts unless they carry domain-specific meaning.
-- **Group into tables** by subdomain/lifecycle/actor when natural clusters emerge; one table is fine for a single cohesive domain.
-- **Always write an example dialogue** (3–5 exchanges) showing the terms used precisely and clarifying boundaries between related concepts.
+- Be opinionated. One canonical term per concept; everything else is an alias to avoid.
+- Flag conflicts explicitly. Every ambiguous term gets a "Flagged ambiguities" entry with a recommendation.
+- Keep definitions tight. One sentence. Define what it IS, not what it does.
+- Domain terms only. Skip generic programming concepts unless they carry domain-specific meaning.
+- Group into tables by subdomain/lifecycle/actor when natural clusters emerge; one table is fine for a single cohesive domain.
+- Always write an example dialogue (3–5 exchanges) showing the terms used precisely and clarifying boundaries between related concepts.
 
 ## Common Rationalizations
 

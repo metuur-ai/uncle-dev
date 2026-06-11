@@ -2,32 +2,13 @@
 name: uncle-dev-dev-code-simplification
 description: Simplifies code for clarity. Use when refactoring code for clarity without changing behavior. Use when code works but is harder to read, maintain, or extend than it should be. Use when reviewing code that has accumulated unnecessary complexity.
 ---
-
-# Code Simplification
-
-> Inspired by the [Claude Code Simplifier plugin](https://github.com/anthropics/claude-plugins-official/blob/main/plugins/code-simplifier/agents/code-simplifier.md). Adapted here as a model-agnostic, process-driven skill for any AI coding agent.
+> Inspired by the https://github.com/anthropics/claude-plugins-official/blob/main/plugins/code-simplifier/agents/code-simplifier.md. Adapted here as a model-agnostic, process-driven skill for any AI coding agent.
 
 ## Overview
 
 Simplify code by reducing complexity while preserving exact behavior. The goal is not fewer lines — it's code that is easier to read, understand, modify, and debug. Every simplification must pass a simple test: "Would a new team member understand this faster than the original?"
 
-**Bad code is more expensive than it has ever been.** Software tends toward entropy — left unchecked, isolated changes accumulate into a messy codebase that defeats *both* humans and AI agents. An agent navigates by reasoning over structure; a tangled codebase produces tangled (or wrong) output, compounding the mess. Resisting entropy isn't cleanup for its own sake — it's what keeps the codebase navigable enough for an agent to keep helping you.
-
-## When to Use
-
-- After a feature is working and tests pass, but the implementation feels heavier than it needs to be
-- During code review when readability or complexity issues are flagged
-- When you encounter deeply nested logic, long functions, or unclear names
-- When refactoring code written under time pressure
-- When consolidating related logic scattered across files
-- After merging changes that introduced duplication or inconsistency
-
-**When NOT to use:**
-
-- Code is already clean and readable — don't simplify for the sake of it
-- You don't understand what the code does yet — comprehend before you simplify
-- The code is performance-critical and the "simpler" version would be measurably slower
-- You're about to rewrite the module entirely — simplifying throwaway code wastes effort
+Bad code is more expensive than it has ever been. Software tends toward entropy — left unchecked, isolated changes accumulate into a messy codebase that defeats both humans and AI agents. An agent navigates by reasoning over structure; a tangled codebase produces tangled (or wrong) output, compounding the mess. Resisting entropy isn't cleanup for its own sake — it's what keeps the codebase navigable enough for an agent to keep helping you.
 
 ## The Five Principles
 
@@ -95,12 +76,12 @@ for (const item of items) {
 
 Simplification has a failure mode: over-simplification. Watch for these traps:
 
-- **Inlining too aggressively** — removing a helper that gave a concept a name makes the call site harder to read
-- **Combining unrelated logic** — two simple functions merged into one complex function is not simpler
-- **Removing "unnecessary" abstraction** — some abstractions exist for extensibility or testability, not complexity
-- **Optimizing for line count** — fewer lines is not the goal; easier comprehension is
+- Inlining too aggressively — removing a helper that gave a concept a name makes the call site harder to read
+- Combining unrelated logic — two simple functions merged into one complex function is not simpler
+- Removing "unnecessary" abstraction — some abstractions exist for extensibility or testability, not complexity
+- Optimizing for line count — fewer lines is not the goal; easier comprehension is
 
-**When the problem is the interface, not the internals:** if you find the code is hard to simplify because the module's *shape* is wrong — a shallow module (interface as complex as its body), an awkward boundary, or a "manager" that hides nothing — line-level simplification won't fix it. Stop and redesign the boundary: load `reference/design-an-interface-SKILL.md` to generate and compare radically different interface designs by depth (the **design-phase** path; see "Escalating Beyond Inline Simplification" below).
+When the problem is the interface, not the internals: if you find the code is hard to simplify because the module's shape is wrong — a shallow module (interface as complex as its body), an awkward boundary, or a "manager" that hides nothing — line-level simplification won't fix it. Stop and redesign the boundary: load `reference/design-an-interface-SKILL.md` to generate and compare radically different interface designs by depth (the design-phase path; see "Escalating Beyond Inline Simplification" below).
 
 ### 5. Scope to What Changed
 
@@ -128,7 +109,7 @@ If you can't answer these, you're not ready to simplify. Read more context first
 
 Scan for these patterns — each one is a concrete signal, not a vague smell:
 
-**Structural complexity:**
+Structural complexity:
 
 | Pattern | Signal | Simplification |
 |---------|--------|----------------|
@@ -138,7 +119,7 @@ Scan for these patterns — each one is a concrete signal, not a vague smell:
 | Boolean parameter flags | `doThing(true, false, true)` | Replace with options objects or separate functions |
 | Repeated conditionals | Same `if` check in multiple places | Extract to a well-named predicate function |
 
-**Naming and readability:**
+Naming and readability:
 
 | Pattern | Signal | Simplification |
 |---------|--------|----------------|
@@ -148,7 +129,7 @@ Scan for these patterns — each one is a concrete signal, not a vague smell:
 | Comments explaining "what" | `// increment counter` above `count++` | Delete the comment — the code is clear enough |
 | Comments explaining "why" | `// Retry because the API is flaky under load` | Keep these — they carry intent the code can't express |
 
-**Redundancy:**
+Redundancy:
 
 | Pattern | Signal | Simplification |
 |---------|--------|----------------|
@@ -160,7 +141,7 @@ Scan for these patterns — each one is a concrete signal, not a vague smell:
 
 ### Step 3: Apply Changes Incrementally
 
-Make one simplification at a time. Run tests after each change. **Submit refactoring changes separately from feature or bug fix changes.** A PR that refactors and adds a feature is two PRs — split them.
+Make one simplification at a time. Run tests after each change. Submit refactoring changes separately from feature or bug fix changes. A PR that refactors and adds a feature is two PRs — split them.
 
 ```
 FOR EACH SIMPLIFICATION:
@@ -172,7 +153,7 @@ FOR EACH SIMPLIFICATION:
 
 Avoid batching multiple simplifications into a single untested change. If something breaks, you need to know which simplification caused it.
 
-**The Rule of 500:** If a refactoring would touch more than 500 lines, invest in automation (codemods, sed scripts, AST transforms) rather than making the changes by hand. Manual edits at that scale are error-prone and exhausting to review. **When the change is too large to land in one inline pass** — many files, a sequence of dependent steps, or anything that needs review before execution — stop simplifying inline and load `reference/request-refactor-plan-SKILL.md` to produce a tiny-commit refactor plan (the **build-phase** path; see "Escalating Beyond Inline Simplification" below).
+The Rule of 500: If a refactoring would touch more than 500 lines, invest in automation (codemods, sed scripts, AST transforms) rather than making the changes by hand. Manual edits at that scale are error-prone and exhausting to review. When the change is too large to land in one inline pass — many files, a sequence of dependent steps, or anything that needs review before execution — stop simplifying inline and load `reference/request-refactor-plan-SKILL.md` to produce a tiny-commit refactor plan (the build-phase path; see "Escalating Beyond Inline Simplification" below).
 
 ### Step 4: Verify the Result
 
@@ -190,18 +171,18 @@ If the "simplified" version is harder to understand or review, revert. Not every
 
 ## Escalating Beyond Inline Simplification
 
-Inline simplification (the process above) handles complexity *within* the current shape of the code. Two situations need a heavier tool — each has a bundled reference. Load the reference only when its trigger fires; otherwise ignore it.
+Inline simplification (the process above) handles complexity within the current shape of the code. Two situations need a heavier tool — each has a bundled reference. Load the reference only when its trigger fires; otherwise ignore it.
 
 | Trigger (what you observe) | Phase | Load | What it gives you |
 |---|---|---|---|
-| The module's **interface/shape** is the problem — shallow module, awkward boundary, a wrapper that hides nothing. Line-level cleanup can't fix a wrong boundary. | **Design** | `reference/design-an-interface-SKILL.md` | "Design It Twice": spawn parallel sub-agents to generate radically different interface designs, then compare by depth (small interface / large hidden complexity) before committing to one. |
-| The simplification is **too large to land inline** — many files, dependent steps, crosses the Rule of 500, or needs review/sign-off before execution. | **Build** | `reference/request-refactor-plan-SKILL.md` | A tiny-commit refactor plan built via structured interview, written to `.devlocal/refactor-plans/<slug>.md` so the refactor lands as safe incremental steps instead of one risky pass. |
+| The module's interface/shape is the problem — shallow module, awkward boundary, a wrapper that hides nothing. Line-level cleanup can't fix a wrong boundary. | Design | `reference/design-an-interface-SKILL.md` | "Design It Twice": spawn parallel sub-agents to generate radically different interface designs, then compare by depth (small interface / large hidden complexity) before committing to one. |
+| The simplification is too large to land inline — many files, dependent steps, crosses the Rule of 500, or needs review/sign-off before execution. | Build | `reference/request-refactor-plan-SKILL.md` | A tiny-commit refactor plan built via structured interview, written to `.devlocal/refactor-plans/<slug>.md` so the refactor lands as safe incremental steps instead of one risky pass. |
 
-**How to use them:**
+How to use them:
 
-1. **Design first when the boundary is wrong.** If `design-an-interface` produces a new interface shape, treat that as the target. Don't hand-refactor toward it blindly.
-2. **Then plan the build when it's large.** Feed the chosen design (or the simplification goal) into `request-refactor-plan` to break it into reviewable, tiny commits. This connects to `uncle-dev-incremental-implementation` — each planned step is one increment.
-3. **Fall back to inline** for everything that fits in one pass with a clean diff — most simplifications never need to escalate.
+1. Design first when the boundary is wrong. If `design-an-interface` produces a new interface shape, treat that as the target. Don't hand-refactor toward it blindly.
+2. Then plan the build when it's large. Feed the chosen design (or the simplification goal) into `request-refactor-plan` to break it into reviewable, tiny commits. This connects to `uncle-dev-incremental-implementation` — each planned step is one increment.
+3. Fall back to inline for everything that fits in one pass with a clean diff — most simplifications never need to escalate.
 
 ## Language-Specific Guidance
 
@@ -320,7 +301,7 @@ function UserBadge({ user }: Props) {
 | "It's working, no need to touch it" | Working code that's hard to read will be hard to fix when it breaks. Simplifying now saves time on every future change. |
 | "Fewer lines is always simpler" | A 1-line nested ternary is not simpler than a 5-line if/else. Simplicity is about comprehension speed, not line count. |
 | "I'll just quickly simplify this unrelated code too" | Unscoped simplification creates noisy diffs and risks regressions in code you didn't intend to change. Stay focused. |
-| "The types make it self-documenting" | Types document structure, not intent. A well-named function explains *why* better than a type signature explains *what*. |
+| "The types make it self-documenting" | Types document structure, not intent. A well-named function explains why better than a type signature explains what. |
 | "This abstraction might be useful later" | Don't preserve speculative abstractions. If it's not used now, it's complexity without value. Remove it and re-add when needed. |
 | "The original author must have had a reason" | Maybe. Check git blame — apply Chesterton's Fence. But accumulated complexity often has no reason; it's just the residue of iteration under pressure. |
 | "I'll refactor while adding this feature" | Separate refactoring from feature work. Mixed changes are harder to review, revert, and understand in history. |

@@ -9,31 +9,19 @@ description: >
   PRD", or whenever you sense the user and you do not yet share the same picture of what is
   being built. Run before uncle-dev-spec, after uncle-dev-idea-refine has chosen a direction.
 ---
-
-# Grill (Shared Design Concept → PRD)
-
 ## Overview
 
-At the start of a project, the human and the AI lack a shared *design concept* — the invisible idea of what is actually being built. Left unaddressed, the agent confidently builds something different from what the user imagined. This skill closes that gap by turning the agent into a **helpful adversary**: it interviews the user relentlessly, walking every branch of the design tree and resolving dependencies one at a time, until a shared understanding exists. It then synthesizes that understanding into a PRD that downstream skills (`uncle-dev-spec`) turn into HLD/LLD/EARS.
+At the start of a project, the human and the AI lack a shared design concept — the invisible idea of what is actually being built. Left unaddressed, the agent confidently builds something different from what the user imagined. This skill closes that gap by turning the agent into a helpful adversary: it interviews the user relentlessly, walking every branch of the design tree and resolving dependencies one at a time, until a shared understanding exists. It then synthesizes that understanding into a PRD that downstream skills (`uncle-dev-spec`) turn into HLD/LLD/EARS.
 
-This is **requirements elicitation**, not ideation. Use `uncle-dev-idea-refine` first to choose *what* idea to pursue; use Grill to pin down *exactly what it means* before any spec or code.
-
-## When to Use
-
-- Starting a non-trivial feature or product where requirements exist only in conversation
-- The user explicitly asks to be grilled / interviewed, or wants a PRD from a rough idea
-- You notice you're guessing at intent, or you and the user keep picturing different things
-- Right before `uncle-dev-spec` — the PRD becomes the spec's input
-
-**NOT for:** trivial or fully-specified changes; pure ideation (use `uncle-dev-idea-refine`); capturing a decision already made (use `uncle-dev-acknowledge` / ADRs).
+This is requirements elicitation, not ideation. Use `uncle-dev-idea-refine` first to choose what idea to pursue; use Grill to pin down exactly what it means before any spec or code.
 
 ## The Core Discipline
 
-**Depth-first, one branch at a time.** Do not fire a flat list of 30 questions. Pick the highest-leverage unknown, ask about it, and follow its consequences down until that branch bottoms out — *then* return to the next unresolved branch. Each answer opens or closes further questions. This is why a real grill can run 40–100 questions: the tree is large, but you only ever hold one path in your head at a time.
+Depth-first, one branch at a time. Do not fire a flat list of 30 questions. Pick the highest-leverage unknown, ask about it, and follow its consequences down until that branch bottoms out — then return to the next unresolved branch. Each answer opens or closes further questions. This is why a real grill can run 40–100 questions: the tree is large, but you only ever hold one path in your head at a time.
 
-**Be a helpful adversary.** Surface contradictions ("earlier you said X, but this implies not-X — which holds?"). Refuse to paper over vagueness. Do not move on from a branch while a dependency is unresolved. Honest, not supportive — but always in service of the user's goal.
+Be a helpful adversary. Surface contradictions ("earlier you said X, but this implies not-X — which holds?"). Refuse to paper over vagueness. Do not move on from a branch while a dependency is unresolved. Honest, not supportive — but always in service of the user's goal.
 
-**Stop condition.** The interview ends when every branch has bottomed out AND the user confirms the synthesized understanding back to you — not at a fixed question count.
+Stop condition. The interview ends when every branch has bottomed out AND the user confirms the synthesized understanding back to you — not at a fixed question count.
 
 ## Process
 
@@ -47,14 +35,14 @@ This is **requirements elicitation**, not ideation. Use `uncle-dev-idea-refine` 
 
 Cover, in roughly this order, walking each to the bottom before the next:
 
-1. **Actors & jobs** — who uses this, what job are they hiring it to do?
-2. **Core domain model** — the central entities, their identity, lifecycle states, and relationships (cardinality).
-3. **Primary flows** — the happy path, step by step, with the system's response at each step.
-4. **Boundaries & scope** — what's explicitly in, what's explicitly out, what's deferred.
-5. **Edge cases & failure modes** — what happens when inputs are bad, services fail, states conflict?
-6. **Non-functionals** — scale, latency, security, compliance, offline, concurrency.
-7. **Integrations & contracts** — upstream/downstream systems, existing seams to reuse.
-8. **Success criteria** — how do we know it works? What's observable when it ships?
+1. Actors & jobs — who uses this, what job are they hiring it to do?
+2. Core domain model — the central entities, their identity, lifecycle states, and relationships (cardinality).
+3. Primary flows — the happy path, step by step, with the system's response at each step.
+4. Boundaries & scope — what's explicitly in, what's explicitly out, what's deferred.
+5. Edge cases & failure modes — what happens when inputs are bad, services fail, states conflict?
+6. Non-functionals — scale, latency, security, compliance, offline, concurrency.
+7. Integrations & contracts — upstream/downstream systems, existing seams to reuse.
+8. Success criteria — how do we know it works? What's observable when it ships?
 
 ### 3. Interview (depth-first loop)
 
@@ -75,7 +63,7 @@ Play back a tight summary of the design concept: model, flows, scope, key decisi
 
 ### 5. Synthesize the PRD
 
-Write `docs/prd/<slug>.md` (or `.uncle-dev/prd/<slug>.md` if no `docs/` tree) using the template below. Use the project's ubiquitous language throughout. Do **not** include file paths or code snippets (they rot) — except a single inline state machine / schema / type shape when prose can't encode a decision precisely.
+Write `docs/prd/<slug>.md` (or `.uncle-dev/prd/<slug>.md` if no `docs/` tree) using the template below. Use the project's ubiquitous language throughout. Do not include file paths or code snippets (they rot) — except a single inline state machine / schema / type shape when prose can't encode a decision precisely.
 
 ```markdown
 # <Feature> — PRD

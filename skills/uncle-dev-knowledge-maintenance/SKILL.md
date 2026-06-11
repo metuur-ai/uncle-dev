@@ -2,9 +2,6 @@
 name: uncle-dev-knowledge-maintenance
 description: Maintains accuracy of .uncle-dev/learns/ over time by reviewing, updating, consolidating, replacing, or deleting learning docs against the current codebase. Use after refactors, migrations, dependency upgrades, when a retrieved learning feels wrong, when a recently solved problem contradicts existing docs, when pattern docs no longer reflect current code, or when multiple docs seem to cover the same topic.
 ---
-
-# Knowledge Maintenance
-
 ## Overview
 
 `.uncle-dev/learns/` accumulates learnings over time. As code evolves, those learnings drift —
@@ -14,31 +11,16 @@ replaces, or deletes them to maintain a trustworthy knowledge store.
 
 Pair with `uncle-dev-knowledge-capture`: capture creates, maintenance sustains.
 
-## When to Use
-
-**Use when:**
-- After a refactor, migration, rename, or dependency upgrade that likely invalidated references
-- A retrieved learning felt wrong or led you in the wrong direction
-- A recently solved problem contradicts an existing learning
-- Pattern docs no longer reflect how the code works today
-- Multiple docs seem to cover the same topic and may have drifted apart
-- Running a periodic knowledge store health check
-
-**NOT for:**
-- Cosmetic edits or wording improvements with no accuracy impact
-- Docs with no referenced code change (if code hasn't changed, the doc probably hasn't drifted)
-- Creating new documentation — use `uncle-dev-knowledge-capture` for that
-
 ## Core Process
 
 ### Mode Detection
 
-Check if `$ARGUMENTS` contains `mode:autofix`. If present, strip it and run in **autofix mode**.
+Check if `$ARGUMENTS` contains `mode:autofix`. If present, strip it and run in autofix mode.
 
 | Mode | When | Behavior |
 |------|------|----------|
-| **Interactive** (default) | User is present | Ask for decisions on genuinely ambiguous cases |
-| **Autofix** | `mode:autofix` in arguments | No user questions. Apply unambiguous actions. Mark ambiguous cases as stale. Generate report. |
+| Interactive (default) | User is present | Ask for decisions on genuinely ambiguous cases |
+| Autofix | `mode:autofix` in arguments | No user questions. Apply unambiguous actions. Mark ambiguous cases as stale. Generate report. |
 
 In autofix mode: skip all user questions; mark ambiguous cases with `status: stale`, `stale_reason`, `stale_date` in frontmatter; generate a full report split into Applied and Recommended sections.
 
@@ -51,10 +33,10 @@ Find all `.md` files under `.uncle-dev/learns/`, excluding `README.md` files and
 If `$ARGUMENTS` is provided (after stripping `mode:autofix`), narrow scope using these strategies
 in order, stopping at the first that produces results:
 
-1. **Directory match** — check if the argument matches a subdirectory name under `.uncle-dev/learns/`
-2. **Frontmatter match** — search `module`, `component`, or `tags` fields for the argument
-3. **Filename match** — match against filenames (partial matches are fine)
-4. **Content search** — search file contents for the argument as a keyword
+1. Directory match — check if the argument matches a subdirectory name under `.uncle-dev/learns/`
+2. Frontmatter match — search `module`, `component`, or `tags` fields for the argument
+3. Filename match — match against filenames (partial matches are fine)
+4. Content search — search file contents for the argument as a keyword
 
 If no matches: report and stop. In autofix mode, do not guess at scope.
 
@@ -64,11 +46,11 @@ Before investigating, estimate scope and choose the lightest interaction path:
 
 | Scope | When | Interaction |
 |-------|------|-------------|
-| **Focused** | 1-2 files or user named a specific doc | Investigate directly, present recommendation |
-| **Batch** | Up to ~8 mostly independent docs | Investigate first, present grouped recommendations |
-| **Broad** | 9+ docs or repo-wide sweep | Triage first (see below), then investigate in batches |
+| Focused | 1-2 files or user named a specific doc | Investigate directly, present recommendation |
+| Batch | Up to ~8 mostly independent docs | Investigate first, present grouped recommendations |
+| Broad | 9+ docs or repo-wide sweep | Triage first (see below), then investigate in batches |
 
-**Broad scope triage:** Read frontmatter of all candidates, group by module/component/category.
+Broad scope triage: Read frontmatter of all candidates, group by module/component/category.
 Identify clusters with the densest learnings + pattern docs. Spot-check whether primary referenced
 files exist. Present the highest-impact cluster and ask the user to confirm or redirect. In autofix
 mode, skip the question and process all clusters in impact order.
@@ -78,21 +60,21 @@ mode, skip the question and process all clusters in impact order.
 For each learning in scope, read it, cross-reference its claims against the current codebase, and
 form a recommendation. Check these dimensions:
 
-- **References** — do file paths, class names, and modules still exist or have they moved?
-- **Recommended solution** — does the fix still match how the code works today?
-- **Code examples** — do snippets still reflect the current implementation?
-- **Related docs** — are cross-referenced learnings and patterns still present and consistent?
-- **Auto memory** (Claude Code only) — does the injected auto-memory block contain entries in the
+- References — do file paths, class names, and modules still exist or have they moved?
+- Recommended solution — does the fix still match how the code works today?
+- Code examples — do snippets still reflect the current implementation?
+- Related docs — are cross-referenced learnings and patterns still present and consistent?
+- Auto memory (Claude Code only) — does the injected auto-memory block contain entries in the
   same problem domain? Report any memory-sourced signals separately, tagged "(auto memory [claude])".
   Memory-only drift (no codebase corroboration) should result in stale-marking in autofix mode.
-- **Overlap** — note when another doc in scope covers the same problem domain, references the same
+- Overlap — note when another doc in scope covers the same problem domain, references the same
   files, or recommends a similar solution. Record the two file paths, which dimensions overlap, and
   which doc appears broader or more current. These feed Step 2.5.
 
-**Update vs Replace — the critical distinction:**
+Update vs Replace — the critical distinction:
 
-- **Update territory:** references moved but the core solution is the same. Fix paths, names, links.
-- **Replace territory:** the recommended solution conflicts with current code, or the architectural
+- Update territory: references moved but the core solution is the same. Fix paths, names, links.
+- Replace territory: the recommended solution conflicts with current code, or the architectural
   approach changed. Stop — delegate to a replacement subagent (Step 4 Replace Flow).
 
 The boundary: if you find yourself rewriting the solution section or changing what the learning
@@ -113,16 +95,16 @@ or problem domain across:
 
 - Problem statement, solution shape, referenced files, prevention rules, root cause
 
-**Consolidate signal:** High overlap across 3+ dimensions. Ask: "Would a future maintainer need
+Consolidate signal: High overlap across 3+ dimensions. Ask: "Would a future maintainer need
 to read both docs to get the current truth, or is one mostly repeating the other?"
 
-**Supersession signals:** A newer doc covers the same files, same workflow, and broader behavior
+Supersession signals: A newer doc covers the same files, same workflow, and broader behavior
 than an older doc. The older doc is a consolidation candidate.
 
-**Cross-doc conflict check:** Look for contradictions — Doc A says "use X" while Doc B says
+Cross-doc conflict check: Look for contradictions — Doc A says "use X" while Doc B says
 "avoid X". These are more urgent than individual staleness. Flag for immediate resolution.
 
-**Retrieval-value test:** Before keeping two docs separate, ask: "Would having these as separate
+Retrieval-value test: Before keeping two docs separate, ask: "Would having these as separate
 docs improve discoverability, or just create drift risk?" Separate docs earn their keep only when
 they cover genuinely different sub-problems, target different audiences, or merging would create an
 unwieldy doc harder to navigate than two focused ones.
@@ -133,13 +115,13 @@ Assign one of five outcomes to each artifact:
 
 | Outcome | Meaning | Action |
 |---------|---------|--------|
-| **Keep** | Still accurate and useful | No file edit; report it was reviewed and remains trustworthy |
-| **Update** | Core solution correct, references drifted | Apply evidence-backed in-place edits |
-| **Consolidate** | Two+ docs overlap heavily but are both correct | Merge unique content into canonical doc, delete subsumed doc |
-| **Replace** | Old guidance is now misleading, replacement can be written | Write successor via subagent, delete old file |
-| **Delete** | No longer useful, applicable, or distinct | Delete the file |
+| Keep | Still accurate and useful | No file edit; report it was reviewed and remains trustworthy |
+| Update | Core solution correct, references drifted | Apply evidence-backed in-place edits |
+| Consolidate | Two+ docs overlap heavily but are both correct | Merge unique content into canonical doc, delete subsumed doc |
+| Replace | Old guidance is now misleading, replacement can be written | Write successor via subagent, delete old file |
+| Delete | No longer useful, applicable, or distinct | Delete the file |
 
-**Core rules:**
+Core rules:
 
 1. Evidence informs judgment. Use engineering judgment, not a mechanical scorecard.
 2. Prefer no-write Keep. Do not update a doc just to leave a review breadcrumb.
@@ -152,7 +134,7 @@ Assign one of five outcomes to each artifact:
 7. But check if the problem domain is still active before deleting. If the code is gone but the
    app still deals with that problem domain, classify as Replace, not Delete.
 
-**In interactive mode, ask questions one at a time.** Use the platform's blocking question tool
+In interactive mode, ask questions one at a time. Use the platform's blocking question tool
 (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini). Lead
 with the recommended option and a one-sentence rationale. Do not ask about whether code changes
 were intentional — that is code review, not doc maintenance.
@@ -190,10 +172,10 @@ Handle directly (no subagent needed — docs are already read):
 
 | Approach | When to use |
 |----------|-------------|
-| **Main thread** | Small scope, short docs |
-| **Sequential subagents** | 1-2 artifacts with many supporting files to read |
-| **Parallel subagents** | 3+ truly independent artifacts with low overlap |
-| **Batched subagents** | Broad sweeps — narrow scope first, then investigate in batches |
+| Main thread | Small scope, short docs |
+| Sequential subagents | 1-2 artifacts with many supporting files to read |
+| Parallel subagents | 3+ truly independent artifacts with low overlap |
+| Batched subagents | Broad sweeps — narrow scope first, then investigate in batches |
 
 Investigation subagents are read-only — they must not edit files. Each returns: file path, evidence,
 recommended action, confidence, open questions.
@@ -209,12 +191,12 @@ Include this instruction in every subagent prompt:
 Skip if no files were modified. Check which branch is checked out and whether the working tree
 has other uncommitted changes. Stage only the files that this skill modified.
 
-**If on main/master:** Create a branch (name it specifically, e.g., `docs/refresh-auth-learnings`),
+If on main/master: Create a branch (name it specifically, e.g., `docs/refresh-auth-learnings`),
 commit, open a PR. In autofix mode, do this automatically.
 
-**If on a feature branch (clean):** Commit to current branch as a separate commit.
+If on a feature branch (clean): Commit to current branch as a separate commit.
 
-**If on a feature branch (dirty):** Commit only maintenance changes (selective staging).
+If on a feature branch (dirty): Commit only maintenance changes (selective staging).
 
 Commit message: summarize what was refreshed (e.g., "update 3 stale learnings, consolidate 2
 overlapping docs"). Follow the repo's existing commit style.
@@ -230,20 +212,20 @@ the check procedure when running in interactive mode.
 
 ### Update: Valid vs Invalid In-Place Edits
 
-**Valid updates:**
+Valid updates:
 - Rename `app/models/auth_token.rb` reference to `app/models/session_token.rb`
 - Update `module: AuthToken` to `module: SessionToken`
 - Fix outdated links to related docs
 - Refresh implementation notes after a directory move
 
-**Not valid as in-place updates (use Replace instead):**
+Not valid as in-place updates (use Replace instead):
 - Rewriting the solution section because the approach changed
 - Changing what the learning recommends
 - Fixing an anti-pattern that the learning endorses
 
 ### Output Format
 
-**Print the full report as markdown.** Do not summarize internally. The report is the deliverable.
+Print the full report as markdown. Do not summarize internally. The report is the deliverable.
 
 ```
 Compound Refresh Summary
@@ -262,8 +244,8 @@ For every file processed, list: file path, classification, evidence (tag memory-
 with "(auto memory [claude])"), and action taken.
 
 In autofix mode, split the report into two sections:
-- **Applied** — writes that succeeded
-- **Recommended** — actions that could not be written (permission denied, etc.), with enough context for a human to apply manually
+- Applied — writes that succeeded
+- Recommended — actions that could not be written (permission denied, etc.), with enough context for a human to apply manually
 
 ## Common Rationalizations
 

@@ -2,38 +2,9 @@
 name: uncle-dev-documentation-and-adrs
 description: Records decisions and documentation. Use when making architectural decisions, changing public APIs, shipping features, or when you need to record context that future engineers and agents will need to understand the codebase.
 ---
-
-# Documentation and ADRs
-
 ## Overview
 
-Document decisions, not just code. The most valuable documentation captures the *why* — the context, constraints, and trade-offs that led to a decision. Code shows *what* was built; documentation explains *why it was built this way* and *what alternatives were considered*. This context is essential for future humans and agents working in the codebase.
-
-## When to Use
-
-- Making a significant architectural decision
-- Choosing between competing approaches
-- Adding or changing a public API
-- Shipping a feature that changes user-facing behavior
-- Onboarding new team members (or agents) to the project
-- When you find yourself explaining the same thing repeatedly
-
-**When NOT to use:** Don't document obvious code. Don't add comments that restate what the code already says. Don't write docs for throwaway prototypes.
-
-For documenting engineering solutions to bugs and problems (not architectural decisions), use `knowledge-capture` instead.
-
-### Acknowledge notes vs ADRs
-
-For per-package design decisions that need a human green-light **before** `/uncle-dev-build` is allowed to claim a story (e.g. "use a precomputed dummy hash for constant-time login", "no /me endpoint", "passwordHash stays nullable"), use `uncle-dev-acknowledge` instead. Those notes land in `openspec/acknowledge/<scope>.md`, are `pending` by default, and **gate** the next-task picker.
-
-| | ADR (`docs/decisions/`) | Acknowledge note (`openspec/acknowledge/`) |
-|---|---|---|
-| Scope | Repo-wide | Per package (`general`, `web`, `api`, `share`, …) |
-| Weight | Heavyweight narrative (Context, Decision, Alternatives, Consequences) | Lightweight bullet metadata + a paragraph of rationale |
-| Lifecycle | Accepted → Superseded / Deprecated; never deleted | Pending → Acknowledged / Rejected / Superseded; gates `/uncle-dev-build` while pending |
-| Triggered by | A decision worth a durable architectural record | A decision the human needs to sign off on before implementation can proceed |
-
-Both can apply to the same decision — write the ADR for durable history AND the acknowledge note to gate implementation. Cross-link the two: the ADR's body can cite the D-id, and the acknowledge note's `inferred_from` or rationale can name the ADR file.
+Document decisions, not just code. The most valuable documentation captures the why — the context, constraints, and trade-offs that led to a decision. Code shows what was built; documentation explains why it was built this way and what alternatives were considered. This context is essential for future humans and agents working in the codebase.
 
 ## Architecture Decision Records (ADRs)
 
@@ -101,14 +72,14 @@ Use PostgreSQL with Prisma ORM.
 PROPOSED → ACCEPTED → (SUPERSEDED or DEPRECATED)
 ```
 
-- **Don't delete old ADRs.** They capture historical context.
+- Don't delete old ADRs. They capture historical context.
 - When a decision changes, write a new ADR that references and supersedes the old one.
 
 ## Inline Documentation
 
 ### When to Comment
 
-Comment the *why*, not the *what*:
+Comment the why, not the what:
 
 ```typescript
 // BAD: Restates the code
@@ -256,10 +227,10 @@ For shipped features:
 
 Special consideration for AI agent context:
 
-- **CLAUDE.md / rules files** — Document project conventions so agents follow them
-- **Spec files** — Keep specs updated so agents build the right thing
-- **ADRs** — Help agents understand why past decisions were made (prevents re-deciding)
-- **Inline gotchas** — Prevent agents from falling into known traps
+- CLAUDE.md / rules files — Document project conventions so agents follow them
+- Spec files — Keep specs updated so agents build the right thing
+- ADRs — Help agents understand why past decisions were made (prevents re-deciding)
+- Inline gotchas — Prevent agents from falling into known traps
 
 ## Common Rationalizations
 
@@ -269,7 +240,7 @@ Special consideration for AI agent context:
 | "We'll write docs when the API stabilizes" | APIs stabilize faster when you document them. The doc is the first test of the design. |
 | "Nobody reads docs" | Agents do. Future engineers do. Your 3-months-later self does. |
 | "ADRs are overhead" | A 10-minute ADR prevents a 2-hour debate about the same decision six months later. |
-| "Comments get outdated" | Comments on *why* are stable. Comments on *what* get outdated — that's why you only write the former. |
+| "Comments get outdated" | Comments on why are stable. Comments on what get outdated — that's why you only write the former. |
 
 ## Red Flags
 

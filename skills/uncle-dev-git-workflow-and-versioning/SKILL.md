@@ -2,16 +2,9 @@
 name: uncle-dev-git-workflow-and-versioning
 description: Structures git workflow practices. Use when making any code change. Use when committing, branching, resolving conflicts, or when you need to organize work across multiple parallel streams.
 ---
-
-# Git Workflow and Versioning
-
 ## Overview
 
 Git is your safety net. Treat commits as save points, branches as sandboxes, and history as documentation. With AI agents generating code at high speed, disciplined version control is the mechanism that keeps changes manageable, reviewable, and reversible.
-
-## When to Use
-
-Always. Every code change flows through git.
 
 ## Core Principles
 
@@ -27,9 +20,9 @@ main ──●──●──●──●──●──●──●──●─
 
 This is the recommended default. Teams using gitflow or long-lived branches can adapt the principles (atomic commits, small changes, descriptive messages) to their branching model — the commit discipline matters more than the specific branching strategy.
 
-- **Dev branches are costs.** Every day a branch lives, it accumulates merge risk.
-- **Release branches are acceptable.** When you need to stabilize a release while main moves forward.
-- **Feature flags > long branches.** Prefer deploying incomplete work behind flags rather than keeping it on a branch for weeks.
+- Dev branches are costs. Every day a branch lives, it accumulates merge risk.
+- Release branches are acceptable. When you need to stabilize a release while main moves forward.
+- Feature flags > long branches. Prefer deploying incomplete work behind flags rather than keeping it on a branch for weeks.
 
 ### 1. Commit Early, Commit Often
 
@@ -64,7 +57,7 @@ x1y2z3a Add task feature, fix sidebar, update deps, refactor utils
 
 ### 3. Descriptive Messages
 
-Commit messages explain the *why*, not just the *what*:
+Commit messages explain the why, not just the what:
 
 ```
 # Good: Explains intent
@@ -78,14 +71,14 @@ consistent with existing validation patterns in auth.ts.
 update auth.ts
 ```
 
-**Format:**
+Format:
 ```
 <type>: <short description>
 
 <optional body explaining why, not what>
 ```
 
-**Types:**
+Types:
 - `feat` — New feature
 - `fix` — Bug fix
 - `refactor` — Code change that neither fixes a bug nor adds a feature
@@ -106,7 +99,7 @@ git commit -m "feat: add phone number validation to registration"
 git commit -m "refactor validation and add phone number field"
 ```
 
-**Separate refactoring from feature work.** A refactoring change and a feature change are two different changes — submit them separately. This makes each change easier to review, revert, and understand in history. Small cleanups (renaming a variable) can be included in a feature commit at reviewer discretion.
+Separate refactoring from feature work. A refactoring change and a feature change are two different changes — submit them separately. This makes each change easier to review, revert, and understand in history. Small cleanups (renaming a variable) can be included in a feature commit at reviewer discretion.
 
 ### 5. Size Your Changes
 
@@ -243,9 +236,9 @@ Automate this with git hooks:
 
 ## Handling Generated Files
 
-- **Commit generated files** only if the project expects them (e.g., `package-lock.json`, Prisma migrations)
-- **Don't commit** build output (`dist/`, `.next/`), environment files (`.env`), or IDE config (`.vscode/settings.json` unless shared)
-- **Have a `.gitignore`** that covers: `node_modules/`, `dist/`, `.env`, `.env.local`, `*.pem`
+- Commit generated files only if the project expects them (e.g., `package-lock.json`, Prisma migrations)
+- Don't commit build output (`dist/`, `.next/`), environment files (`.env`), or IDE config (`.vscode/settings.json` unless shared)
+- Have a `.gitignore` that covers: `node_modules/`, `dist/`, `.env`, `.env.local`, `*.pem`
 
 ## Using Git for Debugging
 

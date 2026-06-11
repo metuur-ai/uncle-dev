@@ -2,30 +2,17 @@
 name: uncle-dev-performance-optimization
 description: Optimizes application performance. Use when performance requirements exist, when you suspect performance regressions, or when Core Web Vitals or load times need improvement. Use when profiling reveals bottlenecks that need fixing.
 ---
-
-# Performance Optimization
-
 ## Overview
 
 Measure before optimizing. Performance work without measurement is guessing — and guessing leads to premature optimization that adds complexity without improving what matters. Profile first, identify the actual bottleneck, fix it, measure again. Optimize only what measurements prove matters.
-
-## When to Use
-
-- Performance requirements exist in the spec (load time budgets, response time SLAs)
-- Users or monitoring report slow behavior
-- Core Web Vitals scores are below thresholds
-- You suspect a change introduced a regression
-- Building features that handle large datasets or high traffic
-
-**When NOT to use:** Don't optimize before you have evidence of a problem. Premature optimization adds complexity that costs more than the performance it gains.
 
 ## Core Web Vitals Targets
 
 | Metric | Good | Needs Improvement | Poor |
 |--------|------|-------------------|------|
-| **LCP** (Largest Contentful Paint) | ≤ 2.5s | ≤ 4.0s | > 4.0s |
-| **INP** (Interaction to Next Paint) | ≤ 200ms | ≤ 500ms | > 500ms |
-| **CLS** (Cumulative Layout Shift) | ≤ 0.1 | ≤ 0.25 | > 0.25 |
+| LCP (Largest Contentful Paint) | ≤ 2.5s | ≤ 4.0s | > 4.0s |
+| INP (Interaction to Next Paint) | ≤ 200ms | ≤ 500ms | > 500ms |
+| CLS (Cumulative Layout Shift) | ≤ 0.1 | ≤ 0.25 | > 0.25 |
 
 ## The Optimization Workflow
 
@@ -41,10 +28,10 @@ Measure before optimizing. Performance work without measurement is guessing — 
 
 Two complementary approaches — use both:
 
-- **Synthetic (Lighthouse, DevTools Performance tab):** Controlled conditions, reproducible. Best for CI regression detection and isolating specific issues.
-- **RUM (web-vitals library, CrUX):** Real user data in real conditions. Required to validate that a fix actually improved user experience.
+- Synthetic (Lighthouse, DevTools Performance tab): Controlled conditions, reproducible. Best for CI regression detection and isolating specific issues.
+- RUM (web-vitals library, CrUX): Real user data in real conditions. Required to validate that a fix actually improved user experience.
 
-**Frontend:**
+Frontend:
 ```bash
 # Synthetic: Lighthouse in Chrome DevTools (or CI)
 # Chrome DevTools → Performance tab → Record
@@ -58,7 +45,7 @@ onINP(console.log);
 onCLS(console.log);
 ```
 
-**Backend:**
+Backend:
 ```bash
 # Response time logging
 # Application Performance Monitoring (APM)
@@ -100,7 +87,7 @@ What is slow?
 
 Common bottlenecks by category:
 
-**Frontend:**
+Frontend:
 
 | Symptom | Likely Cause | Investigation |
 |---------|-------------|---------------|
@@ -109,7 +96,7 @@ Common bottlenecks by category:
 | Poor INP | Heavy JavaScript on main thread, large DOM updates | Check long tasks in Performance trace |
 | Slow initial load | Large bundle, many network requests | Check bundle size, code splitting |
 
-**Backend:**
+Backend:
 
 | Symptom | Likely Cause | Investigation |
 |---------|-------------|---------------|
@@ -303,7 +290,7 @@ Time to Interactive: < 3.5s on 4G
 Lighthouse Performance score: ≥ 90
 ```
 
-**Enforce in CI:**
+Enforce in CI:
 ```bash
 # Bundle size check
 npx bundlesize --config bundlesize.config.json
@@ -315,7 +302,6 @@ npx lhci autorun
 ## See Also
 
 For detailed performance checklists, optimization commands, and anti-pattern reference, see `references/performance-checklist.md`.
-
 
 ## Common Rationalizations
 

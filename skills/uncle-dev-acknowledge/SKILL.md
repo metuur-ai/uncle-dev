@@ -3,9 +3,6 @@ name: uncle-dev-acknowledge
 description: Captures design-decision notes — as gating sdd-mode, or as ADRs in lid-ears mode. Use when the user pastes a list of "decisions worth checking", when /uncle-dev-spec surfaces decisions worth confirming, or when knowledge-capture detects a design decision. Also handles ack/reject/supersede on existing decision IDs (openspec mode only).
 
 ---
-
-# Acknowledge
-
 ## Phase 0 — Read SDD mode (ALWAYS first)
 
 ```bash
@@ -17,46 +14,31 @@ echo "$SDD_MODE"
 
 | Result                | Path                                                                                                                                                                                                                                       |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `lid-ears`            | **Exit immediately.** Tell the user: "This project uses lid-ears mode. Design decisions are captured as ADRs in `docs/decisions/`. Run `/uncle-dev-documentation-and-adrs` to write one." Do NOT create any `openspec/acknowledge/` files. |
+| `lid-ears`            | Exit immediately. Tell the user: "This project uses lid-ears mode. Design decisions are captured as ADRs in `docs/decisions/`. Run `/uncle-dev-documentation-and-adrs` to write one." Do NOT create any `openspec/acknowledge/` files. |
 | `openspec`            | Continue with the full process below.                                                                                                                                                                                                      |
 
 ---
 
 ## Overview
 
-Design decisions worth a human green-light belong neither in `.uncle-dev/learns/` (which is for solved problems) nor in `docs/decisions/` (which is heavyweight, repo-wide, narrative). They belong in `openspec/acknowledge/<scope>.md` — small per-package files of `### D<N>` sections that start as `status: pending` and **block `/uncle-dev-build` from claiming any story in their scope** until a human acknowledges them.
+Design decisions worth a human green-light belong neither in `.uncle-dev/learns/` (which is for solved problems) nor in `docs/decisions/` (which is heavyweight, repo-wide, narrative). They belong in `openspec/acknowledge/<scope>.md` — small per-package files of `### D<N>` sections that start as `status: pending` and block `/uncle-dev-build` from claiming any story in their scope until a human acknowledges them.
 
 Once acknowledged, notes stay in place with `status: acknowledged` as citation history. The same file is the place to grep for "why did we do X" months later.
 
-## When to Use
-
-- The user pastes a list of decisions worth checking (e.g. "D5 constant-time login… D9 schema stays nullable…").
-- `/uncle-dev-spec` Phase 3 review surfaces a design decision the human still needs to sign off on.
-- `/uncle-dev-knowledge-capture` Step 0 routes here because the input is a design decision, not a solved bug.
-- The user runs `/uncle-dev-acknowledge ack <ids>` to clear the gate, or `reject` / `supersede` to manage existing entries.
-- A human wants to write notes by hand — read `note-schema.yaml` and edit the scope file directly.
-
-**When NOT to use:**
-
-- `sdd_mode: lid-ears` — use `/uncle-dev-documentation-and-adrs` instead.
-- A bug was just solved → `uncle-dev-knowledge-capture` (writes to `.uncle-dev/learns/`).
-- A repo-wide architectural decision needs a narrative record → `uncle-dev-documentation-and-adrs` (writes `docs/decisions/ADR-NNN-*.md`). Cross-link both ways when both apply.
-- The note is just an inline code comment about _what_ the code does → don't capture it; the code is the truth.
-
 ## Process
 
-The skill operates in two modes: **capture** (parse new notes, write/update scope files) and **workflow** (ack/reject/supersede existing decisions). The slash command picks the mode from its arguments.
+The skill operates in two modes: capture (parse new notes, write/update scope files) and workflow (ack/reject/supersede existing decisions). The slash command picks the mode from its arguments.
 
 ### Capture mode
 
-1. **Parse input into discrete decisions.** Split on any of: `- D<N>` bullets, blank-line-separated paragraphs, numbered lists. Each decision has a one-line title and a rationale body. If the user already supplied a `D<N>` id, reuse it; otherwise allocate fresh ids in step 3.
-2. **Run inference rules per decision.** For each decision body, apply the rule table in `inference-rules.md` to produce a scope set (one or more of `general`, `api`, `web`, `share`, or any project-specific scope). Record the matched signals as `inferred_from`.
-3. **Allocate D-ids atomically.** Read `openspec/acknowledge/_meta.yaml` under a `mkdir`-style sentinel lock (same pattern as `skills/uncle-dev-next-task/parallelism-and-locks.md`). Increment `next_decision_id`, write back, release. Skip allocation for decisions whose id was supplied by the user.
-4. **Write or update each scope file.**
+1. Parse input into discrete decisions. Split on any of: `- D<N>` bullets, blank-line-separated paragraphs, numbered lists. Each decision has a one-line title and a rationale body. If the user already supplied a `D<N>` id, reuse it; otherwise allocate fresh ids in step 3.
+2. Run inference rules per decision. For each decision body, apply the rule table in `inference-rules.md` to produce a scope set (one or more of `general`, `api`, `web`, `share`, or any project-specific scope). Record the matched signals as `inferred_from`.
+3. Allocate D-ids atomically. Read `openspec/acknowledge/_meta.yaml` under a `mkdir`-style sentinel lock (same pattern as `skills/uncle-dev-next-task/parallelism-and-locks.md`). Increment `next_decision_id`, write back, release. Skip allocation for decisions whose id was supplied by the user.
+4. Write or update each scope file.
    - Ensure `openspec/acknowledge/<scope>.md` exists with the standard header (create lazily if missing).
    - Ensure `openspec/acknowledge/general.md` always exists (create on first run with header only).
    - Append a new `### D<N>` section per `note-schema.yaml`, or update an existing section if the id already exists. Never edit the prose body of an existing section in capture mode — only the metadata bullet list.
-5. **Print a routing summary.** Show one line per decision: `D<N> → [scopes] (signals: <matched>)`. The human can spot-check before moving on.
+5. Print a routing summary. Show one line per decision: `D<N> → [scopes] (signals: <matched>)`. The human can spot-check before moving on.
 
 ### Workflow mode
 
@@ -67,7 +49,7 @@ See `acknowledge-workflow.md` for the full mechanics. Quick reference:
 - `supersede <old> --by <new>` — flip old to `status: superseded`, set `supersedes: <old>` on the new note. Both stay readable.
 - `list [--scope <s>] [--status <s>]` — read-only summary, used by the gate and by humans browsing.
 
-All workflow operations are sed-style **status-line rewrites only** — they touch the metadata bullets, never the prose.
+All workflow operations are sed-style status-line rewrites only — they touch the metadata bullets, never the prose.
 
 ## Inference Rules
 
@@ -84,11 +66,11 @@ Source of truth is `inference-rules.md`. Quick summary table (read the reference
 | Cross-cutting concerns (security, perf budget, observability, error envelope, naming) | `general` (always)                                            |
 | Nothing matched                                                                       | `general` only (fallback)                                     |
 
-**Duplication rule.** A note lands in every scope its signals match. It additionally lands in `general` when it's cross-cutting OR a negation. Duplicates share **one global D-id** so ack on any copy propagates to all (the workflow walks every scope file looking for that id).
+Duplication rule. A note lands in every scope its signals match. It additionally lands in `general` when it's cross-cutting OR a negation. Duplicates share one global D-id so ack on any copy propagates to all (the workflow walks every scope file looking for that id).
 
 ## Acknowledge Workflow
 
-See `acknowledge-workflow.md` for the propagation algorithm, lock handling, and the exact regex used for status-line rewrites. Honor the rule: **never edit prose during workflow operations**. Capture is the only mode that writes prose.
+See `acknowledge-workflow.md` for the propagation algorithm, lock handling, and the exact regex used for status-line rewrites. Honor the rule: never edit prose during workflow operations. Capture is the only mode that writes prose.
 
 ## Common Rationalizations
 

@@ -2,22 +2,9 @@
 name: uncle-dev-planning-and-task-breakdown
 description: Breaks an OpenSpec change into ordered shared stories and execution notes. Use when you have an approved proposal/design and need shared implementable units. Use when a task feels too large to start, when you need to estimate scope, or when parallel work is possible.
 ---
-
-# Planning and Task Breakdown
-
 ## Overview
 
 Decompose an approved OpenSpec change into shared story-level work and shared execution coordination. Good planning keeps tracked repo artifacts focused on team truth while allowing each developer to keep disposable technical scratch work in `.devlocal/`.
-
-## When to Use
-
-- You have a spec and need to break it into implementable units
-- A task feels too large or vague to start
-- Work needs to be parallelized across multiple agents or sessions
-- You need to communicate scope to a human
-- The implementation order isn't obvious
-
-**When NOT to use:** Single-file changes with obvious scope, or when the spec already contains well-defined tasks.
 
 ## The Planning Process
 
@@ -30,16 +17,16 @@ SDD_MODE=$(bash "$_cfg" preferences.sdd_mode "" 2>/dev/null || true)
 echo "$SDD_MODE"
 ```
 
-**Route based on result:**
+Route based on result:
 
-- **`lid-ears`** → Skip to **Step 1-LID** below. Do NOT run any `openspec` command.
-- **`openspec`** → Continue with **Step 1-OpenSpec** below.
+- `lid-ears` → Skip to Step 1-LID below. Do NOT run any `openspec` command.
+- `openspec` → Continue with Step 1-OpenSpec below.
 
 ---
 
 ### Step 1-LID — Plan Mode (lid-ears)
 
-**ABSOLUTE PROHIBITION: Do NOT run any `openspec` command in this path.**
+ABSOLUTE PROHIBITION: Do NOT run any `openspec` command in this path.
 
 Read inputs in read-only mode:
 - `docs/ears/<slug>.md` — EARS requirements (source of truth for stories)
@@ -70,9 +57,9 @@ Rules:
 - `(mutex: tag)` when two stories cannot run concurrently (e.g., both modify the same file)
 - Private technical breakdown goes in `.devlocal/<user>/<story-id>/scratchpad.md`
 
-**No `execution.md` in lid-ears mode.** Cross-story coordination notes go in `.devlocal/`.
+No `execution.md` in lid-ears mode. Cross-story coordination notes go in `.devlocal/`.
 
-**Do NOT write code during planning.** The output is `docs/tasks/<slug>.md` only. Skip to Step 2 (dependency graph — conceptually map before writing; no separate execution artifact needed).
+Do NOT write code during planning. The output is `docs/tasks/<slug>.md` only. Skip to Step 2 (dependency graph — conceptually map before writing; no separate execution artifact needed).
 
 ---
 
@@ -93,11 +80,11 @@ If the CLI is not installed, recommend `npm install -g openspec` and read files 
 - Map dependencies between components
 - Note risks and unknowns
 
-**Do NOT write code during planning.** The outputs are `tasks.md` and `execution.md`, not implementation.
+Do NOT write code during planning. The outputs are `tasks.md` and `execution.md`, not implementation.
 
 ---
 
-**Graphify availability check** — run once before Step 2:
+Graphify availability check — run once before Step 2:
 ```bash
 [ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
 ```
@@ -147,9 +134,9 @@ graphify query "what depends on <module-being-changed>"
 
 Add graph-discovered dependencies to the tree before slicing stories. Mark graph-sourced edges with `[graph]` so they can be verified if needed. Note any god nodes touched in the `## Shared Blockers` section of `execution.md`.
 
-**Confidence rule:** Only add `[graph]` dependencies with EXTRACTED or INFERRED (>0.7) confidence to the dependency tree. AMBIGUOUS edges go into an "Open Questions" note in `execution.md` for manual verification.
+Confidence rule: Only add `[graph]` dependencies with EXTRACTED or INFERRED (>0.7) confidence to the dependency tree. AMBIGUOUS edges go into an "Open Questions" note in `execution.md` for manual verification.
 
-**Also check hyperedges for story boundaries.** Hyperedges label named groups like "user onboarding flow" or "checkout pipeline" — these often map directly to story-sized units, more precisely than community clusters:
+Also check hyperedges for story boundaries. Hyperedges label named groups like "user onboarding flow" or "checkout pipeline" — these often map directly to story-sized units, more precisely than community clusters:
 
 ```bash
 # Check density first — only useful if ≥ 5 hyperedges exist
@@ -163,9 +150,9 @@ for h in hs:
 "
 ```
 
-- **≥ 5 hyperedges:** map each one that overlaps the change area to a candidate story; the hyperedge's `nodes` list is the story's module scope
-- **< 5 hyperedges:** skip; use community structure from GRAPH_REPORT.md instead
-- **Do NOT use hyperedges** to find call chains or dependency direction — use `graphify path` for that
+- ≥ 5 hyperedges: map each one that overlaps the change area to a candidate story; the hyperedge's `nodes` list is the story's module scope
+- < 5 hyperedges: skip; use community structure from GRAPH_REPORT.md instead
+- Do NOT use hyperedges to find call chains or dependency direction — use `graphify path` for that
 
 See `uncle-dev-graphify-aware-analysis` for the full hyperedge decision table.
 
@@ -173,7 +160,7 @@ See `uncle-dev-graphify-aware-analysis` for the full hyperedge decision table.
 
 Instead of tracking every private engineering step in the repo, create shared story-sized slices:
 
-**Bad (repo noise):**
+Bad (repo noise):
 ```
 Task 1: Update DTO
 Task 2: Rename helper
@@ -181,7 +168,7 @@ Task 3: Add API validation
 Task 4: Add button loading state
 ```
 
-**Good (shared stories):**
+Good (shared stories):
 ```
 Story 1: User can create an account
 Story 2: User can log in
@@ -266,16 +253,16 @@ Use `.devlocal/` for technical substeps, personal TODOs, experiments, and prompt
 
 | Size | Shared Scope | Example |
 |------|--------------|---------|
-| **S** | One assignable outcome | Add invoice list for billing owners |
-| **M** | One feature slice with a few moving parts | Retry failed charge flow |
-| **L** | Multiple distinct outcomes | Billing management suite |
-| **XL** | Cross-cutting initiative | **Too large — break it down further** |
+| S | One assignable outcome | Add invoice list for billing owners |
+| M | One feature slice with a few moving parts | Retry failed charge flow |
+| L | Multiple distinct outcomes | Billing management suite |
+| XL | Cross-cutting initiative | Too large — break it down further |
 
 If a story is L or larger, break it down further before implementation. Shared tracked tasks should stay story-sized; code-level steps belong in `.devlocal/`.
 
-For a large **refactor** story specifically, detail it with the `dev-code-simplification` skill's `request-refactor-plan` reference — it interviews you and writes a tiny-commit plan to `.devlocal/refactor-plans/<slug>.md`. That plan is a personal planning aid (gitignored scratchpad), not a tracked artifact; the story itself still lives in the mode-appropriate tracked location (`docs/tasks/` in lid-ears, `openspec/changes/` in openspec).
+For a large refactor story specifically, detail it with the `dev-code-simplification` skill's `request-refactor-plan` reference — it interviews you and writes a tiny-commit plan to `.devlocal/refactor-plans/<slug>.md`. That plan is a personal planning aid (gitignored scratchpad), not a tracked artifact; the story itself still lives in the mode-appropriate tracked location (`docs/tasks/` in lid-ears, `openspec/changes/` in openspec).
 
-**When to break a story down further:**
+When to break a story down further:
 - It would take more than one focused session (roughly 2+ hours of agent work)
 - You cannot describe the acceptance criteria in 3 or fewer bullet points
 - It touches two or more independent subsystems (e.g., auth and billing)
@@ -325,9 +312,9 @@ For a large **refactor** story specifically, detail it with the `dev-code-simpli
 
 When multiple agents or sessions are available:
 
-- **Safe to parallelize:** Independent stories with clear contracts, tests for already-implemented features, documentation
-- **Must be sequential:** Database migrations, shared state changes, dependency chains
-- **Needs coordination:** Stories that share an API contract or design dependency; track the dependency in `execution.md` first, then parallelize
+- Safe to parallelize: Independent stories with clear contracts, tests for already-implemented features, documentation
+- Must be sequential: Database migrations, shared state changes, dependency chains
+- Needs coordination: Stories that share an API contract or design dependency; track the dependency in `execution.md` first, then parallelize
 
 ## Common Rationalizations
 

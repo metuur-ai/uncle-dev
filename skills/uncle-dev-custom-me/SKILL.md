@@ -2,26 +2,11 @@
 name: uncle-dev-custom-me
 description: Authors and registers user-defined override or companion skills that the uncle-dev runtime loads in place of (or alongside) bundled skills. Use when you want to replace `uncle-dev-<X>` with your own version, or layer team-specific rules on top of an uncle-dev skill without duplicating its content.
 ---
-
-# Uncle Dev — Custom Me
-
 ## Overview
 
 uncle-dev ships ~35 bundled skills. Teams often need to customize one — e.g., add a corporate TDD policy to `uncle-dev-test-driven-development`, or replace `uncle-dev-frontend-ui-engineering` with one that knows your design system. This skill teaches you the two supported customization patterns, where the file lives, and how to register it so the runtime actually loads it.
 
 The runtime mechanism is a single loader script (`scripts/uncle-dev-load-skill.sh`) called by 14 wired commands. When you register an override or companion in `.agents/uncle-dev-setup.yaml`, the loader emits `SKILL:` and `COMPANION:` lines the agent honors per the directive in your project CLAUDE.md.
-
-## When to Use
-
-- You want to replace an uncle-dev skill entirely with your own version.
-- You want to layer extra rules on top of an uncle-dev skill without copying its content.
-- You're being told "follow this corporate convention" that uncle-dev doesn't know about.
-
-**When NOT to Use:**
-- You want to fork uncle-dev — use git, not this skill.
-- The customization is a single per-skill setting that already exists as a `preferences.*` key.
-- You want a one-off rule for the current conversation — say it in chat instead.
-- You're working with a skill invoked outside the 14 wired commands (e.g., `uncle-dev-debug-error` from a non-build context, `uncle-dev-security-and-hardening` ad-hoc). v1 honors overrides/companions only when one of `/uncle-dev-build`, `/test`, `/spec`, `/review`, `/plan`, `/ship`, `/next-task`, `/acknowledge`, `/wrap`, `/research`, `/knowledge-capture`, `/knowledge-maintenance`, `/code-simplify`, or `/uncle-senior` invokes the skill.
 
 ## Process
 
@@ -43,14 +28,14 @@ Replace an uncle-dev skill with your own full SKILL.md. The override's body is l
 
 ### Pattern 2 — Companion
 
-Add a delta on top of an uncle-dev skill. The base skill loads first, then the companion's `## Companion Additions` merges into context. The companion does **not** restate the base.
+Add a delta on top of an uncle-dev skill. The base skill loads first, then the companion's `## Companion Additions` merges into context. The companion does not restate the base.
 
 ```
 /uncle-dev-custom-me companion <base-skill> <new-name>
 ```
 
 1. Pick the base skill name and a short new name (e.g., `team-tdd-rules`).
-2. The slash command scaffolds `.agents/skills/<new-name>/SKILL.md` from `templates/companion-skill.md` — a strict template containing **only** the frontmatter and a `## Companion Additions` heading. There is no Overview, no Process placeholder, not even commented-out.
+2. The slash command scaffolds `.agents/skills/<new-name>/SKILL.md` from `templates/companion-skill.md` — a strict template containing only the frontmatter and a `## Companion Additions` heading. There is no Overview, no Process placeholder, not even commented-out.
 3. The slash command prints the YAML block. Paste it into `.agents/uncle-dev-setup.yaml` under `skills.companions`.
 4. Validate: `bash scripts/uncle-dev-config.sh --validate` → exit 0.
 5. Edit `.agents/skills/<new-name>/SKILL.md` and add your delta inside `## Companion Additions`. Optionally add `## Additional Red Flags`, `## Project-Specific Patterns`, or `## Local Verification Steps` — these are the only other sections allowed.
@@ -95,7 +80,7 @@ Multiple companions on the same base are allowed; the loader emits one `COMPANIO
 
 - `SKILL: agent-skills:<name>` is a literal sentinel — not a file path. The `agent-skills:` prefix means "use the bundled skill." Treat anything else as a project-relative file path.
 - `.agents/uncle-dev-setup.yaml` is YAML, not JSON. The slash command prints the registration block ready to paste. Do not reformat or re-indent it.
-- Per-phase `skills.companions.<phase>` (e.g., `build`, `ship`) is permitted by the schema but **not loaded in v1**. Use the per-skill form keyed by base skill name.
+- Per-phase `skills.companions.<phase>` (e.g., `build`, `ship`) is permitted by the schema but not loaded in v1. Use the per-skill form keyed by base skill name.
 - Codex and OpenCode commands do not run shell, so they do not emit `SKILL:`/`COMPANION:` lines. Off Claude Code, your customization does not load — read the file yourself.
 - Override fully replaces the base. There is no merging at the section level. If you omit `## Verification`, the base's `## Verification` is gone.
 - Companions are loaded only by the 14 wired commands. A skill invoked ad-hoc (e.g., from inside a different prompt) falls through to the base.
@@ -128,7 +113,7 @@ After authoring a customization, confirm each item before considering it shipped
 
 - [ ] `.agents/skills/<new-name>/SKILL.md` exists.
 - [ ] For overrides: all 6 standard sections present per `docs/skill-anatomy.md`. Frontmatter has `overrides: <base-skill>`.
-- [ ] For companions: **only** `## Companion Additions` plus any of the four allowed optional sections. Frontmatter has `companion_to: <base-skill>`. `grep -E "^## (Overview|When to Use|Process|Common Rationalizations|Red Flags|Verification)" .agents/skills/<new-name>/SKILL.md` returns nothing.
+- [ ] For companions: only `## Companion Additions` plus any of the four allowed optional sections. Frontmatter has `companion_to: <base-skill>`. `grep -E "^## (Overview|When to Use|Process|Common Rationalizations|Red Flags|Verification)" .agents/skills/<new-name>/SKILL.md` returns nothing.
 - [ ] `bash scripts/uncle-dev-config.sh --validate` → exit 0.
 - [ ] `bash scripts/uncle-dev-load-skill.sh <base-skill>` prints the expected `SKILL:` and/or `COMPANION:` line(s), no `WARN:` on stderr.
 - [ ] Running the relevant wired command (e.g., `/uncle-dev-test`) in a session prints the same `SKILL:` / `COMPANION:` lines and the agent reads your file.

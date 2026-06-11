@@ -2,9 +2,6 @@
 name: uncle-dev-graphify-aware-analysis
 description: Shared protocol for querying the graphify semantic knowledge graph inside uncle-dev skills. Not invoked directly — referenced by research, spec, planning, debug, and review skills when graphify-out/graph.json is present. Defines availability check, command patterns, confidence interpretation, and fallback rules.
 ---
-
-# Graphify-Aware Analysis Protocol
-
 ## Overview
 
 Graphify builds a semantic knowledge graph from a codebase. Nodes represent concepts (modules, functions, patterns, docs). Edges carry typed relations — `calls`, `implements`, `references`, `conceptually_related_to`, `shares_data_with`, `semantically_similar_to`, `rationale_for` — and confidence levels. Hyperedges capture multi-node concepts not expressible as pairwise edges.
@@ -13,14 +10,14 @@ This protocol defines how uncle-dev skills interact with that graph: when to que
 
 ## Project-Level Availability Check
 
-Every skill that uses graphify runs this check **once, at the start of the skill invocation**, before any step:
+Every skill that uses graphify runs this check once, at the start of the skill invocation, before any step:
 
 ```bash
 [ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
 ```
 
-- **ON** → graphify steps are active throughout the skill run
-- **OFF** → skip every graphify section; proceed with the skill's standard grep/Glob/Read process
+- ON → graphify steps are active throughout the skill run
+- OFF → skip every graphify section; proceed with the skill's standard grep/Glob/Read process
 
 If `graph.json` exists but `graphify-out/GRAPH_REPORT.md` is missing, run `graphify update .` once before querying — the report is generated during the build and is required for architectural signal reading.
 
@@ -32,7 +29,7 @@ Do not repeat the check per-step. The result set at skill start applies to the e
 
 Plain-language explanation of one concept node plus all its direct neighbors in every direction.
 
-**When to use:** You have a specific concept name and want to understand its full structural neighborhood — what it calls, what calls it, what it shares data with, what it implements.
+When to use: You have a specific concept name and want to understand its full structural neighborhood — what it calls, what calls it, what it shares data with, what it implements.
 
 ```bash
 graphify explain "AuthMiddleware"
@@ -43,7 +40,7 @@ graphify explain "PaymentService"
 
 Shortest path through the graph between two known concept nodes. Reveals the dependency chain connecting them.
 
-**When to use:** Tracing how module A reaches module B; validating an assumed dependency; finding cross-layer coupling.
+When to use: Tracing how module A reaches module B; validating an assumed dependency; finding cross-layer coupling.
 
 ```bash
 graphify path "UserService" "BillingController"
@@ -54,11 +51,11 @@ graphify path "failing-ui-component" "suspected-api-module"
 
 BFS traversal starting from semantically matched nodes. Best for open-ended questions when you don't have exact node names.
 
-**Flags:**
+Flags:
 - `--dfs` — depth-first; better when you want to go deep into one branch rather than broad
 - `--budget N` — cap output tokens (default 2000; use `--budget 500` for a spot-check, `--budget 1500` for research contexts)
 
-**When to use:** You have a question but not a specific node name; impact analysis; finding "what else touches this area."
+When to use: You have a question but not a specific node name; impact analysis; finding "what else touches this area."
 
 ```bash
 graphify query "how does payment processing connect to order fulfillment" --budget 1500
@@ -70,7 +67,7 @@ graphify query "concepts similar to UserAuthHandler"
 
 Incremental rebuild of the graph from code changes. AST-only; no LLM call required.
 
-**When to use:** After significant code changes in the current session when the graph may be stale.
+When to use: After significant code changes in the current session when the graph may be stale.
 
 ```bash
 graphify update src/
@@ -83,10 +80,10 @@ Before any targeted query, read `graphify-out/GRAPH_REPORT.md` for architectural
 
 | Section | What it contains | How to use it |
 |---|---|---|
-| **God nodes** | Highest-betweenness nodes — architectural chokepoints | Any change touching a god node has outsized blast radius; flag it early in planning and review |
-| **Community structure** | Logical clusters of related concepts | Use clusters to scope "what else is affected?" and to identify natural story boundaries |
-| **Surprising connections** | Semantically linked nodes in different layers | Signals hidden coupling the author may not know about |
-| **Suggested questions** | Questions the graph's own structure surfaced | Starting points for research and review traversal |
+| God nodes | Highest-betweenness nodes — architectural chokepoints | Any change touching a god node has outsized blast radius; flag it early in planning and review |
+| Community structure | Logical clusters of related concepts | Use clusters to scope "what else is affected?" and to identify natural story boundaries |
+| Surprising connections | Semantically linked nodes in different layers | Signals hidden coupling the author may not know about |
+| Suggested questions | Questions the graph's own structure surfaced | Starting points for research and review traversal |
 
 ## Confidence Level Decision Table
 
@@ -113,9 +110,9 @@ Never file a bug, scope a story, or block a merge on AMBIGUOUS edges alone.
 
 ## Hyperedges: When to Use Them
 
-Hyperedges are different from pairwise edges. A pairwise edge says "A calls B". A hyperedge says "A, B, C, D all participate in the checkout flow" — it captures **named group membership**, not a bilateral relationship.
+Hyperedges are different from pairwise edges. A pairwise edge says "A calls B". A hyperedge says "A, B, C, D all participate in the checkout flow" — it captures named group membership, not a bilateral relationship.
 
-They are stored in `graphify-out/graph.json` under the `hyperedges` array. The CLI (`query`, `explain`, `path`) does **not** traverse them — you must read `graph.json` directly.
+They are stored in `graphify-out/graph.json` under the `hyperedges` array. The CLI (`query`, `explain`, `path`) does not traverse them — you must read `graph.json` directly.
 
 ```bash
 # Find all hyperedges containing a specific module
@@ -133,20 +130,20 @@ for h in matches:
 
 | Question | Why hyperedges help |
 |---|---|
-| **"Which named flow does this module belong to?"** | A hyperedge labels the flow and lists all its co-participants — impossible to derive from pairwise traversal |
-| **Planning story boundaries** | Hyperedges often map directly to story-sized named concepts (e.g. "user onboarding flow" = exact story scope) |
-| **Debug: module has few pairwise neighbors but feels central** | It may belong to a cross-cutting hyperedge (event pipeline, caching layer) that pairwise edges don't surface |
-| **Spec: "what exactly participates in this feature?"** | Hyperedge membership gives a precise list; `graphify query` gives a fuzzy BFS neighborhood |
+| "Which named flow does this module belong to?" | A hyperedge labels the flow and lists all its co-participants — impossible to derive from pairwise traversal |
+| Planning story boundaries | Hyperedges often map directly to story-sized named concepts (e.g. "user onboarding flow" = exact story scope) |
+| Debug: module has few pairwise neighbors but feels central | It may belong to a cross-cutting hyperedge (event pipeline, caching layer) that pairwise edges don't surface |
+| Spec: "what exactly participates in this feature?" | Hyperedge membership gives a precise list; `graphify query` gives a fuzzy BFS neighborhood |
 
 ### Do NOT use hyperedges when:
 
 | Question | Use instead |
 |---|---|
-| **"How does A reach B?"** — dependency direction matters | `graphify path "A" "B"` — hyperedges are undirected group membership, not directed call chains |
-| **"What calls X?"** — caller lookup | `graphify query "what calls X"` — that's a pairwise `calls` edge question |
-| **Quick spot-check during research** | CLI query — reading and parsing `graph.json` is heavier; not worth it for orientation queries |
-| **Code-only corpus with no docs or papers** | Hyperedges are sparse in code-only graphs; the extraction LLM produces fewer group-level concepts without prose context. Check `len(g['hyperedges'])` first — if < 5, skip |
-| **You need confidence scores on relationships** | Pairwise edges carry per-edge confidence; hyperedges carry a single score for the whole group |
+| "How does A reach B?" — dependency direction matters | `graphify path "A" "B"` — hyperedges are undirected group membership, not directed call chains |
+| "What calls X?" — caller lookup | `graphify query "what calls X"` — that's a pairwise `calls` edge question |
+| Quick spot-check during research | CLI query — reading and parsing `graph.json` is heavier; not worth it for orientation queries |
+| Code-only corpus with no docs or papers | Hyperedges are sparse in code-only graphs; the extraction LLM produces fewer group-level concepts without prose context. Check `len(g['hyperedges'])` first — if < 5, skip |
+| You need confidence scores on relationships | Pairwise edges carry per-edge confidence; hyperedges carry a single score for the whole group |
 
 ### Density check before using hyperedges
 

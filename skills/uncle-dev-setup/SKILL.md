@@ -2,22 +2,11 @@
 name: uncle-dev-setup
 description: Wires uncle-dev fully into a target project for Claude Code, Codex, and/or OpenCode. Installs the plugin for each detected tool, scaffolds required directories, writes the project config file, injects hooks into .claude/settings.json (Claude Code only), and adds uncle-dev rules to CLAUDE.md or AGENTS.md. Use when setting up uncle-dev in a new or existing project, when hooks are not firing, or when the session does not load the Skill Discovery flowchart on start.
 ---
-
-# Uncle Dev Project Setup
-
 ## Overview
 
 The install scripts (`install-claude.sh`, `install-codex.sh`, `install-opencode.sh`) copy plugin files globally but do not configure any target project. This skill closes that gap: it detects which AI coding tools are active, runs the correct install for each, and wires uncle-dev into the current project directory — hooks, rules, directories, and config — so every subsequent session is fully equipped.
 
-Supported tools: **Claude Code**, **Codex**, **OpenCode**. All three can be configured in a single run.
-
-## When to Use
-
-- Starting a new project and want uncle-dev workflows from day one
-- Joining an existing project that lacks uncle-dev configuration
-- Claude Code sessions start without the Skill Discovery flowchart (SessionStart hook not firing)
-- Commits bypass quality checks (pre-commit-guard not active)
-- CLAUDE.md / AGENTS.md does not contain uncle-dev rules
+Supported tools: Claude Code, Codex, OpenCode. All three can be configured in a single run.
 
 ## When NOT to Use
 
@@ -27,7 +16,7 @@ Supported tools: **Claude Code**, **Codex**, **OpenCode**. All three can be conf
 
 ## Fast Path — setup-project.sh
 
-**MANDATORY:** Steps 1, 3, 4, 5, and 6 MUST be executed by running the setup script — never by the AI agent manually. The script interactively asks the user for preferences (including `sdd_mode`). If the AI skips the script and applies defaults silently, it is violating this process.
+MANDATORY: Steps 1, 3, 4, 5, and 6 MUST be executed by running the setup script — never by the AI agent manually. The script interactively asks the user for preferences (including `sdd_mode`). If the AI skips the script and applies defaults silently, it is violating this process.
 
 The script ships inside the plugin cache after `install-claude.sh` runs. Locate it:
 
@@ -44,20 +33,20 @@ SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-age
 )"
 ```
 
-Run from the **target project root** — the user's terminal, not a subshell:
+Run from the target project root — the user's terminal, not a subshell:
 
 | Situation                                                                                             | Command                           |
 | ----------------------------------------------------------------------------------------------------- | --------------------------------- |
 | First-time setup                                                                                      | `bash "${SETUP_SCRIPT}"`          |
 | Change config (level, sdd_mode, tdd-mode, execution_profile, annotations, graphify, mutation-testing) | `bash "${SETUP_SCRIPT}" --update` |
 
-**`--update` re-asks all preference questions** and overwrites the existing `.agents/uncle-dev-setup.yaml` preferences. Tool detection is always re-run. Use it whenever the user says "change my SDD mode", "switch to lid-ears", or "update my uncle-dev config".
+`--update` re-asks all preference questions and overwrites the existing `.agents/uncle-dev-setup.yaml` preferences. Tool detection is always re-run. Use it whenever the user says "change my SDD mode", "switch to lid-ears", or "update my uncle-dev config".
 
-**Wait for the script to finish.** The script prompts the user for workflow preferences (including `sdd_mode`, testing strictness, annotations, and graph usage).
+Wait for the script to finish. The script prompts the user for workflow preferences (including `sdd_mode`, testing strictness, annotations, and graph usage).
 
 The agent must NOT answer these on the user's behalf. If the script cannot run interactively, ask the user each question explicitly before writing any config.
 
-After the script completes, only **Step 2** (plugin installation) may need manual attention:
+After the script completes, only Step 2 (plugin installation) may need manual attention:
 
 ```bash
 jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
@@ -66,7 +55,7 @@ jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
 
 If `false`: `bash <AGENT_SKILLS_ROOT>/scripts/install-claude.sh`, then restart Claude Code.
 
-**Proceed with the manual steps below only if `setup-project.sh` fails or bash is unavailable.**
+Proceed with the manual steps below only if `setup-project.sh` fails or bash is unavailable.
 
 ---
 
@@ -468,7 +457,7 @@ Next steps:
 - [ ] `openspec/`, `.uncle-dev/learns/`, `.devlocal/`, `.agents/` all exist
 - [ ] `git check-ignore .devlocal/` returns `.devlocal/`
 
-**Claude Code:**
+Claude Code:
 
 - [ ] `jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' ~/.claude/plugins/installed_plugins.json` returns `true`
 - [ ] `.claude/settings.json` contains `session-start.sh` in a SessionStart hook
@@ -476,12 +465,12 @@ Next steps:
 - [ ] Restart Claude Code in the project — session prints the Skill Discovery flowchart
 - [ ] Run `git commit -m "x"` — `pre-commit-guard.sh` blocks it
 
-**Codex:**
+Codex:
 
 - [ ] `plugins/uncle-dev/.codex-plugin/plugin.json` exists (local) or `~/plugins/uncle-dev/` exists (user)
 - [ ] `.agents/plugins/marketplace.json` contains an uncle-dev entry
 
-**OpenCode:**
+OpenCode:
 
 - [ ] `AGENTS.md` exists at project root or `~/.config/opencode/AGENTS.md` exists
 - [ ] `.opencode/skills/` is populated (local) or `~/.config/opencode/skills/` (global)

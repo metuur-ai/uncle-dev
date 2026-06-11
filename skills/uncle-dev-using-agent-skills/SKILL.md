@@ -2,9 +2,6 @@
 name: uncle-dev-using-agent-skills
 description: Discovers and invokes agent skills. Use when starting a session or when you need to discover which skill applies to the current task. This is the meta-skill that governs how all other skills are discovered and invoked.
 ---
-
-# Using Agent Skills
-
 ## Overview
 
 Agent Skills is a collection of engineering workflow skills organized by development phase. Each skill encodes a specific process that senior engineers follow. This meta-skill helps you discover and apply the right skill for your current task.
@@ -61,13 +58,13 @@ Don't silently fill in ambiguous requirements. The most common failure mode is m
 
 When you encounter inconsistencies, conflicting requirements, or unclear specifications:
 
-1. **STOP.** Do not proceed with a guess.
+1. STOP. Do not proceed with a guess.
 2. Name the specific confusion.
 3. Present the tradeoff or ask the clarifying question.
 4. Wait for resolution before continuing.
 
-**Bad:** Silently picking one interpretation and hoping it's right.
-**Good:** "I see X in the spec but Y in the existing code. Which takes precedence?"
+Bad: Silently picking one interpretation and hoping it's right.
+Good: "I see X in the spec but Y in the existing code. Which takes precedence?"
 
 ### 3. Push Back When Warranted
 
@@ -125,13 +122,13 @@ These are the subtle errors that look like productivity but create problems:
 
 ## Skill Rules
 
-1. **Check for an applicable skill before starting work.** Skills encode processes that prevent common mistakes.
+1. Check for an applicable skill before starting work. Skills encode processes that prevent common mistakes.
 
-2. **Skills are workflows, not suggestions.** Follow the steps in order. Don't skip verification steps.
+2. Skills are workflows, not suggestions. Follow the steps in order. Don't skip verification steps.
 
-3. **Multiple skills can apply.** A feature implementation might involve `idea-refine` → `spec-driven-development` → `planning-and-task-breakdown` → `incremental-implementation` → `test-driven-development` → `code-review-and-quality` → `shipping-and-launch` in sequence.
+3. Multiple skills can apply. A feature implementation might involve `idea-refine` → `spec-driven-development` → `planning-and-task-breakdown` → `incremental-implementation` → `test-driven-development` → `code-review-and-quality` → `shipping-and-launch` in sequence.
 
-4. **When in doubt, start with a spec.** If the task is non-trivial and there's no spec, begin with `spec-driven-development`.
+4. When in doubt, start with a spec. If the task is non-trivial and there's no spec, begin with `spec-driven-development`.
 
 ## Lifecycle Sequence
 

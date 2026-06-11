@@ -8,26 +8,11 @@ description: >
   or only a vague idea; or when the task would take more than 30 minutes. Always invoke
   this skill before coding begins — code without a spec is guessing.
 ---
-
-# Spec-Driven Development
-
-Design is the single source of truth. Intent flows downstream: **HLD → LLD → EARS → code/tests**. If all code were deleted, the spec documents must be sufficient to regenerate the project entirely.
-
-## When to Use
-
-- Starting a new feature or project
-- Requirements are ambiguous, incomplete, or only exist in chat
-- The change touches multiple files or modules
-- You're about to make an architectural decision
-- The task would take more than 30 minutes
-
-**Skip when:** single-line fixes, typo corrections, or changes where requirements are unambiguous and fully self-contained.
-
----
+Design is the single source of truth. Intent flows downstream: HLD → LLD → EARS → code/tests. If all code were deleted, the spec documents must be sufficient to regenerate the project entirely.
 
 ## Phase 0 — Detect Mode and Route
 
-**Run this first, before any other tool call:**
+Run this first, before any other tool call:
 
 ```bash
 CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.0/scripts/uncle-dev-config.sh"
@@ -36,34 +21,34 @@ bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
 
 | Result     | Path                                                            |
 | ---------- | --------------------------------------------------------------- |
-| `lid-ears` | Follow **Phase 0-LID** below. Never touch OpenSpec.             |
+| `lid-ears` | Follow Phase 0-LID below. Never touch OpenSpec.             |
 | `openspec` | Read `references/openspec-workflow.md` and follow that process. |
 
 ---
 
 ## Phase 0-LID — LID+EARS Documentation Chain
 
-**Only when `sdd_mode: lid-ears`.**
+Only when `sdd_mode: lid-ears`.
 
-**ABSOLUTE PROHIBITION: Do NOT run any `openspec` command. Do NOT propose change IDs. Do NOT load external skills. Do NOT advance to the OpenSpec flow. This path produces three documentation files and nothing else.**
+ABSOLUTE PROHIBITION: Do NOT run any `openspec` command. Do NOT propose change IDs. Do NOT load external skills. Do NOT advance to the OpenSpec flow. This path produces three documentation files and nothing else.
 
 ### Step 1 — Elicit (ask all three layers before writing anything)
 
-**Load upstream inputs first.** If a PRD exists at `docs/prd/<slug>.md` (produced by `uncle-dev-grill`), use it as the source for Lenses/Intent/Details rather than re-eliciting from scratch. If requirements still live only in the user's head and this is a non-trivial feature, run `uncle-dev-grill` first to build a shared design concept. And if `docs/ubiquitous-language.md` (or `.uncle-dev/ubiquitous-language.md`) exists, read it and use its canonical terms throughout the HLD/LLD/EARS; if the domain has meaningful terminology and no glossary exists yet, run `uncle-dev-ubiquitous-language` before writing — aligned terms now prevent expensive renames later.
+Load upstream inputs first. If a PRD exists at `docs/prd/<slug>.md` (produced by `uncle-dev-grill`), use it as the source for Lenses/Intent/Details rather than re-eliciting from scratch. If requirements still live only in the user's head and this is a non-trivial feature, run `uncle-dev-grill` first to build a shared design concept. And if `docs/ubiquitous-language.md` (or `.uncle-dev/ubiquitous-language.md`) exists, read it and use its canonical terms throughout the HLD/LLD/EARS; if the domain has meaningful terminology and no glossary exists yet, run `uncle-dev-ubiquitous-language` before writing — aligned terms now prevent expensive renames later.
 
-**L — Lenses** (feeds HLD)
+L — Lenses (feeds HLD)
 
 - Who are the users or systems affected by this change?
 - What is their current pain? What changes for them after this ships?
 - Any secondary consumers (other services, agents, hooks)?
 
-**I — Intent** (feeds HLD + LLD)
+I — Intent (feeds HLD + LLD)
 
 - What must be observable/true when this ships?
 - What currently broken or missing behaviour gets fixed?
 - What must NOT change (invariants)?
 
-**D — Details** (feeds LLD)
+D — Details (feeds LLD)
 
 - Platform, tool, or stack constraints
 - Compliance or security requirements
@@ -150,15 +135,15 @@ With the full spec drafted (HLD + LLD + EARS), run a pre-mortem before locking:
 
 Invoke `/uncle-dev-pre-mortem` — pass the HLD goals + success criteria, LLD architecture + constraints, and EARS requirements as context. It imagines the initiative has completely failed and works backward to surface hidden risks.
 
-Present the **Top 3 Risks and mitigations** from the pre-mortem output alongside the three spec documents at Step 5. The user may revise specs in response before confirming YES.
+Present the Top 3 Risks and mitigations from the pre-mortem output alongside the three spec documents at Step 5. The user may revise specs in response before confirming YES.
 
 ### Step 5 — HARD GATE
 
-Present all three documents **and the pre-mortem Top 3 Risks**. Ask exactly this — nothing more:
+Present all three documents and the pre-mortem Top 3 Risks. Ask exactly this — nothing more:
 
 > "Do these specs look correct and are the risks acceptable? Reply YES to lock them, or tell me what to change."
 
-**STOP. No follow-up questions. No options. No next steps. Wait silently.**
+STOP. No follow-up questions. No options. No next steps. Wait silently.
 
 ### Step 6 — Confirm, save, and auto-chain into planning
 
@@ -176,9 +161,9 @@ To change a behaviour, update the EARS spec first — changes flow downstream.
 Continuing into planning…
 ```
 
-Then **immediately invoke `/uncle-dev-plan` in the same turn**. The YES at Step 5 is the user's authorization to complete the full define-time workflow (spec → plan). Do not stop and wait for the user to type the next command. The plan step enforces its own gate before any code is written.
+Then immediately invoke `/uncle-dev-plan` in the same turn. The YES at Step 5 is the user's authorization to complete the full define-time workflow (spec → plan). Do not stop and wait for the user to type the next command. The plan step enforces its own gate before any code is written.
 
-**Do NOT open openspec-workflow.md or run any openspec command.**
+Do NOT open openspec-workflow.md or run any openspec command.
 
 ---
 
@@ -195,7 +180,7 @@ Then **immediately invoke `/uncle-dev-plan` in the same turn**. The YES at Step 
 
 ## OpenSpec Mode
 
-When `sdd_mode` is `openspec`, read and follow **`references/openspec-workflow.md`**. It covers:
+When `sdd_mode` is `openspec`, read and follow `references/openspec-workflow.md`. It covers:
 
 - Graphify baseline check
 - Reading current OpenSpec truth

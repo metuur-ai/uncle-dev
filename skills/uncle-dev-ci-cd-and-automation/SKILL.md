@@ -2,24 +2,13 @@
 name: uncle-dev-ci-cd-and-automation
 description: Automates CI/CD pipeline setup. Use when setting up or modifying build and deployment pipelines. Use when you need to automate quality gates, configure test runners in CI, or establish deployment strategies.
 ---
-
-# CI/CD and Automation
-
 ## Overview
 
 Automate quality gates so that no change reaches production without passing tests, lint, type checking, and build. CI/CD is the enforcement mechanism for every other skill — it catches what humans and agents miss, and it does so consistently on every single change.
 
-**Shift Left:** Catch problems as early in the pipeline as possible. A bug caught in linting costs minutes; the same bug caught in production costs hours. Move checks upstream — static analysis before tests, tests before staging, staging before production.
+Shift Left: Catch problems as early in the pipeline as possible. A bug caught in linting costs minutes; the same bug caught in production costs hours. Move checks upstream — static analysis before tests, tests before staging, staging before production.
 
-**Faster is Safer:** Smaller batches and more frequent releases reduce risk, not increase it. A deployment with 3 changes is easier to debug than one with 30. Frequent releases build confidence in the release process itself.
-
-## When to Use
-
-- Setting up a new project's CI pipeline
-- Adding or modifying automated checks
-- Configuring deployment pipelines
-- When a change should trigger automated verification
-- Debugging CI failures
+Faster is Safer: Smaller batches and more frequent releases reduce risk, not increase it. A deployment with 3 changes is easier to debug than one with 30. Frequent releases build confidence in the release process itself.
 
 ## The Quality Gate Pipeline
 
@@ -51,7 +40,7 @@ Pull Request Opened
   Ready for review
 ```
 
-**No gate can be skipped.** If lint fails, fix lint — don't disable the rule. If a test fails, fix the code — don't skip the test.
+No gate can be skipped. If lint fails, fix lint — don't disable the rule. If a test fails, fix the code — don't skip the test.
 
 ## GitHub Actions Configuration
 
@@ -134,7 +123,7 @@ jobs:
           DATABASE_URL: postgresql://ci_user:${{ secrets.CI_DB_PASSWORD }}@localhost:5432/testdb
 ```
 
-> **Note:** Even for CI-only test databases, use GitHub Secrets for credentials rather than hardcoding values. This builds good habits and prevents accidental reuse of test credentials in other contexts.
+> Note: Even for CI-only test databases, use GitHub Secrets for credentials rather than hardcoding values. This builds good habits and prevents accidental reuse of test credentials in other contexts.
 
 ### E2E Tests
 
@@ -181,7 +170,7 @@ Fix the issue and verify locally before pushing again."
 Agent fixes → pushes → CI runs again
 ```
 
-**Key patterns:**
+Key patterns:
 
 ```
 Lint failure → Agent runs `npm run lint --fix` and commits
@@ -211,10 +200,10 @@ deploy-preview:
 
 Feature flags decouple deployment from release. Deploy incomplete or risky features behind flags so you can:
 
-- **Ship code without enabling it.** Merge to main early, enable when ready.
-- **Roll back without redeploying.** Disable the flag instead of reverting code.
-- **Canary new features.** Enable for 1% of users, then 10%, then 100%.
-- **Run A/B tests.** Compare behavior with and without the feature.
+- Ship code without enabling it. Merge to main early, enable when ready.
+- Roll back without redeploying. Disable the flag instead of reverting code.
+- Canary new features. Enable for 1% of users, then 10%, then 100%.
+- Run A/B tests. Compare behavior with and without the feature.
 
 ```typescript
 // Simple feature flag pattern
@@ -224,7 +213,7 @@ if (featureFlags.isEnabled('new-checkout-flow', { userId })) {
 return renderLegacyCheckout();
 ```
 
-**Flag lifecycle:** Create → Enable for testing → Canary → Full rollout → Remove the flag and dead code. Flags that live forever become technical debt — set a cleanup date when you create them.
+Flag lifecycle: Create → Enable for testing → Canary → Full rollout → Remove the flag and dead code. Flags that live forever become technical debt — set a cleanup date when you create them.
 
 ### Staged Rollouts
 
@@ -301,10 +290,10 @@ Designate someone responsible for keeping CI green. When the build breaks, the B
 
 ### PR Checks
 
-- **Required reviews:** At least 1 approval before merge
-- **Required status checks:** CI must pass before merge
-- **Branch protection:** No force-pushes to main
-- **Auto-merge:** If all checks pass and approved, merge automatically
+- Required reviews: At least 1 approval before merge
+- Required status checks: CI must pass before merge
+- Branch protection: No force-pushes to main
+- Auto-merge: If all checks pass and approved, merge automatically
 
 ## CI Optimization
 
@@ -326,7 +315,7 @@ Slow CI pipeline?
     └── GitHub-hosted larger runners or self-hosted for CPU-heavy builds
 ```
 
-**Example: caching and parallelism**
+Example: caching and parallelism
 ```yaml
 jobs:
   lint:

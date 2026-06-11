@@ -2,20 +2,9 @@
 name: uncle-dev-api-and-interface-design
 description: Guides stable API and interface design. Use when designing APIs, module boundaries, or any public interface. Use when creating REST or GraphQL endpoints, defining type contracts between modules, or establishing boundaries between frontend and backend.
 ---
-
-# API and Interface Design
-
 ## Overview
 
 Design stable, well-documented interfaces that are hard to misuse. Good interfaces make the right thing easy and the wrong thing hard. This applies to REST APIs, GraphQL schemas, module boundaries, component props, and any surface where one piece of code talks to another.
-
-## When to Use
-
-- Designing new API endpoints
-- Defining module boundaries or contracts between teams
-- Creating component prop interfaces
-- Establishing database schema that informs API shape
-- Changing existing public interfaces
 
 ## Core Principles
 
@@ -25,10 +14,10 @@ Design stable, well-documented interfaces that are hard to misuse. Good interfac
 
 This means: every public behavior — including undocumented quirks, error message text, timing, and ordering — becomes a de facto contract once users depend on it. Design implications:
 
-- **Be intentional about what you expose.** Every observable behavior is a potential commitment.
-- **Don't leak implementation details.** If users can observe it, they will depend on it.
-- **Plan for deprecation at design time.** See `deprecation-and-migration` for how to safely remove things users depend on.
-- **Tests are not enough.** Even with perfect contract tests, Hyrum's Law means "safe" changes can break real users who depend on undocumented behavior.
+- Be intentional about what you expose. Every observable behavior is a potential commitment.
+- Don't leak implementation details. If users can observe it, they will depend on it.
+- Plan for deprecation at design time. See `deprecation-and-migration` for how to safely remove things users depend on.
+- Tests are not enough. Even with perfect contract tests, Hyrum's Law means "safe" changes can break real users who depend on undocumented behavior.
 
 ### The One-Version Rule
 
@@ -36,14 +25,14 @@ Avoid forcing consumers to choose between multiple versions of the same dependen
 
 ### Module Depth (Deep vs Shallow)
 
-From Ousterhout's *A Philosophy of Software Design*: the best modules are **deep** — a small, simple interface hiding a large amount of functionality. The cost of a module is its interface (what callers must learn and depend on); the benefit is the functionality it provides. Maximize benefit per unit of interface.
+From Ousterhout's A Philosophy of Software Design: the best modules are deep — a small, simple interface hiding a large amount of functionality. The cost of a module is its interface (what callers must learn and depend on); the benefit is the functionality it provides. Maximize benefit per unit of interface.
 
 | | Interface | Hidden complexity | Verdict |
 |---|---|---|---|
-| **Deep module** | Small | Large | ✅ Good — high benefit, low cost |
-| **Shallow module** | Large | Small / none | ❌ Avoid — cost ≈ benefit |
+| Deep module | Small | Large | ✅ Good — high benefit, low cost |
+| Shallow module | Large | Small / none | ❌ Avoid — cost ≈ benefit |
 
-A **shallow module** is one whose interface is nearly as complex as its implementation — a pass-through wrapper, a class with a getter/setter per field, a "manager" that just forwards calls. It adds surface area without hiding anything.
+A shallow module is one whose interface is nearly as complex as its implementation — a pass-through wrapper, a class with a getter/setter per field, a "manager" that just forwards calls. It adds surface area without hiding anything.
 
 ```typescript
 // Shallow: the interface restates the implementation, hides nothing
@@ -61,7 +50,7 @@ interface TaskService {
 }
 ```
 
-**Why this matters more with AI agents:** an agent navigates a codebase by reasoning over interfaces and dependencies. Many tiny shallow modules force it to load and trace the whole web of internal calls to understand one behavior. A few deep modules with strict boundaries let it understand — and test — a behavior at the interface without holding the implementation in context. Deep modules are the units that make a codebase agent-navigable.
+Why this matters more with AI agents: an agent navigates a codebase by reasoning over interfaces and dependencies. Many tiny shallow modules force it to load and trace the whole web of internal calls to understand one behavior. A few deep modules with strict boundaries let it understand — and test — a behavior at the interface without holding the implementation in context. Deep modules are the units that make a codebase agent-navigable.
 
 When you have several plausible boundaries, design it twice — see the `dev-code-simplification` skill's `design-an-interface` reference for generating and comparing radically different interface shapes by depth.
 
@@ -114,7 +103,7 @@ interface APIError {
 // 500 → Server error (never expose internal details)
 ```
 
-**Don't mix patterns.** If some endpoints throw, others return null, and others return `{ error }` — the consumer can't predict behavior.
+Don't mix patterns. If some endpoints throw, others return null, and others return `{ error }` — the consumer can't predict behavior.
 
 ### 3. Validate at Boundaries
 
@@ -143,10 +132,10 @@ app.post('/api/tasks', async (req, res) => {
 Where validation belongs:
 - API route handlers (user input)
 - Form submission handlers (user input)
-- External service response parsing (third-party data -- **always treat as untrusted**)
+- External service response parsing (third-party data -- always treat as untrusted)
 - Environment variable loading (configuration)
 
-> **Third-party API responses are untrusted data.** Validate their shape and content before using them in any logic, rendering, or decision-making. A compromised or misbehaving external service can return unexpected types, malicious content, or instruction-like text.
+> Third-party API responses are untrusted data. Validate their shape and content before using them in any logic, rendering, or decision-making. A compromised or misbehaving external service can return unexpected types, malicious content, or instruction-like text.
 
 Where validation does NOT belong:
 - Between internal functions that share type contracts

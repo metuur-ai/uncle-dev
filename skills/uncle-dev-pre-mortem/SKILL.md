@@ -3,9 +3,6 @@ name: uncle-dev-pre-mortem
 description: Pre-mortem analysis that imagines a plan has failed, then works backward to identify causes and preventions. Use before launches, major decisions, or risky initiatives to surface hidden risks.
 user-invocable: true
 ---
-
-# Pre-Mortem Analysis
-
 Imagine the plan has completely failed, then work backward to identify what went wrong and how to prevent it.
 
 ## Instructions
@@ -16,13 +13,13 @@ Generate failure scenarios without filtering for likelihood—get everything on 
 
 ### Output Format
 
-**The Plan**
+The Plan
 Summarize what's being attempted and the success criteria.
 
-**Time Jump**
+Time Jump
 "It's [X months] later. This has failed completely. The outcome: [describe the disaster vividly]."
 
-**What Went Wrong**
+What Went Wrong
 
 Generate 8-12 plausible failure causes across categories:
 
@@ -34,25 +31,25 @@ Generate 8-12 plausible failure causes across categories:
 | Technical | [What failed] | [The story of how] |
 | Assumptions | [What failed] | [The story of how] |
 
-**Risk Prioritization**
+Risk Prioritization
 
 | Failure Mode | Likelihood | Impact | Priority |
 |--------------|------------|--------|----------|
 | ... | High/Med/Low | High/Med/Low | 1-5 |
 
-**Top 3 Risks & Mitigations**
+Top 3 Risks & Mitigations
 
 For each top risk:
-- **Risk**: [Description]
-- **Early Warning Signs**: What would indicate this is happening?
-- **Prevention**: How to reduce likelihood
-- **Mitigation**: How to reduce impact if it occurs
-- **Owner**: Who's responsible for watching this?
+- Risk: [Description]
+- Early Warning Signs: What would indicate this is happening?
+- Prevention: How to reduce likelihood
+- Mitigation: How to reduce impact if it occurs
+- Owner: Who's responsible for watching this?
 
-**Pre-Mortem Insights**
+Pre-Mortem Insights
 What did this exercise reveal that wasn't obvious before?
 
-**Revised Confidence**
+Revised Confidence
 After this analysis, how confident are you in success? What would increase confidence?
 
 ## Guidelines

@@ -2,29 +2,11 @@
 name: uncle-dev-wrap
 description: Compacts the current conversation into a handoff document so a fresh agent or session can continue the work without context loss. Writes the doc to `.devlocal/handoffs/handoff-<UTC-timestamp>.md` (gitignored personal scratchpad), references existing artifacts by path/URL instead of duplicating them, redacts sensitive data, and lists suggested skills for the next session to invoke. Use when the user says "wrap this up", "hand this off", "context is getting full", "summarize for the next session", or runs /uncle-dev-wrap.
 ---
-
-# Uncle Dev Wrap (Session Handoff)
-
 ## Overview
 
 Conversations end. Context resets. The next agent or session needs a tight, accurate handoff to pick up where the last one left off — without re-reading the entire transcript, and without losing the live state in a developer's head. This skill writes one structured Markdown document under `.devlocal/handoffs/` that another agent can read in seconds and continue the work.
 
 The handoff lives in the gitignored personal scratchpad (`.devlocal/`), not in shared project artifacts. It references durable artifacts (PRDs, plans, ADRs, OpenSpec changes, issues, commits, diffs) by path or URL rather than copying them.
-
-## When to Use
-
-**Use when:**
-- The user says "wrap this up", "hand this off", "summarize for the next session", "context is getting full", or "I need to switch agents"
-- The user runs `/uncle-dev-wrap`
-- Context window is close to compaction and a follow-up session is expected
-- A long debugging or implementation session needs to be paused and resumed later by someone (or something) else
-- The user passes an argument describing what the next session will focus on (e.g. `/uncle-dev-wrap "finish the auth migration"`)
-
-**NOT for:**
-- Documenting a solved problem — use `uncle-dev-knowledge-capture` (writes to `.uncle-dev/learns/`)
-- Recording an architectural decision — use `uncle-dev-documentation-and-adrs` or `uncle-dev-acknowledge`
-- Project-wide status reports or stakeholder briefs — handoffs target the next coding session, not humans planning roadmaps
-- Replacing OpenSpec `handoff.md` artifacts — those live inside the change directory and follow the spec workflow
 
 ## Core Process
 
@@ -40,15 +22,15 @@ HANDOFF_FILE="${HANDOFF_DIR}/handoff-${SLUG}.md"
 echo "$HANDOFF_FILE"
 ```
 
-- The path is **relative to the project root** — always run from the workspace root.
+- The path is relative to the project root — always run from the workspace root.
 - Confirm `.devlocal/` is gitignored before writing (it is, project-wide, per `.gitignore`).
-- Do **not** write to `$TMPDIR`/`/tmp` — those are wiped by the OS and invisible to teammates pulling the branch.
-- Do **not** write to a shared/tracked directory — handoffs are personal scratchpad, not artifacts.
+- Do not write to `$TMPDIR`/`/tmp` — those are wiped by the OS and invisible to teammates pulling the branch.
+- Do not write to a shared/tracked directory — handoffs are personal scratchpad, not artifacts.
 
 ### Step 2: Read the next-session focus
 
-- If the user passed arguments (`/uncle-dev-wrap <text>`), treat them verbatim as **Next Session Focus**. This shapes the entire doc — sections that don't serve that focus should be terse.
-- If no arguments were passed, ask the user *one* blocking question: "What will the next session focus on?" Use the platform's blocking question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini).
+- If the user passed arguments (`/uncle-dev-wrap <text>`), treat them verbatim as Next Session Focus. This shapes the entire doc — sections that don't serve that focus should be terse.
+- If no arguments were passed, ask the user one blocking question: "What will the next session focus on?" Use the platform's blocking question tool (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini).
 - If the user declines to specify, default the focus to "Continue current work" and proceed.
 
 ### Step 3: Survey existing artifacts (DO NOT duplicate them)
@@ -71,13 +53,13 @@ For each relevant artifact, record the path or URL — not the content.
 
 ### Step 4: Draft the handoff using the template
 
-Use the template in **Specific Techniques → Handoff Template**. Fill only the sections that have real content. Empty sections should be removed, not left with placeholders.
+Use the template in Specific Techniques → Handoff Template. Fill only the sections that have real content. Empty sections should be removed, not left with placeholders.
 
 Key rules:
-- **Tight bullets, not narrative paragraphs.** The next agent skims this; it does not read it cover-to-cover.
-- **Reference, don't restate.** "See `openspec/changes/auth-rework/design.md` § Token storage" beats pasting the design rationale.
-- **Pin the live state that isn't in any artifact**: in-flight diffs not yet committed, failing test output, the exact command that was about to run, the hypothesis being tested, what was just ruled out.
-- **No commentary on the conversation itself.** The handoff is for the next agent's work, not a session retrospective.
+- Tight bullets, not narrative paragraphs. The next agent skims this; it does not read it cover-to-cover.
+- Reference, don't restate. "See `openspec/changes/auth-rework/design.md` § Token storage" beats pasting the design rationale.
+- Pin the live state that isn't in any artifact: in-flight diffs not yet committed, failing test output, the exact command that was about to run, the hypothesis being tested, what was just ruled out.
+- No commentary on the conversation itself. The handoff is for the next agent's work, not a session retrospective.
 
 ### Step 5: Redact sensitive data
 
@@ -94,7 +76,7 @@ If the user is in a CTF, security-research, or pentest authorization context tha
 
 ### Step 6: Pick suggested skills for the next session
 
-Pick 2–6 skills from the agent-skills catalog that the next session should invoke first. Be specific — list both the skill name and *why* it applies to the focus from Step 2.
+Pick 2–6 skills from the agent-skills catalog that the next session should invoke first. Be specific — list both the skill name and why it applies to the focus from Step 2.
 
 Common picks by focus:
 
@@ -114,29 +96,29 @@ Do not invent skill names. Only list skills that exist under `skills/` in this r
 1. Write the final Markdown to `$HANDOFF_FILE` (Step 1 path) using the Write tool.
 2. Print to the user, in this order:
    - The relative path to the handoff doc (e.g. `.devlocal/handoffs/handoff-20260528-223300.md`)
-   - A one-line summary of the **Next Session Focus**
+   - A one-line summary of the Next Session Focus
    - The list of suggested skills as a single line: `Suggested: skill-a, skill-b, skill-c`
    - Any redaction notice from Step 5
-   - **A copy-paste bootstrap line for the next session**, exactly:
+   - A copy-paste bootstrap line for the next session, exactly:
      ```
      Next session, paste this:
      Read .devlocal/handoffs/handoff-<UTC-timestamp>.md and resume from "Next Session Focus".
      ```
 
-Do **not** print the full handoff body back to the user — the file is the artifact, not the chat.
+Do not print the full handoff body back to the user — the file is the artifact, not the chat.
 
 ### How the next session picks up the handoff
 
 There are three ways the next session finds and loads the handoff:
 
-1. **Automatic via SessionStart hook (ships with the agent-skills plugin).** The plugin's `hooks/session-start.sh` already scans `.devlocal/handoffs/`, picks the newest `handoff-*.md` by mtime, and injects two lines into the session-start system message:
+1. Automatic via SessionStart hook (ships with the agent-skills plugin). The plugin's `hooks/session-start.sh` already scans `.devlocal/handoffs/`, picks the newest `handoff-*.md` by mtime, and injects two lines into the session-start system message:
    ```
    Recent handoff from /uncle-dev-wrap: .devlocal/handoffs/handoff-<ts>.md
    To resume, run: Read .devlocal/handoffs/handoff-<ts>.md and continue from "Next Session Focus".
    ```
    Any user with the plugin installed gets this for free — no `settings.json` editing required. The agent loads the file on demand via `Read`; the body is never pasted into the session prompt.
-2. **Manual bootstrap (always works, no plugin needed).** User pastes the bootstrap line printed in Step 7 above. The new agent runs `Read .devlocal/handoffs/handoff-<ts>.md` and follows the **Next Session Focus**.
-3. **Latest-handoff shortcut (no timestamp needed).** User pastes: `Read the most recent file in .devlocal/handoffs/ and resume from "Next Session Focus".` The agent runs `ls -t .devlocal/handoffs/ | head -1` and reads it.
+2. Manual bootstrap (always works, no plugin needed). User pastes the bootstrap line printed in Step 7 above. The new agent runs `Read .devlocal/handoffs/handoff-<ts>.md` and follows the Next Session Focus.
+3. Latest-handoff shortcut (no timestamp needed). User pastes: `Read the most recent file in .devlocal/handoffs/ and resume from "Next Session Focus".` The agent runs `ls -t .devlocal/handoffs/ | head -1` and reads it.
 
 Note: even when option 1 is active, still print the Step 7 bootstrap line — it's the user-facing confirmation that the handoff was written, and it works across runtimes (Codex, Gemini) where the SessionStart hook isn't loaded.
 
@@ -234,9 +216,9 @@ Aim for 60–200 lines total. If the draft exceeds 250 lines, you are restating 
 - [ ] File written to `.devlocal/handoffs/handoff-<UTC-timestamp>.md` (relative to project root)
 - [ ] `.devlocal/` is gitignored (sanity-check: `git check-ignore .devlocal/handoffs/` exits 0)
 - [ ] Filename timestamp is UTC and unique
-- [ ] **Next Session Focus** section is one or two specific sentences (or the user-supplied argument)
+- [ ] Next Session Focus section is one or two specific sentences (or the user-supplied argument)
 - [ ] At least one artifact reference (spec, plan, ADR, learning, PR, commit) is listed by path or URL — none of their content is pasted
-- [ ] **Suggested Skills** section lists 2–6 real skills with one-line "why this skill applies" notes
+- [ ] Suggested Skills section lists 2–6 real skills with one-line "why this skill applies" notes
 - [ ] Redaction scan ran; any matches replaced with `[REDACTED:<type>]`
-- [ ] Final user-facing output is: the file path, the focus, the suggested skills line, any redaction notice, **and the "Next session, paste this:" bootstrap line** — not the full handoff body
+- [ ] Final user-facing output is: the file path, the focus, the suggested skills line, any redaction notice, and the "Next session, paste this:" bootstrap line — not the full handoff body
 - [ ] Handoff length is between 60 and 250 lines

@@ -2,38 +2,23 @@
 name: uncle-dev-next-task
 description: Picks the next actionable task — from docs/tasks/ in lid-ears mode, or from OpenSpec changes in openspec mode. Computes a parallel-safe ready set and surfaces conflicts. Use when starting or resuming work, when the user asks "what's next", when `/uncle-dev-build continue` runs, or when multiple agents need to coordinate on which story to pick.
 ---
-
-# Next Task Picker
-
 ## Overview
 
 Resolve the question "what should I work on right now?" deterministically. Routes to the correct task source based on `sdd_mode`:
-- **`lid-ears`**: picks from `docs/tasks/<slug>.md` files (produced by `/uncle-dev-plan`)
-- **`openspec`**: picks from OpenSpec change `tasks.md` files and `.devlocal/` scratchpads
+- `lid-ears`: picks from `docs/tasks/<slug>.md` files (produced by `/uncle-dev-plan`)
+- `openspec`: picks from OpenSpec change `tasks.md` files and `.devlocal/` scratchpads
 
-This skill is a **coordinator**, not an implementer. It returns a structured handoff that `/uncle-dev-build`, `/uncle-dev-test`, `/uncle-dev-review`, and `/uncle-dev-ship` consume.
-
-## When to Use
-
-- Start or resume a work session ("continue", "what's next?", `/uncle-dev-build continue`)
-- Multiple agents or worktrees are sharing a repo and need to claim distinct stories
-- You want to know what's parallel-safe vs what's blocked
-- Before `/uncle-dev-ship`, to verify no stories are unchecked
-- Before `/uncle-dev-spec`, to confirm there is no active work you forgot about
-
-**When NOT to use:**
-- The user named a specific story or PR to work on (skip resolution, go straight there)
-- Ad-hoc bug fixes or typo corrections that aren't tracked anywhere
+This skill is a coordinator, not an implementer. It returns a structured handoff that `/uncle-dev-build`, `/uncle-dev-test`, `/uncle-dev-review`, and `/uncle-dev-ship` consume.
 
 ## Inputs and Outputs
 
-**Inputs (all optional):**
+Inputs (all optional):
 - `--story <id>` — explicit pick, skip resolution
 - `--change <id>` — restrict to one change
 - `--ready` — print the ready set only, no recommendation
 - `--release <story-id>` — release a stale lock and exit
 
-**Output (the handoff contract):**
+Output (the handoff contract):
 
 ```
 READY SET (3 available, 2 parallel-safe, 1 blocked)
@@ -86,7 +71,7 @@ Callers (`/uncle-dev-build`, `/uncle-dev-test`, etc.) MUST surface this output v
 
 ### Phase 0 — Read SDD mode (ALWAYS first)
 
-**Run this before any other step. The result determines which path to follow.**
+Run this before any other step. The result determines which path to follow.
 
 ```bash
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
@@ -97,14 +82,14 @@ echo "$SDD_MODE"
 
 | Result | Path |
 |--------|------|
-| `lid-ears` | Follow **Path A — LID-EARS** below. Never check for `openspec/`. |
-| `openspec` | Follow **Path B — OpenSpec** below. |
+| `lid-ears` | Follow Path A — LID-EARS below. Never check for `openspec/`. |
+| `openspec` | Follow Path B — OpenSpec below. |
 
 ---
 
 ### Path A — LID-EARS Resolution
 
-**Only when `sdd_mode: lid-ears`. Do NOT run any openspec command.**
+Only when `sdd_mode: lid-ears`. Do NOT run any openspec command.
 
 ```
    ┌─────────────────────────────────────────────────┐
@@ -146,7 +131,7 @@ echo "$SDD_MODE"
    └─────────────────────────────────────────────────┘
 ```
 
-**Handoff format (lid-ears):**
+Handoff format (lid-ears):
 ```
 READY SET (N available)
   ┌─ recommended
@@ -167,7 +152,7 @@ READY SET (N available)
 NEXT ACTION: pick recommended, or pass --story <id> to override.
 ```
 
-**Failure modes (lid-ears):**
+Failure modes (lid-ears):
 - No `docs/tasks/` directory or all files empty → exit: "no task files found; run `/uncle-dev-plan` first."
 - All stories checked → exit: "all tasks complete; run `/uncle-dev-ship`."
 - Ready set empty but unchecked stories exist → list each with its blocking dep(s)
@@ -176,7 +161,7 @@ NEXT ACTION: pick recommended, or pass --story <id> to override.
 
 ### Path B — OpenSpec Resolution
 
-**Only when `sdd_mode: openspec`.**
+Only when `sdd_mode: openspec`.
 
 ```
    ┌─────────────────────────────────────────────────┐
@@ -273,9 +258,9 @@ When CLI is unavailable, walk `openspec/changes/*/` and treat any change with at
 For each scratchpad in `.devlocal/<user>/<story-id>/scratchpad.md`:
 
 - Find the matching story in `tasks.md`
-- If the story is checked but the scratchpad has unchecked steps modified within the last 7 days → **conflict**
+- If the story is checked but the scratchpad has unchecked steps modified within the last 7 days → conflict
 
-When a conflict is found, halt and follow `conflict-resolution.md`. **Always ask the user** — never auto-resolve.
+When a conflict is found, halt and follow `conflict-resolution.md`. Always ask the user — never auto-resolve.
 
 ### Step 4: Compute the Ready Set
 
@@ -292,11 +277,11 @@ Stories from different changes are parallel-safe by default, unless their `propo
 
 See `acknowledge-gate.md` for the full algorithm. After Step 4, every story still in the ready set is checked against `openspec/acknowledge/`:
 
-1. Derive the story's **touched scopes** — the `(scope: a, b)` annotation, plus any `apps/<x>/` or `packages/<x>/` path mentions in the story block, plus any scopes named in the story's `design.md` Technical Decisions rows.
-2. If any `<scope>.md` file under `openspec/acknowledge/` has a `### D<N>` section with `status: pending` whose scope is in the story's touched scopes, drop the story to a new **blocked-by-acknowledgement** bucket and record each blocking D-id.
+1. Derive the story's touched scopes — the `(scope: a, b)` annotation, plus any `apps/<x>/` or `packages/<x>/` path mentions in the story block, plus any scopes named in the story's `design.md` Technical Decisions rows.
+2. If any `<scope>.md` file under `openspec/acknowledge/` has a `### D<N>` section with `status: pending` whose scope is in the story's touched scopes, drop the story to a new blocked-by-acknowledgement bucket and record each blocking D-id.
 3. Whenever the recommendation would have been a blocked-by-acknowledgement story, the picker emits the `BLOCKED:` output (see the output contract above) instead of the standard `READY SET` block. `--claim` MUST refuse to acquire a lock in this case.
 
-The gate is **non-bypassable** — there is no `--ignore-acknowledgements` flag. To unblock: ack, reject, or supersede the pending decisions via `/uncle-dev-acknowledge`.
+The gate is non-bypassable — there is no `--ignore-acknowledgements` flag. To unblock: ack, reject, or supersede the pending decisions via `/uncle-dev-acknowledge`.
 
 If `openspec/acknowledge/` does not exist (the project hasn't started using ack notes yet), Step 4b is a no-op.
 
@@ -304,10 +289,10 @@ If `openspec/acknowledge/` does not exist (the project hasn't started using ack 
 
 The recommended pick uses these tie-breakers in order:
 
-1. **Most descendants** — picking this unblocks the most downstream work
-2. **Resumes a scratchpad** — finish what was started (only if no conflict)
-3. **Smallest estimate** — small wins build momentum and free up locks
-4. **Document order** — first unchecked in `tasks.md`
+1. Most descendants — picking this unblocks the most downstream work
+2. Resumes a scratchpad — finish what was started (only if no conflict)
+3. Smallest estimate — small wins build momentum and free up locks
+4. Document order — first unchecked in `tasks.md`
 
 If two stories tie on all four, pick the one whose change-id sorts first alphabetically. Determinism matters when multiple agents call this skill at once.
 
@@ -331,7 +316,7 @@ This works because:
 - The ranking function is pure and deterministic
 - Mutex tags prevent two agents from picking stories that touch the same shared resource even if both stories are technically unblocked
 
-For Conductor-style worktree workflows, the lock file lives in the **shared** repo (not the worktree) so it's visible across worktrees. By convention, `.devlocal/_locks/` is gitignored but symlinked or bind-mounted across worktrees in Conductor setups.
+For Conductor-style worktree workflows, the lock file lives in the shared repo (not the worktree) so it's visible across worktrees. By convention, `.devlocal/_locks/` is gitignored but symlinked or bind-mounted across worktrees in Conductor setups.
 
 See `parallelism-and-locks.md` for the full mechanics, including stale-lock recovery.
 

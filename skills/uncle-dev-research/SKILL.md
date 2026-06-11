@@ -2,28 +2,17 @@
 name: uncle-dev-research
 description: Documents the codebase as it exists today by spawning parallel subagents to explore structure, patterns, and history, then writing a research document to .devlocal/research/. Use when starting work on an unfamiliar codebase, when you need to understand existing implementation before speccing a change, or when asked "how does X work?" about something in the repo.
 ---
-
-# Codebase Research
-
 ## Overview
 
 Comprehensive codebase documentation through parallel subagent exploration. This skill's only job is to describe what exists — not to evaluate it, improve it, or recommend changes.
 
-**The documentarian mindset:** You are creating a technical map of the existing system. Document what exists, where it exists, how it works, and how components interact. Do not suggest improvements, perform root cause analysis, critique the implementation, or propose future enhancements unless the user explicitly asks for them.
+The documentarian mindset: You are creating a technical map of the existing system. Document what exists, where it exists, how it works, and how components interact. Do not suggest improvements, perform root cause analysis, critique the implementation, or propose future enhancements unless the user explicitly asks for them.
 
 When this skill is invoked, respond with:
 ```
 I'm ready to research the codebase. What would you like me to investigate?
 ```
 Then wait for the user's research question before proceeding.
-
-## When to Use
-
-- Starting work on an unfamiliar codebase or module
-- Understanding existing implementation before writing a spec
-- Answering "how does X work?" or "where is Y implemented?" questions
-- Mapping component interactions and data flows
-- Building shared context before a planning session
 
 ## When NOT to Use
 
@@ -34,7 +23,7 @@ Then wait for the user's research question before proceeding.
 
 ## Core Process
 
-**Graphify availability check** — run once before Step 1:
+Graphify availability check — run once before Step 1:
 ```bash
 [ -f graphify-out/graph.json ] && echo "graphify: ON" || echo "graphify: OFF — using standard search"
 ```
@@ -42,7 +31,7 @@ If OFF, skip all graphify sections below and proceed with the standard process.
 
 ### Step 1: Read directly mentioned files first
 
-If the user references specific files (tickets, configs, docs), read them **fully** before spawning any subagents. Use the Read tool without limit or offset. Do this in the main context — not in a subagent — so you have full context before decomposing the research.
+If the user references specific files (tickets, configs, docs), read them fully before spawning any subagents. Use the Read tool without limit or offset. Do this in the main context — not in a subagent — so you have full context before decomposing the research.
 
 ### Step 1.5: Graph-First Orientation
 
@@ -65,9 +54,9 @@ graphify path "<module-A>" "<module-B>"
 ```
 
 Use findings to:
-- **Narrow Step 2 decomposition** — skip investigation areas the graph shows as unrelated to the topic
-- **Pre-fill subagent context** — pass relevant graph nodes and relationships into each scout's prompt so they read the right files first
-- **Detect god-node adjacency** — if the research topic touches a high-betweenness node, note it in the research plan (signals wider blast radius for a later spec or review)
+- Narrow Step 2 decomposition — skip investigation areas the graph shows as unrelated to the topic
+- Pre-fill subagent context — pass relevant graph nodes and relationships into each scout's prompt so they read the right files first
+- Detect god-node adjacency — if the research topic touches a high-betweenness node, note it in the research plan (signals wider blast radius for a later spec or review)
 
 If the graph returns empty or only AMBIGUOUS edges, proceed to Step 2 as if this step was skipped.
 
@@ -86,19 +75,19 @@ Create a brief research plan before spawning agents.
 
 Run multiple agents concurrently, each focused on a specific area. Two agent strategies:
 
-**For full repository or unfamiliar codebase:** Spawn `uncle-dev-ag-repo-research-analyst` to produce a structured repo handoff document first, then spawn targeted scouts for specific questions. If the graph is ON, you may also spawn `uncle-dev-ag-graph-analyst` in background alongside the repo-research-analyst for multi-hop structural questions that would require many grep passes to answer manually.
+For full repository or unfamiliar codebase: Spawn `uncle-dev-ag-repo-research-analyst` to produce a structured repo handoff document first, then spawn targeted scouts for specific questions. If the graph is ON, you may also spawn `uncle-dev-ag-graph-analyst` in background alongside the repo-research-analyst for multi-hop structural questions that would require many grep passes to answer manually.
 
-**For targeted questions:** Spawn inline scout agents — one per investigation area — each with a focused read-only prompt. Each scout uses Glob, Grep, and Read tools to find and document what exists.
+For targeted questions: Spawn inline scout agents — one per investigation area — each with a focused read-only prompt. Each scout uses Glob, Grep, and Read tools to find and document what exists.
 
-**For historical context:** Spawn a separate agent to search `.uncle-dev/learns/` for previously captured knowledge about the topic.
+For historical context: Spawn a separate agent to search `.uncle-dev/learns/` for previously captured knowledge about the topic.
 
-**Key instruction for all subagents:** "You are a documentarian, not an evaluator. Describe what exists. No recommendations, no critiques, no suggestions."
+Key instruction for all subagents: "You are a documentarian, not an evaluator. Describe what exists. No recommendations, no critiques, no suggestions."
 
-Do not write detailed prompts about *how* to search — the agents know their tools. Tell them *what* you are looking for.
+Do not write detailed prompts about how to search — the agents know their tools. Tell them what you are looking for.
 
 ### Step 4: Synthesize findings
 
-Wait for **all** subagents to complete before synthesizing. Then:
+Wait for all subagents to complete before synthesizing. Then:
 - Treat live codebase findings as the primary source of truth
 - Use `.uncle-dev/learns/` findings as supplementary historical context
 - Connect findings across different components
@@ -109,11 +98,11 @@ Wait for **all** subagents to complete before synthesizing. Then:
 
 Gather current git context (commit hash, branch, date) before writing. Save to `.devlocal/research/` (personal scratchpad, gitignored):
 
-**Filename:** `YYYY-MM-DD-[ticket]-description.md`
+Filename: `YYYY-MM-DD-[ticket]-description.md`
 - With ticket: `2025-01-08-ENG-1478-parent-child-tracking.md`
 - Without ticket: `2025-01-08-authentication-flow.md`
 
-**Document structure:**
+Document structure:
 ```markdown
 ---
 date: [ISO timestamp with timezone]
@@ -171,7 +160,7 @@ Append follow-up research to the same document. Add a `## Follow-up Research [ti
 
 ## Subagent Discipline
 
-Every subagent prompt must include this instruction: **"Document what IS, not what SHOULD BE. No recommendations."**
+Every subagent prompt must include this instruction: "Document what IS, not what SHOULD BE. No recommendations."
 
 Run subagents in background (`run_in_background: true`) when they are independent. Wait for all to complete before synthesizing — never write the research document with placeholder values.
 

@@ -2,34 +2,22 @@
 name: uncle-dev-security-and-hardening
 description: Hardens code against vulnerabilities. Use when handling user input, authentication, data storage, or external integrations. Use when building any feature that accepts untrusted data, manages user sessions, or interacts with third-party services.
 ---
-
-# Security and Hardening
-
 ## Overview
 
 Security-first development practices for web applications. Treat every external input as hostile, every secret as sacred, and every authorization check as mandatory. Security isn't a phase — it's a constraint on every line of code that touches user data, authentication, or external systems.
-
-## When to Use
-
-- Building anything that accepts user input
-- Implementing authentication or authorization
-- Storing or transmitting sensitive data
-- Integrating with external APIs or services
-- Adding file uploads, webhooks, or callbacks
-- Handling payment or PII data
 
 ## The Three-Tier Boundary System
 
 ### Always Do (No Exceptions)
 
-- **Validate all external input** at the system boundary (API routes, form handlers)
-- **Parameterize all database queries** — never concatenate user input into SQL
-- **Encode output** to prevent XSS (use framework auto-escaping, don't bypass it)
-- **Use HTTPS** for all external communication
-- **Hash passwords** with bcrypt/scrypt/argon2 (never store plaintext)
-- **Set security headers** (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
-- **Use httpOnly, secure, sameSite cookies** for sessions
-- **Run `npm audit`** (or equivalent) before every release
+- Validate all external input at the system boundary (API routes, form handlers)
+- Parameterize all database queries — never concatenate user input into SQL
+- Encode output to prevent XSS (use framework auto-escaping, don't bypass it)
+- Use HTTPS for all external communication
+- Hash passwords with bcrypt/scrypt/argon2 (never store plaintext)
+- Set security headers (CSP, HSTS, X-Frame-Options, X-Content-Type-Options)
+- Use httpOnly, secure, sameSite cookies for sessions
+- Run `npm audit` (or equivalent) before every release
 
 ### Ask First (Requires Human Approval)
 
@@ -43,13 +31,13 @@ Security-first development practices for web applications. Treat every external 
 
 ### Never Do
 
-- **Never commit secrets** to version control (API keys, passwords, tokens)
-- **Never log sensitive data** (passwords, tokens, full credit card numbers)
-- **Never trust client-side validation** as a security boundary
-- **Never disable security headers** for convenience
-- **Never use `eval()` or `innerHTML`** with user-provided data
-- **Never store sessions in client-accessible storage** (localStorage for auth tokens)
-- **Never expose stack traces** or internal error details to users
+- Never commit secrets to version control (API keys, passwords, tokens)
+- Never log sensitive data (passwords, tokens, full credit card numbers)
+- Never trust client-side validation as a security boundary
+- Never disable security headers for convenience
+- Never use `eval()` or `innerHTML` with user-provided data
+- Never store sessions in client-accessible storage (localStorage for auth tokens)
+- Never expose stack traces or internal error details to users
 
 ## OWASP Top 10 Prevention
 
@@ -233,7 +221,7 @@ npm audit reports a vulnerability
     └── Track and fix during regular dependency updates
 ```
 
-**Key questions:**
+Key questions:
 - Is the vulnerable function actually called in your code path?
 - Is the dependency a runtime dependency or dev-only?
 - Is the vulnerability exploitable given your deployment context (e.g., a server-side vulnerability in a client-only app)?
@@ -276,7 +264,7 @@ app.use('/api/auth/', rateLimit({
   *.key
 ```
 
-**Always check before committing:**
+Always check before committing:
 ```bash
 # Check for accidentally staged secrets
 git diff --cached | grep -i "password\|secret\|api_key\|token"

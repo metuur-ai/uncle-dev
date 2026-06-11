@@ -2,28 +2,11 @@
 name: uncle-dev-knowledge-capture
 description: Captures recently solved problems as searchable documentation in .uncle-dev/learns/, compounding team knowledge over time. Coordinates parallel subagents to research context, extract solutions, find related docs, and assemble one structured file. Use when a problem has just been solved, when you hear "that worked", "it's fixed", "working now", or "problem solved", or when the user runs /uncle-dev-knowledge-capture or wants to document a recent debugging session.
 ---
-
-# Knowledge Capture
-
 ## Overview
 
 Each documented solution compounds team knowledge. The first time you solve a problem takes research.
 Document it, and the next occurrence takes minutes. This skill coordinates parallel subagents to
 capture the solution while context is fresh, then writes one structured file into `.uncle-dev/learns/`.
-
-## When to Use
-
-**Use when:**
-- A problem has just been solved and verified working
-- You hear "that worked", "it's fixed", "working now", or "problem solved"
-- The user runs `/uncle-dev-knowledge-capture`
-- A debugging session concluded with a working fix
-
-**NOT for:**
-- Problems still being actively debugged
-- Trivial fixes (typos, obvious one-liner errors)
-- Architectural decisions — use `documentation-and-adrs` for those
-- Documenting features proactively before any problem occurred
 
 ## Core Process
 
@@ -43,7 +26,7 @@ Is this a SOLVED PROBLEM or a DESIGN DECISION worth confirming?
    Delegate to uncle-dev-acknowledge and exit.
 ```
 
-If the user picks **Design decision**, route based on `sdd_mode`:
+If the user picks Design decision, route based on `sdd_mode`:
 
 ```bash
 _cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
@@ -52,10 +35,10 @@ SDD_MODE=$(bash "$_cfg" preferences.sdd_mode "" 2>/dev/null || true)
 echo "$SDD_MODE"
 ```
 
-- **`lid-ears` mode**: Invoke `/uncle-dev-documentation-and-adrs` (or instruct the user to run it) to write `docs/decisions/ADR-NNN-<slug>.md`. Design decisions in lid-ears mode live as narrative ADRs, not gating acknowledge notes. Exit immediately.
-- **`openspec` mode**: Invoke `uncle-dev-acknowledge` (or instruct the user to run `/uncle-dev-acknowledge` and paste the notes) and exit immediately. Acknowledge notes belong in `openspec/acknowledge/<scope>.md`, not in `.uncle-dev/learns/` — they are a different artifact class with a different lifecycle.
+- `lid-ears` mode: Invoke `/uncle-dev-documentation-and-adrs` (or instruct the user to run it) to write `docs/decisions/ADR-NNN-<slug>.md`. Design decisions in lid-ears mode live as narrative ADRs, not gating acknowledge notes. Exit immediately.
+- `openspec` mode: Invoke `uncle-dev-acknowledge` (or instruct the user to run `/uncle-dev-acknowledge` and paste the notes) and exit immediately. Acknowledge notes belong in `openspec/acknowledge/<scope>.md`, not in `.uncle-dev/learns/` — they are a different artifact class with a different lifecycle.
 
-If the user picks **Solved problem**, continue with the capture-mode question:
+If the user picks Solved problem, continue with the capture-mode question:
 
 Present the user with two options using the same blocking-question tool. Wait for the user's choice before proceeding. Do NOT pre-select a mode.
 
@@ -67,7 +50,7 @@ Present the user with two options using the same blocking-question tool. Wait fo
    and cross-references. Best for simple fixes or sessions nearing context limits.
 ```
 
-If the user chooses **Full**, ask one follow-up question: whether to search session history for
+If the user chooses Full, ask one follow-up question: whether to search session history for
 relevant prior context. If yes, dispatch the Session Historian in Step 2. If no, skip it.
 
 ### Step 1: Auto Memory Scan (Full mode only)
@@ -91,13 +74,13 @@ content that ends up in the final doc with "(auto memory [claude])".
 
 ### Step 2: Research
 
-**Full mode — dispatch in parallel (background):**
+Full mode — dispatch in parallel (background):
 
 #### Context Analyzer
 - Reads conversation history to identify the problem and its context
 - Reads `solution-schema.yaml` in this skill directory for enum validation and track classification
 - Determines the track (bug or knowledge) from the `problem_type`
-- Uses the Category Mapping table in the **Specific Techniques** section to map `problem_type` to a
+- Uses the Category Mapping table in the Specific Techniques section to map `problem_type` to a
   `.uncle-dev/learns/` subdirectory
 - Suggests a filename: `[sanitized-problem-slug]-[date].md`
 - Incorporates auto memory excerpts if provided by the orchestrator
@@ -107,8 +90,8 @@ content that ends up in the final doc with "(auto memory [claude])".
 #### Solution Extractor
 - Reads `solution-schema.yaml` in this skill directory for track classification
 - Adapts output based on track:
-  - **Bug track:** Problem, Symptoms, What Didn't Work, Solution, Why This Works, Prevention
-  - **Knowledge track:** Context, Guidance, Why This Matters, When to Apply, Examples
+  - Bug track: Problem, Symptoms, What Didn't Work, Solution, Why This Works, Prevention
+  - Knowledge track: Context, Guidance, Why This Matters, When to Apply, Examples
 - Incorporates auto memory excerpts if provided; tags memory-sourced content "(auto memory [claude])"
 - Returns: structured content sections with code examples
 
@@ -116,10 +99,10 @@ content that ends up in the final doc with "(auto memory [claude])".
 - Searches `.uncle-dev/learns/` for related documentation using grep-first filtering (see Specific Techniques)
 - Assesses overlap with the new doc across five dimensions: problem statement, root cause, solution
   approach, referenced files, prevention rules
-- Scores overlap: **High** (4-5 dimensions), **Moderate** (2-3), **Low** (0-1)
+- Scores overlap: High (4-5 dimensions), Moderate (2-3), Low (0-1)
 - Returns: related links, overlap score, matched dimensions, stale candidate flags
 
-**Then dispatch in foreground (after background agents launch, only if user opted in):**
+Then dispatch in foreground (after background agents launch, only if user opted in):
 
 #### Session Historian
 Dispatched as `compound-engineering:research:session-historian` on mid-tier model.
@@ -131,52 +114,52 @@ Include in the dispatch prompt:
 - "Only surface findings directly relevant to this specific problem. Ignore unrelated work."
 - Output format: What was tried before / What didn't work / Key decisions / Related context
 
-**Lightweight mode:** The orchestrator performs all research in a single sequential pass (no
+Lightweight mode: The orchestrator performs all research in a single sequential pass (no
 subagents). Reads `solution-schema.yaml`, classifies the problem using the Category Mapping table,
 extracts solution from conversation history. Incorporates any relevant auto memory as supplementary
 context. Does not search `.uncle-dev/learns/` for duplicates.
 
 ### Step 3: Assembly
 
-**WAIT for all Step 2 subagents to complete before proceeding.**
+WAIT for all Step 2 subagents to complete before proceeding.
 
 The orchestrator performs all steps below. Subagents return text data only — they MUST NOT write files.
 
-1. **Check overlap assessment** from Related Docs Finder:
+1. Check overlap assessment from Related Docs Finder:
 
    | Overlap | Action |
    |---------|--------|
-   | **High** (4-5 dimensions) | Update the existing doc. Preserve its path. Add `last_updated: YYYY-MM-DD` to frontmatter. |
-   | **Moderate** (2-3) | Create new doc. Flag for `uncle-dev-knowledge-maintenance` review. |
-   | **Low / none** | Create new doc normally. |
+   | High (4-5 dimensions) | Update the existing doc. Preserve its path. Add `last_updated: YYYY-MM-DD` to frontmatter. |
+   | Moderate (2-3) | Create new doc. Flag for `uncle-dev-knowledge-maintenance` review. |
+   | Low / none | Create new doc normally. |
 
    When updating: preserve path and structure; update solution, code examples, prevention tips, stale
    references. Do not change the title unless the problem framing materially shifted.
 
-2. **Incorporate session history** (if available): fold failed attempts into **What Didn't Work** (bug)
-   or **Context** (knowledge). Tag session-sourced content with "(session history)".
+2. Incorporate session history (if available): fold failed attempts into What Didn't Work (bug)
+   or Context (knowledge). Tag session-sourced content with "(session history)".
 
-3. **Assemble** from collected pieces using the Resolution Templates in the **Specific Techniques** section.
+3. Assemble from collected pieces using the Resolution Templates in the Specific Techniques section.
 
-4. **Validate** YAML frontmatter against `solution-schema.yaml` — all required fields present, enum
+4. Validate YAML frontmatter against `solution-schema.yaml` — all required fields present, enum
    values match exactly.
 
-5. **Create directory** if needed: `mkdir -p .uncle-dev/learns/[category]/`
+5. Create directory if needed: `mkdir -p .uncle-dev/learns/[category]/`
 
-6. **Write one file:** `.uncle-dev/learns/[category]/[filename].md` (new) or the existing doc (update).
+6. Write one file: `.uncle-dev/learns/[category]/[filename].md` (new) or the existing doc (update).
 
 ### Step 4: Selective Maintenance Check
 
 After writing, decide whether to invoke `uncle-dev-knowledge-maintenance`:
 
-**Invoke when:**
+Invoke when:
 - A related learning recommends an approach the new fix now contradicts
 - The new fix clearly supersedes an older documented solution
 - Work involved a refactor, migration, rename, or dependency upgrade
 - Related Docs Finder surfaced high-confidence stale candidates
 - Related Docs Finder reported moderate overlap (potential consolidation)
 
-**Skip when:**
+Skip when:
 - No related docs were found
 - Related docs remain consistent with the new learning
 - Context is tight (recommend `/uncle-dev-knowledge-maintenance <scope>` as the next step instead)
@@ -228,9 +211,9 @@ Map `problem_type` to the target `.uncle-dev/learns/` subdirectory:
 
 Use the template matching the track when assembling the final doc.
 
-> **Different artifact class:** for design decisions that need human acknowledgement (not solved bugs), use `uncle-dev-acknowledge` — those land in `openspec/acknowledge/<scope>.md` and gate `/uncle-dev-build`, not in `.uncle-dev/learns/`. Step 0 routes the input there before this section is reached.
+> Different artifact class: for design decisions that need human acknowledgement (not solved bugs), use `uncle-dev-acknowledge` — those land in `openspec/acknowledge/<scope>.md` and gate `/uncle-dev-build`, not in `.uncle-dev/learns/`. Step 0 routes the input there before this section is reached.
 
-**Bug Track** (`build_error`, `test_failure`, `runtime_error`, `performance_issue`, `database_issue`, `security_issue`, `ui_bug`, `integration_issue`, `logic_error`):
+Bug Track (`build_error`, `test_failure`, `runtime_error`, `performance_issue`, `database_issue`, `security_issue`, `ui_bug`, `integration_issue`, `logic_error`):
 
 ```markdown
 ---
@@ -272,7 +255,7 @@ tags: [keyword-one, keyword-two]
 - [Related docs or issues, if any]
 ```
 
-**Knowledge Track** (`best_practice`, `documentation_gap`, `workflow_issue`, `developer_experience`):
+Knowledge Track (`best_practice`, `documentation_gap`, `workflow_issue`, `developer_experience`):
 
 ```markdown
 ---

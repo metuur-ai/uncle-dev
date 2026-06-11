@@ -2,26 +2,9 @@
 name: uncle-dev-feature-map
 description: Discovers and catalogs product features by reading backend routes, controllers, service logic, and frontend pages/components. Outputs a feature map document focused on what users can do — not how the code works. Use when you need a product-level inventory of an unfamiliar codebase, before speccing new features, or when building a requirements doc from existing behavior.
 ---
-
-# uncle-dev-feature-map
-
 ## Overview
 
 Extracts a product-level feature catalog from source code by reading backend and frontend layers in parallel. The output answers "what can users do with this product?" — not "how is it implemented?" Every feature is named in product language, cross-referenced between backend and frontend, and gaps are explicitly flagged.
-
-## When to Use
-
-**Use when:**
-- Joining an unfamiliar codebase and need a product overview before writing specs
-- Auditing feature scope before a large refactor or migration
-- Building a requirements doc from existing behavior (reverse-engineering the spec)
-- Identifying orphaned UI or undocumented API-only capabilities
-- Asked "what does this product do?" about a codebase you haven't read yet
-
-**When NOT to use:**
-- You need to understand how a specific feature is implemented → use `uncle-dev-research`
-- You are making code changes → use `uncle-dev-source-driven-development`
-- You already have a product spec and need to verify it → use `uncle-dev-spec-driven-development`
 
 ## Differentiator from `uncle-dev-research`
 
@@ -45,32 +28,32 @@ State findings explicitly. If ambiguous, ask — don't guess the project structu
 
 ### Step 2: Spawn Parallel Subagents
 
-Launch **two agents in a single message**:
+Launch two agents in a single message:
 
-**Backend agent** — scans routes, controllers, API handlers, and service layer.
+Backend agent — scans routes, controllers, API handlers, and service layer.
 
-**Frontend agent** — scans pages, views, navigation, and feature-gated components.
+Frontend agent — scans pages, views, navigation, and feature-gated components.
 
 Each agent prompt must include:
 > "Extract product features and business logic — not code explanations. Name each feature as a product manager would. For each feature include: feature name (user-facing), what the user can do, entry point (route path or handler), and any visible business rules or constraints."
 
 ### Step 3: Extract Feature Signals
 
-**Backend signals:**
+Backend signals:
 - HTTP routes grouped by resource/domain (not by file or controller)
 - Auth/permission guards → reveals role-based access (who can do what)
 - Service method names with business meaning (`chargeSubscription`, `sendInvoice`, `approveRequest`)
 - Validation rules → reveals business constraints ("name required", "max 5 members")
 - Queue jobs and events → reveals async or background features
 
-**Frontend signals:**
+Frontend signals:
 - Page and view files mapped to their route paths
 - Navigation menus, sidebars, and tab groups
 - Feature flags and conditional UI blocks
 - Multi-step form flows → indicates complex features
 - Empty states and error messages → reveals expected user actions
 
-**Do not report:**
+Do not report:
 - How something is implemented internally
 - Variable names, class hierarchies, or architectural patterns
 - Performance details or infrastructure choices
@@ -79,8 +62,8 @@ Each agent prompt must include:
 
 After both agents complete:
 - Match API endpoints to UI pages that call them
-- Flag **API-only capabilities** — backend routes with no corresponding UI
-- Flag **orphaned UI** — frontend pages with no backend match (mocks, stubs, dead screens)
+- Flag API-only capabilities — backend routes with no corresponding UI
+- Flag orphaned UI — frontend pages with no backend match (mocks, stubs, dead screens)
 - Group all features by product domain (auth, billing, dashboard, settings, admin, etc.)
 
 ### Step 5: Synthesize Feature Map Document
@@ -125,7 +108,7 @@ status: draft
 Before closing:
 - Feature names are product language, not code identifiers (`"Create user account"` not `"UserController.store"`)
 - Business rules are stated as constraints (`"max 5 users per org"`) not implementation (`"checks users.count < 5"`)
-- Every feature entry has a backend **or** frontend reference — no entries without evidence
+- Every feature entry has a backend or frontend reference — no entries without evidence
 - API-only and orphaned UI sections are populated (even if empty, confirm they were checked)
 
 ## Common Rationalizations

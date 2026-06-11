@@ -2,20 +2,9 @@
 name: uncle-dev-shipping-and-launch
 description: Prepares production launches. Use when preparing to deploy to production. Use when you need a pre-launch checklist, when setting up monitoring, when planning a staged rollout, or when you need a rollback strategy.
 ---
-
-# Shipping and Launch
-
 ## Overview
 
 Ship with confidence. The goal is not just to deploy — it's to deploy safely, with monitoring in place, a rollback plan ready, and a clear understanding of what success looks like. Every launch should be reversible, observable, and incremental.
-
-## When to Use
-
-- Deploying a feature to production for the first time
-- Releasing a significant change to users
-- Migrating data or infrastructure
-- Opening a beta or early access program
-- Any deployment that carries risk (all of them)
 
 ## SDD Mode Detection
 
@@ -30,17 +19,17 @@ echo "$SDD_MODE"
 
 ### lid-ears mode — Pre-Ship Verification
 
-**If sdd_mode is `lid-ears`: run these checks INSTEAD of the OpenSpec CLI section below. Do NOT run any `openspec` command.**
+If sdd_mode is `lid-ears`: run these checks INSTEAD of the OpenSpec CLI section below. Do NOT run any `openspec` command.
 
-1. **Tasks complete** — Read `docs/tasks/*.md`; confirm all items are `- [x]`. List unchecked items and stop if found.
-2. **EARS coverage** — Read `docs/ears/*.md`; for each requirement (R-x.y), confirm at least one test asserts it. List uncovered requirements and stop if found.
-3. **Docs current** — Confirm `docs/hld/<slug>.md`, `docs/lld/<slug>.md`, `docs/ears/<slug>.md` reflect the shipped implementation. Flag any stale sections.
+1. Tasks complete — Read `docs/tasks/*.md`; confirm all items are `- [x]`. List unchecked items and stop if found.
+2. EARS coverage — Read `docs/ears/*.md`; for each requirement (R-x.y), confirm at least one test asserts it. List uncovered requirements and stop if found.
+3. Docs current — Confirm `docs/hld/<slug>.md`, `docs/lld/<slug>.md`, `docs/ears/<slug>.md` reflect the shipped implementation. Flag any stale sections.
 
 Skip the OpenSpec CLI Integration section entirely and continue to The Pre-Launch Checklist.
 
 ### OpenSpec CLI Integration
 
-**If sdd_mode is `openspec`:** Check if the OpenSpec CLI is available (`openspec --version`). When available, use it during the ship workflow:
+If sdd_mode is `openspec`: Check if the OpenSpec CLI is available (`openspec --version`). When available, use it during the ship workflow:
 
 - `openspec validate <change-id>` — Confirm all change artifacts are well-formed before launch
 - `openspec status <change-id>` — Verify all artifacts are complete
@@ -123,7 +112,7 @@ if (flags.taskSharing) {
 return null;
 ```
 
-**Feature flag lifecycle:**
+Feature flag lifecycle:
 
 ```
 1. DEPLOY with flag OFF     → Code is in production but inactive
@@ -133,7 +122,7 @@ return null;
 5. CLEAN UP                 → Remove flag and dead code path after full rollout
 ```
 
-**Rules:**
+Rules:
 - Every feature flag has an owner and an expiration date
 - Clean up flags within 2 weeks of full rollout
 - Don't nest feature flags (creates exponential combinations)
