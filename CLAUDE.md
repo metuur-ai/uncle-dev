@@ -15,7 +15,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 
 ## Skills by Phase
 
-**Define:** uncle-dev-research, uncle-dev-idea-refine, uncle-dev-grill, uncle-dev-ubiquitous-language, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
+**Define:** uncle-dev-research, uncle-dev-idea-refine, uncle-dev-grill, uncle-dev-verbalized-sampling, uncle-dev-ubiquitous-language, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
 **Brownfield:** uncle-dev-feature-map, uncle-dev-brownfield
 **Evaluate:** uncle-senior
 **Plan:** uncle-dev-planning-and-task-breakdown
@@ -73,7 +73,7 @@ Applies to: inline scouts, repo-research-analyst, code reviewers, investigate se
 This project uses uncle-dev engineering skills for structured AI-assisted development.
 
 ### Skills by Phase
-**Define:** uncle-dev-research, uncle-dev-idea-refine, uncle-dev-grill, uncle-dev-ubiquitous-language, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
+**Define:** uncle-dev-research, uncle-dev-idea-refine, uncle-dev-grill, uncle-dev-verbalized-sampling, uncle-dev-ubiquitous-language, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
 **Brownfield:** uncle-dev-feature-map, uncle-dev-brownfield
 **Plan:** uncle-dev-planning-and-task-breakdown
 **Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-spec-annotations, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design

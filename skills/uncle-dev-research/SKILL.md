@@ -1,6 +1,6 @@
 ---
 name: uncle-dev-research
-description: Documents the codebase as it exists today by spawning parallel subagents to explore structure, patterns, and history, then writing a research document to .uncle-dev/research/. Use when starting work on an unfamiliar codebase, when you need to understand existing implementation before speccing a change, or when asked "how does X work?" about something in the repo.
+description: Documents the codebase as it exists today by spawning parallel subagents to explore structure, patterns, and history, then writing a research document to .devlocal/research/. Use when starting work on an unfamiliar codebase, when you need to understand existing implementation before speccing a change, or when asked "how does X work?" about something in the repo.
 ---
 
 # Codebase Research
@@ -107,7 +107,7 @@ Wait for **all** subagents to complete before synthesizing. Then:
 
 ### Step 5: Write research document
 
-Gather current git context (commit hash, branch, date) before writing. Save to `.uncle-dev/research/`:
+Gather current git context (commit hash, branch, date) before writing. Save to `.devlocal/research/` (personal scratchpad, gitignored):
 
 **Filename:** `YYYY-MM-DD-[ticket]-description.md`
 - With ticket: `2025-01-08-ENG-1478-parent-child-tracking.md`
@@ -196,7 +196,7 @@ Run subagents in background (`run_in_background: true`) when they are independen
 
 After research is complete:
 
-- [ ] Research document exists in `.uncle-dev/research/` with valid YAML frontmatter
+- [ ] Research document exists in `.devlocal/research/` with valid YAML frontmatter
 - [ ] Document includes specific file:line references (not vague descriptions)
 - [ ] Document contains no recommendations or improvement suggestions
 - [ ] `.uncle-dev/learns/` was searched for historical context

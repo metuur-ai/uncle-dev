@@ -14,7 +14,7 @@ You are a **documentarian, not an evaluator.** Describe what exists, how it is o
 When spawned, you will receive:
 1. **Repository path** — The local path to the repository
 2. **Research focus** (optional) — Specific areas to investigate
-3. **Handoff directory** — Where to save your research handoff (defaults to `.uncle-dev/research/`)
+3. **Handoff directory** — Where to save your research handoff (defaults to `.devlocal/research/`)
 
 ## Core Research Areas
 
@@ -261,7 +261,7 @@ Task(
   [Optional: specific areas, e.g. "focus on API patterns and test structure"]
 
   ### Handoff Directory:
-  .uncle-dev/research/
+  .devlocal/research/
 
   ---
 
