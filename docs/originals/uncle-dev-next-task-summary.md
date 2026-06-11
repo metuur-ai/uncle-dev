@@ -154,7 +154,7 @@ skills/uncle-dev-next-task/
   parallelism-and-locks.md       # ready-set algorithm, lock format, atomic acquisition
   conflict-resolution.md         # the 4-option prompt, multi-conflict sessions
 
-.claude/commands/
+commands/
   uncle-dev-next-task.md         # slash command wrapper, supports --story / --ready / --release / --claim
 
 docs/

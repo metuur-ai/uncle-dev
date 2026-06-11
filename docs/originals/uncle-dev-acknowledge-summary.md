@@ -232,7 +232,7 @@ skills/uncle-dev-acknowledge/
   note-schema.yaml              ← file-level frontmatter + per-section metadata contract
   acknowledge-workflow.md       ← ack/reject/supersede mechanics, propagation, lock protocol
 
-.claude/commands/
+commands/
   uncle-dev-acknowledge.md      ← slash command (paste | extract | ack | reject | supersede | list)
 
 skills/uncle-dev-next-task/
@@ -250,8 +250,8 @@ Plus integration edits to five existing files:
 |---|---|
 | `skills/uncle-dev-next-task/SKILL.md` | Step 4b in the resolution diagram; BLOCKED output added to output contract |
 | `skills/uncle-dev-next-task/parsing-and-annotations.md` | `scope` annotation key added to the recognized-keys table |
-| `.claude/commands/uncle-dev-next-task.md` | Pending-ack added to Failure Modes |
-| `.claude/commands/uncle-dev-build.md` | Non-bypassable BLOCKED handling added to Step 0 |
+| `commands/uncle-dev-next-task.md` | Pending-ack added to Failure Modes |
+| `commands/uncle-dev-build.md` | Non-bypassable BLOCKED handling added to Step 0 |
 | `skills/uncle-dev-knowledge-capture/SKILL.md` | Step 0 routes design decisions to uncle-dev-acknowledge before entering capture modes |
 | `skills/uncle-dev-spec-driven-development/SKILL.md` | Phase 3 "Flagging Decisions for Acknowledgement" subsection + `→ ack` row syntax |
 | `skills/uncle-dev-documentation-and-adrs/SKILL.md` | ADR vs acknowledge-note comparison table |

@@ -150,7 +150,7 @@ See `skills/uncle-dev-graphify-aware-analysis/SKILL.md` for the full protocol, c
 
 ## Using Commands
 
-The `.claude/commands/` directory contains slash commands for Claude Code:
+The `commands/` directory contains slash commands for Claude Code:
 
 | Command | Skill Invoked |
 |---------|---------------|

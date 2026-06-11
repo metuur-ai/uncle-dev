@@ -101,14 +101,13 @@ if [[ "$DEV" -eq 0 ]]; then
 
   mkdir -p "${CACHE_PATH}"
 
-  # skills/ — root skills (32) + .claude/skills/ OpenSpec skills (4), merged
+  # skills/ — full skill library
   copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_ROOT}" "${CACHE_PATH}/skills" "${FORCE}"
-  copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_OPENSPEC}" "${CACHE_PATH}/skills" "${FORCE}"
 
   # agents/ — reusable personas
   copy_dir_contents "${REPO_ROOT}/${ASSET_AGENTS}" "${CACHE_PATH}/agents" "${FORCE}"
 
-  # commands/ — recursive, preserving opsx/ subdir
+  # commands/ — recursive, preserving any subdir structure
   copy_dir_contents "${REPO_ROOT}/${ASSET_COMMANDS_ROOT}" "${CACHE_PATH}/commands" "${FORCE}"
 
   # hooks/ — session lifecycle hooks

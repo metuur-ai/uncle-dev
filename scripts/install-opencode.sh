@@ -103,9 +103,8 @@ log "Installing for OpenCode in ${INSTALL_ROOT}"
 # AGENTS.md — primary OpenCode instruction file
 copy_file "${REPO_ROOT}/AGENTS.md" "${AGENTS_DEST}" "${FORCE}"
 
-# skills/ — root skills (32) + .claude/skills/ OpenSpec skills (4), merged
+# skills/ — full skill library
 copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_ROOT}" "${SKILLS_DEST}" "${FORCE}"
-copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_OPENSPEC}" "${SKILLS_DEST}" "${FORCE}"
 
 # agents/ — reusable personas
 copy_dir_contents "${REPO_ROOT}/${ASSET_AGENTS}" "${AGENTS_PERSONAS_DEST}" "${FORCE}"
@@ -134,7 +133,6 @@ for rule in "${ASSET_RULES[@]}"; do
   copy_file "${REPO_ROOT}/${rule}" "${BUNDLE_TMP}/${rule}" "1"
 done
 copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_ROOT}" "${BUNDLE_TMP}/skills" "1"
-copy_dir_contents "${REPO_ROOT}/${ASSET_SKILLS_OPENSPEC}" "${BUNDLE_TMP}/skills" "1"
 copy_dir_contents "${REPO_ROOT}/${ASSET_AGENTS}" "${BUNDLE_TMP}/agents" "1"
 
 tar -czf "${ARCHIVE}" -C "${DIST_DIR}" ".opencode-bundle-tmp"

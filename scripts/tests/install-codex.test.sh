@@ -38,9 +38,9 @@ PLUGIN_ROOT="${FAKE_HOME}/plugins/uncle-dev"
 echo ""
 echo "── Asset coverage ────────────────────────────────────────"
 
-# skills: 36 (32 root + 4 openspec)
+# skills: full library from skills/
 assert_dir  "${PLUGIN_ROOT}/skills"
-assert_count "${PLUGIN_ROOT}/skills" 36 "skills total"
+assert_count "${PLUGIN_ROOT}/skills" 57 "skills total"
 
 for skill in openspec-apply-change openspec-archive-change openspec-explore openspec-propose; do
   assert_dir "${PLUGIN_ROOT}/skills/${skill}"
@@ -48,13 +48,11 @@ done
 
 # agents
 assert_dir  "${PLUGIN_ROOT}/agents"
-assert_count "${PLUGIN_ROOT}/agents" 8 "agents"
+assert_count "${PLUGIN_ROOT}/agents" 9 "agents"
 
-# commands: all from .claude/commands/ (19 top-level + opsx/)
+# commands: all from commands/
 assert_dir  "${PLUGIN_ROOT}/commands"
-assert_count "${PLUGIN_ROOT}/commands" 20 "commands dir entries (19 md + opsx)"
-assert_dir  "${PLUGIN_ROOT}/commands/opsx"
-assert_count "${PLUGIN_ROOT}/commands/opsx" 4 "opsx commands"
+assert_count "${PLUGIN_ROOT}/commands" 24 "commands dir entries"
 
 # rules
 for rule in "${ASSET_RULES[@]}"; do

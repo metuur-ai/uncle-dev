@@ -3,20 +3,14 @@
 # Source this file to get ASSET_* variables.
 # Every installer must source this — adding an asset = one edit here.
 
-# skills/ (32 dirs) — core engineering skill library
+# skills/ — full skill library (engineering skills + OpenSpec lifecycle + docs skills)
 ASSET_SKILLS_ROOT="skills"
 
-# .claude/skills/ (4 dirs) — OpenSpec lifecycle skills (apply/archive/explore/propose)
-ASSET_SKILLS_OPENSPEC=".claude/skills"
-
-# agents/ (8 .md) — reusable agent personas
+# agents/ (9 .md) — reusable agent personas
 ASSET_AGENTS="agents"
 
-# .claude/commands/ top-level .md (19 files)
-ASSET_COMMANDS_ROOT=".claude/commands"
-
-# .claude/commands/opsx/ (4 .md) — opsx subcommands
-ASSET_COMMANDS_OPSX=".claude/commands/opsx"
+# commands/ — slash commands
+ASSET_COMMANDS_ROOT="commands"
 
 # hooks/ — session lifecycle hooks (*.sh + hooks.json + SIMPLIFY-IGNORE.md)
 ASSET_HOOKS="hooks"

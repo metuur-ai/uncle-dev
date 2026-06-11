@@ -47,9 +47,9 @@ echo "Cache: ${CACHE}"
 echo ""
 echo "── Asset coverage ────────────────────────────────────────"
 
-# skills: 32 root + 4 openspec = 36
+# skills: full library from skills/
 assert_dir  "${CACHE}/skills"
-assert_count "${CACHE}/skills" 36 "skills total"
+assert_count "${CACHE}/skills" 57 "skills total"
 
 # openspec skills specifically
 for skill in openspec-apply-change openspec-archive-change openspec-explore openspec-propose; do
@@ -58,13 +58,11 @@ done
 
 # agents
 assert_dir  "${CACHE}/agents"
-assert_count "${CACHE}/agents" 8 "agents"
+assert_count "${CACHE}/agents" 9 "agents"
 
-# commands: 19 top-level + opsx/ subdir with 4
+# commands: all top-level .md from commands/
 assert_dir "${CACHE}/commands"
-assert_count "${CACHE}/commands" 20 "top-level commands (19 md + opsx dir)"  # 19 md + opsx dir
-assert_dir "${CACHE}/commands/opsx"
-assert_count "${CACHE}/commands/opsx" 4 "opsx commands"
+assert_count "${CACHE}/commands" 24 "top-level commands"
 
 # hooks
 assert_dir "${CACHE}/hooks"
@@ -91,8 +89,6 @@ done
 # commands promoted to ~/.claude/commands/
 assert_dir  "${FAKE_HOME}/.claude/commands"
 assert_file "${FAKE_HOME}/.claude/commands/uncle-dev-spec.md"
-assert_dir  "${FAKE_HOME}/.claude/commands/opsx"
-assert_file "${FAKE_HOME}/.claude/commands/opsx/apply.md"
 
 # archive
 assert_file "${REPO_ROOT}/dist/uncle-dev-claude.tar.gz"

@@ -16,6 +16,7 @@
         "./skills/uncle-dev-acknowledge",
         "./skills/uncle-dev-api-and-interface-design",
         "./skills/uncle-dev-browser-testing-with-devtools",
+        "./skills/uncle-dev-changelog",
         "./skills/uncle-dev-ci-cd-and-automation",
         "./skills/uncle-dev-code-context",
         "./skills/uncle-dev-code-review-and-quality",
@@ -51,10 +52,10 @@
         "./skills/uncle-dev-using-agent-skills",
         "./skills/uncle-dev-wrap",
         "./skills/uncle-senior",
-        "./.claude/skills/openspec-apply-change",
-        "./.claude/skills/openspec-archive-change",
-        "./.claude/skills/openspec-explore",
-        "./.claude/skills/openspec-propose"
+        "./skills/openspec-apply-change",
+        "./skills/openspec-archive-change",
+        "./skills/openspec-explore",
+        "./skills/openspec-propose"
       ],
       "agents": [
         "./agents/uncle-dev-ag-code-reviewer.md",

@@ -286,6 +286,7 @@ Every deployment needs a rollback plan before it happens:
 ```
 ## See Also
 
+- For user-facing release notes before tagging, see `uncle-dev-changelog`
 - For security pre-launch checks, see `references/security-checklist.md`
 - For performance pre-launch checklist, see `references/performance-checklist.md`
 - For accessibility verification before launch, see `references/accessibility-checklist.md`

@@ -21,7 +21,7 @@ NON-NEGOTIABLE RULES
   concise wording, descriptive headings, one term per concept, complete runnable
   code examples, no colloquialisms ("dive in", "game-changer", "powerful").
 - Sub-agents that don't auto-load a skill must read it first:
-  .claude/skills/<skill>/SKILL.md. State which skills you loaded before editing.
+  skills/<skill>/SKILL.md. State which skills you loaded before editing.
 - Work on COPIES: operate in docs/improved/ (mirror the filenames). Never touch
   docs/originals/ — it is the pristine source of truth.
 - Graphify-first: this repo has graphify-out/graph.json. For any "how does X

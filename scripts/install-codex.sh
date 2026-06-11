@@ -117,19 +117,15 @@ assemble_plugin() {
     "${plugin_root}/.codex-plugin/plugin.json" \
     "${FORCE}"
 
-  # commands/ — all commands from canonical source (.claude/commands/), incl. opsx/
+  # commands/ — all commands from canonical source (commands/)
   copy_dir_contents \
     "${REPO_ROOT}/${ASSET_COMMANDS_ROOT}" \
     "${plugin_root}/commands" \
     "${FORCE}"
 
-  # skills/ — root skills (32) + .claude/skills/ OpenSpec skills (4), merged
+  # skills/ — full skill library
   copy_dir_contents \
     "${REPO_ROOT}/${ASSET_SKILLS_ROOT}" \
-    "${plugin_root}/skills" \
-    "${FORCE}"
-  copy_dir_contents \
-    "${REPO_ROOT}/${ASSET_SKILLS_OPENSPEC}" \
     "${plugin_root}/skills" \
     "${FORCE}"
 

@@ -311,7 +311,7 @@ agent-skills/
 │   └── uncle-dev-ag-repo-research-analyst.md
 ├── references/                        # 4 supplementary checklists
 ├── hooks/                             # Session lifecycle hooks
-├── .claude/commands/                  # 7 slash commands
+├── commands/                  # 7 slash commands
 └── docs/                              # Setup guides per tool
 ```
 
