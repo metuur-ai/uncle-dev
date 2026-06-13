@@ -41,11 +41,7 @@ assert_file "${INSTALL_ROOT}/AGENTS.md"
 
 # skills: full library from skills/
 assert_dir  "${INSTALL_ROOT}/skills"
-assert_count "${INSTALL_ROOT}/skills" 57 "skills total"
-
-for skill in openspec-apply-change openspec-archive-change openspec-explore openspec-propose; do
-  assert_dir "${INSTALL_ROOT}/skills/${skill}"
-done
+assert_count "${INSTALL_ROOT}/skills" 43 "skills total"
 
 # agents
 assert_dir  "${INSTALL_ROOT}/agents"
@@ -73,7 +69,7 @@ echo "── Asset coverage (local scope) ────────────�
 
 assert_file "${FAKE_WS}/AGENTS.md"
 assert_dir  "${FAKE_WS}/.opencode/skills"
-assert_count "${FAKE_WS}/.opencode/skills" 57 "skills total (local)"
+assert_count "${FAKE_WS}/.opencode/skills" 43 "skills total (local)"
 assert_dir  "${FAKE_WS}/.opencode/agents"
 assert_count "${FAKE_WS}/.opencode/agents" 9 "agents (local)"
 

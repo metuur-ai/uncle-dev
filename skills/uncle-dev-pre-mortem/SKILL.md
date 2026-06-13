@@ -3,6 +3,7 @@ name: uncle-dev-pre-mortem
 description: Pre-mortem analysis that imagines a plan has failed, then works backward to identify causes and preventions. Use before launches, major decisions, or risky initiatives to surface hidden risks.
 user-invocable: true
 ---
+
 Imagine the plan has completely failed, then work backward to identify what went wrong and how to prevent it.
 
 ## Instructions
@@ -23,23 +24,24 @@ What Went Wrong
 
 Generate 8-12 plausible failure causes across categories:
 
-| Category | Failure Mode | How It Played Out |
-|----------|--------------|-------------------|
-| Execution | [What failed] | [The story of how] |
-| External | [What failed] | [The story of how] |
-| People | [What failed] | [The story of how] |
-| Technical | [What failed] | [The story of how] |
+| Category    | Failure Mode  | How It Played Out  |
+| ----------- | ------------- | ------------------ |
+| Execution   | [What failed] | [The story of how] |
+| External    | [What failed] | [The story of how] |
+| People      | [What failed] | [The story of how] |
+| Technical   | [What failed] | [The story of how] |
 | Assumptions | [What failed] | [The story of how] |
 
 Risk Prioritization
 
-| Failure Mode | Likelihood | Impact | Priority |
-|--------------|------------|--------|----------|
-| ... | High/Med/Low | High/Med/Low | 1-5 |
+| Failure Mode | Likelihood   | Impact       | Priority |
+| ------------ | ------------ | ------------ | -------- |
+| ...          | High/Med/Low | High/Med/Low | 1-5      |
 
-Top 3 Risks & Mitigations
+Top 5 Risks & Mitigations
 
 For each top risk:
+
 - Risk: [Description]
 - Early Warning Signs: What would indicate this is happening?
 - Prevention: How to reduce likelihood

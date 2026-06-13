@@ -26,23 +26,24 @@ Summarize what's being attempted and the success criteria.
 
 Generate 8-12 plausible failure causes across categories:
 
-| Category | Failure Mode | How It Played Out |
-|----------|--------------|-------------------|
-| Execution | [What failed] | [The story of how] |
-| External | [What failed] | [The story of how] |
-| People | [What failed] | [The story of how] |
-| Technical | [What failed] | [The story of how] |
+| Category    | Failure Mode  | How It Played Out  |
+| ----------- | ------------- | ------------------ |
+| Execution   | [What failed] | [The story of how] |
+| External    | [What failed] | [The story of how] |
+| People      | [What failed] | [The story of how] |
+| Technical   | [What failed] | [The story of how] |
 | Assumptions | [What failed] | [The story of how] |
 
 **Risk Prioritization**
 
-| Failure Mode | Likelihood | Impact | Priority |
-|--------------|------------|--------|----------|
-| ... | High/Med/Low | High/Med/Low | 1-5 |
+| Failure Mode | Likelihood   | Impact       | Priority |
+| ------------ | ------------ | ------------ | -------- |
+| ...          | High/Med/Low | High/Med/Low | 1-5      |
 
-**Top 3 Risks & Mitigations**
+**Top 5 Risks & Mitigations**
 
 For each top risk:
+
 - **Risk**: [Description]
 - **Early Warning Signs**: What would indicate this is happening?
 - **Prevention**: How to reduce likelihood

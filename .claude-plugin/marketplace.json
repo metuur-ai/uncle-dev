@@ -51,11 +51,7 @@
         "./skills/uncle-dev-ubiquitous-language",
         "./skills/uncle-dev-using-agent-skills",
         "./skills/uncle-dev-wrap",
-        "./skills/uncle-senior",
-        "./skills/openspec-apply-change",
-        "./skills/openspec-archive-change",
-        "./skills/openspec-explore",
-        "./skills/openspec-propose"
+        "./skills/uncle-senior"
       ],
       "agents": [
         "./agents/uncle-dev-ag-code-reviewer.md",

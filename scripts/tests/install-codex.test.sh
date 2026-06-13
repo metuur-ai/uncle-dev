@@ -40,11 +40,7 @@ echo "── Asset coverage ─────────────────�
 
 # skills: full library from skills/
 assert_dir  "${PLUGIN_ROOT}/skills"
-assert_count "${PLUGIN_ROOT}/skills" 57 "skills total"
-
-for skill in openspec-apply-change openspec-archive-change openspec-explore openspec-propose; do
-  assert_dir "${PLUGIN_ROOT}/skills/${skill}"
-done
+assert_count "${PLUGIN_ROOT}/skills" 43 "skills total"
 
 # agents
 assert_dir  "${PLUGIN_ROOT}/agents"

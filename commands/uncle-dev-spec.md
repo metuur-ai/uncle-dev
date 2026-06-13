@@ -45,16 +45,19 @@ Execute this sequence:
 ### 1. Elicit — ask all three layers before writing anything
 
 **L — Lenses (feeds HLD)**
+
 - Who are the users or systems affected?
 - What is their pain today? What changes for them after this ships?
 - Any secondary consumers (other services, agents, hooks)?
 
 **I — Intent (feeds HLD + LLD)**
+
 - What must be observable/true when this ships?
 - What currently broken behaviour gets fixed?
 - What must NOT change (invariants)?
 
 **D — Details (feeds LLD)**
+
 - Hard constraints (platform, stack, tool restrictions)
 - Compliance or security requirements
 - Explicit out-of-scope items already decided
@@ -63,24 +66,29 @@ Execute this sequence:
 
 ### 2. Write HLD — `docs/hld/<slug>.md`
 
-Broad conceptual map. Audience: anyone who needs to understand *what* and *why*, not *how*.
+Broad conceptual map. Audience: anyone who needs to understand _what_ and _why_, not _how_.
 
 ```markdown
 # <Feature Title> — High-Level Design
 
 ## Overview
+
 <one-paragraph summary of the change and its purpose>
 
 ## Stakeholders & Impact
+
 <who is affected, their current pain, what changes after this ships>
 
 ## Goals
+
 <what must be observable/true when this ships>
 
 ## Non-Goals
+
 <what must NOT change; explicit out-of-scope decisions>
 
 ## Success Criteria
+
 <how we know this is done — observable outcomes>
 ```
 
@@ -94,15 +102,19 @@ Detailed modular breakdown. Audience: engineers implementing or reviewing the ch
 # <Feature Title> — Low-Level Design
 
 ## Architecture
+
 <how the pieces fit together — components, data flow, interfaces>
 
 ## Constraints
+
 <hard technical constraints, platform limits, compliance rules>
 
 ## Key Decisions
+
 <decisions made and why — tradeoffs, rejected alternatives>
 
 ## Out of Scope
+
 <items explicitly deferred>
 ```
 
@@ -113,6 +125,7 @@ Detailed modular breakdown. Audience: engineers implementing or reviewing the ch
 Exact, structured behavioral requirements. Agents use these to write tests and implementation.
 
 Use exactly these keywords:
+
 - `THE SYSTEM SHALL` — always-on behaviour
 - `WHEN <trigger>, THE SYSTEM SHALL` — event-driven
 - `WHILE <state>, THE SYSTEM SHALL` — continuous during a condition
@@ -126,16 +139,16 @@ One table per logical unit of work:
 
 ## Unit 1: <name>
 
-| ID    | EARS statement |
-|-------|----------------|
+| ID    | EARS statement            |
+| ----- | ------------------------- |
 | R-1.1 | WHEN … THE SYSTEM SHALL … |
-| R-1.2 | IF … THE SYSTEM SHALL … |
+| R-1.2 | IF … THE SYSTEM SHALL …   |
 
 ## Unit 2: <name>
 
 | ID    | EARS statement |
-|-------|----------------|
-| R-2.1 | … |
+| ----- | -------------- |
+| R-2.1 | …              |
 ```
 
 ---
@@ -146,13 +159,14 @@ With the full spec drafted (HLD + LLD + EARS), run a pre-mortem before locking:
 
 Invoke `/uncle-dev-pre-mortem` — pass the HLD goals + success criteria, LLD architecture + constraints, and EARS requirements as context. It imagines the initiative has completely failed and works backward to surface hidden risks.
 
-Present the **Top 3 Risks and mitigations** from the pre-mortem output alongside the three spec documents at Step 5. The user may revise specs in response before confirming YES.
+Present the **Top 5 Risks and mitigations** from the pre-mortem output alongside the three spec documents at Step 5. The user may revise specs in response before confirming YES.
 
 ---
 
 ### 5. HARD GATE
 
-Present all three documents (HLD, LLD, EARS) **and the pre-mortem Top 3 Risks**. Ask exactly this, nothing more:
+Present all three documents (HLD, LLD, EARS) **and the pre-mortem Top 5 Risks**. Ask exactly this, nothing more:
+
 > "Do these specs look correct and are the risks acceptable? Reply YES to lock them, or tell me what to change."
 
 **STOP. Do not ask follow-up questions. Do not offer options. Do not mention OpenSpec, change IDs, or next steps. Wait silently for the user's reply.**
@@ -164,6 +178,7 @@ Present all three documents (HLD, LLD, EARS) **and the pre-mortem Top 3 Risks**.
 Only after explicit user confirmation. **No openspec commands. No change creation.**
 
 Tell the user (concise — one block, no prompts):
+
 ```
 Specs locked. Saved:
   docs/hld/<slug>.md   — High-Level Design

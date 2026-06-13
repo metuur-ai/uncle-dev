@@ -8,6 +8,7 @@ description: >
   or only a vague idea; or when the task would take more than 30 minutes. Always invoke
   this skill before coding begins — code without a spec is guessing.
 ---
+
 Design is the single source of truth. Intent flows downstream: HLD → LLD → EARS → code/tests. If all code were deleted, the spec documents must be sufficient to regenerate the project entirely.
 
 ## Phase 0 — Detect Mode and Route
@@ -21,7 +22,7 @@ bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
 
 | Result     | Path                                                            |
 | ---------- | --------------------------------------------------------------- |
-| `lid-ears` | Follow Phase 0-LID below. Never touch OpenSpec.             |
+| `lid-ears` | Follow Phase 0-LID below. Never touch OpenSpec.                 |
 | `openspec` | Read `references/openspec-workflow.md` and follow that process. |
 
 ---
@@ -135,11 +136,11 @@ With the full spec drafted (HLD + LLD + EARS), run a pre-mortem before locking:
 
 Invoke `/uncle-dev-pre-mortem` — pass the HLD goals + success criteria, LLD architecture + constraints, and EARS requirements as context. It imagines the initiative has completely failed and works backward to surface hidden risks.
 
-Present the Top 3 Risks and mitigations from the pre-mortem output alongside the three spec documents at Step 5. The user may revise specs in response before confirming YES.
+Present the Top 5 Risks and mitigations from the pre-mortem output alongside the three spec documents at Step 5. The user may revise specs in response before confirming YES.
 
 ### Step 5 — HARD GATE
 
-Present all three documents and the pre-mortem Top 3 Risks. Ask exactly this — nothing more:
+Present all three documents and the pre-mortem Top 5 Risks. Ask exactly this — nothing more:
 
 > "Do these specs look correct and are the risks acceptable? Reply YES to lock them, or tell me what to change."
 
@@ -172,7 +173,7 @@ Do NOT open openspec-workflow.md or run any openspec command.
 - [ ] `docs/hld/<slug>.md` written with overview, stakeholders, goals, non-goals, success criteria
 - [ ] `docs/lld/<slug>.md` written with architecture, constraints, key decisions, out of scope
 - [ ] `docs/ears/<slug>.md` written with EARS table per unit of work
-- [ ] `/uncle-dev-pre-mortem` run against HLD + LLD + EARS; Top 3 Risks presented at Step 5
+- [ ] `/uncle-dev-pre-mortem` run against HLD + LLD + EARS; Top 5 Risks presented at Step 5
 - [ ] User has explicitly confirmed specs and risk profile before anything downstream was touched
 - [ ] After YES, `/uncle-dev-plan` was invoked in the same turn (do not leave the user at a "run X next" pointer)
 
