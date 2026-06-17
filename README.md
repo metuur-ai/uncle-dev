@@ -17,7 +17,7 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 ## Commands
 
-The plugin ships 24 commands. The table below highlights the main lifecycle entry points; each one activates the right skills automatically.
+The plugin ships 25 commands. The table below highlights the main lifecycle entry points; each one activates the right skills automatically.
 
 | What you're doing           | Command                       | Key principle                       |
 | --------------------------- | ----------------------------- | ----------------------------------- |

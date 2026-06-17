@@ -147,6 +147,46 @@ it("does not expose raw authentication failure details", async () => {
 });
 ```
 
+## The `@debt` Marker — Consciously-Kept Shortcuts
+
+`@debt` is a separate in-code marker for a shortcut you are *deliberately* keeping, with its limit and its escape hatch written down. It answers a different question than `@spec` and `[D]`:
+
+- `@spec <ID>` — forward traceability: "this code implements this product behavior."
+- `[D]` (spec status) — an unbuilt requirement: "this behavior is deferred, not yet built."
+- `@debt <ceiling>, <upgrade>` — a built-but-shortcut decision: "this works today, here is the limit it holds to, and here is what to do when that limit is reached."
+
+### Grammar
+
+```
+@debt <ceiling>, <upgrade>
+```
+
+Both fields are **mandatory** and separated by the **first** comma:
+
+- `<ceiling>` — the trigger that invalidates the shortcut: a load, scale, deadline, or condition under which it breaks. Non-empty.
+- `<upgrade>` — the concrete path out: what to replace the shortcut with when the ceiling is hit. Non-empty.
+
+A marker missing either field is **invalid** — a parser rejects it. `@debt in-memory cache` (no comma, no upgrade) is malformed; `@debt , swap to Redis` (empty ceiling) is malformed; `@debt < 1k rows,` (empty upgrade) is malformed.
+
+Works in any comment style:
+
+```typescript
+// @debt < 10k sessions, swap the in-memory map for Redis
+const sessions = new Map();
+```
+
+```python
+# @debt single-region only, add multi-region replication before EU launch
+```
+
+```html
+<!-- @debt hardcoded feature list, source from the pricing API once it ships -->
+```
+
+### Harvesting
+
+Run `/uncle-dev-debt` to gather every `@debt` marker into a ledger showing each marker's location (`file:line`), ceiling, and upgrade path. Markers missing a ceiling or upgrade are flagged as **silent-rot risk** and sorted to the top — a shortcut with no recorded limit or exit is debt that rots silently.
+
 ## Segment & Prefix Conventions
 
 A segment is one product-behavior area owned by one LLD. The spec prefix marks its boundary.
@@ -275,6 +315,8 @@ For HLD and LLD templates, see `uncle-dev-design-architecture-docs` (those live 
 - Reusing a deleted spec ID for unrelated new behavior
 - Inventing a spec ID inline without adding it to `docs/specs/`
 - Crossing segment boundaries in a single PR without surfacing the boundary crossing
+- Using `@debt` as a TODO dump — `@debt` is for a deliberately-kept shortcut with a written ceiling and upgrade path, not a parking lot for "do this later." Unscoped deferral belongs in a tracker, not in `@debt`.
+- A `@debt` marker missing its ceiling or upgrade path (a shortcut with no recorded limit or exit rots silently — the harvest flags it)
 
 ## Verification
 

@@ -10,6 +10,7 @@ TESTS=(
   "${SCRIPT_DIR}/install-opencode.test.sh"
   "${SCRIPT_DIR}/config-env-override.test.sh"
   "${SCRIPT_DIR}/mode-branch-split.test.sh"
+  "${SCRIPT_DIR}/debt-harvest.test.sh"
 )
 
 TOTAL_PASS=0

@@ -118,19 +118,19 @@ Source of truth: `docs/ears/ponytail-patterns-adoption.md`. Stories are grouped 
 
 ### Unit 6: `@debt` marker + harvest command
 
-- [ ] 6.1 Define `@debt` grammar with mandatory ceiling+upgrade (est: ~25m)
+- [x] 6.1 Define `@debt` grammar with mandatory ceiling+upgrade (est: ~25m)
   - acceptance: R-6.1 — `// @debt <ceiling>, <upgrade>` convention, both fields mandatory, distinct from `@spec`/`[D]`.
   - verify: convention documented in `uncle-dev-spec-annotations`; grammar rejects a marker missing ceiling or upgrade.
 
-- [ ] 6.2 `/uncle-dev-debt` harvest into ledger (deps: 6.1, est: ~35m)
+- [x] 6.2 `/uncle-dev-debt` harvest into ledger (deps: 6.1, est: ~35m)
   - acceptance: R-6.2 — command lists every marker with location, ceiling, upgrade path.
   - verify: seeded `@debt` markers appear in the ledger with all three fields (machinery modeled on `scan-spec-coherence.py`).
 
-- [ ] 6.3 Flag untriggered markers as rot risk (deps: 6.2, est: ~15m)
+- [x] 6.3 Flag untriggered markers as rot risk (deps: 6.2, est: ~15m)
   - acceptance: R-6.3 — markers lacking a trigger/upgrade path flagged and sorted to top.
   - verify: a non-conforming marker is reported as silent-rot risk above conforming ones.
 
-- [ ] 6.4 Frame as conscious debt, not TODO dump (deps: 6.1, est: ~10m)
+- [x] 6.4 Frame as conscious debt, not TODO dump (deps: 6.1, est: ~10m)
   - acceptance: R-6.4 — skill text scopes `@debt` to deliberately-kept shortcuts.
   - verify: skill includes the one-line distinction from `[D]`/TODO and a Red Flag against deferral use.
 
