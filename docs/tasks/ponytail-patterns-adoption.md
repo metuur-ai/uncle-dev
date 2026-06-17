@@ -104,11 +104,11 @@ Source of truth: `docs/ears/ponytail-patterns-adoption.md`. Stories are grouped 
 
 ### Unit 5: Self-application of the audit
 
-- [ ] 5.1 Run whole-repo audit on uncle-dev config/manifest surface (deps: 4.3, 4.4, est: ~30m)
+- [x] 5.1 Run whole-repo audit on uncle-dev config/manifest surface (deps: 4.3, 4.4, est: ~30m)
   - acceptance: R-5.1 — produce a ranked, tagged cut-list artifact for uncle-dev's own surface.
   - verify: artifact saved (e.g. `.devlocal/<user>/audit/uncle-dev-self-audit.md`) with ranked tagged findings + `net:` line.
 
-- [ ] 5.2 Scope deletions out (deps: 5.1, est: ~5m)
+- [x] 5.2 Scope deletions out (deps: 5.1, est: ~5m)
   - acceptance: R-5.2 — cut-list is the deliverable; acting on deletions is out of scope.
   - verify: artifact states deletions are deferred to a separate change; no deletions made in this change.
 
