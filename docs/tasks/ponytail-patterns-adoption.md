@@ -136,23 +136,23 @@ Source of truth: `docs/ears/ponytail-patterns-adoption.md`. Stories are grouped 
 
 ### Unit 7: Session-switchable strictness + statusline (Claude-only)
 
-- [ ] 7.1 `/uncle-dev-mode` hook writes session flag (deps: 2.1, est: ~30m)
+- [x] 7.1 `/uncle-dev-mode` hook writes session flag (deps: 2.1, est: ~30m)
   - acceptance: R-7.1 — `/uncle-dev-mode <strict|balanced|fast>` writes a session flag recording the profile.
   - verify: invoking the command writes the expected flag file with the chosen profile.
 
-- [ ] 7.2 Guards consult flag via config tier (deps: 7.1, est: ~30m)
+- [x] 7.2 Guards consult flag via config tier (deps: 7.1, est: ~30m)
   - acceptance: R-7.2 — `spec-coherence-guard.sh` + `pre-commit-guard.sh` read the flag (through config override tier) instead of YAML `execution_profile`.
   - verify: with flag=fast, guards behave as fast even though YAML says strict.
 
-- [ ] 7.3 No YAML mutation on mode change (deps: 7.1, est: ~5m)
+- [x] 7.3 No YAML mutation on mode change (deps: 7.1, est: ~5m)
   - acceptance: R-7.3 — `.agents/uncle-dev-setup.yaml` unchanged on session mode switch.
   - verify: git diff of the YAML is empty after `/uncle-dev-mode`.
 
-- [ ] 7.4 Optional statusline badge (deps: 7.1, est: ~20m)
+- [x] 7.4 Optional statusline badge (deps: 7.1, est: ~20m)
   - acceptance: R-7.4 — where a statusline is configured, show active mode badge (e.g. `[UNCLE-DEV:STRICT]`).
   - verify: configured statusline renders the badge matching the active flag.
 
-- [ ] 7.5 Claude-only install gating (deps: 7.1, est: ~10m)
+- [x] 7.5 Claude-only install gating (deps: 7.1, est: ~10m)
   - acceptance: R-7.5 — non-Claude hosts get no mode hook or statusline.
   - verify: `install-codex.sh`/`install-opencode.sh` do not install the hook/statusline.
 

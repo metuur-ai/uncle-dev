@@ -11,6 +11,7 @@ TESTS=(
   "${SCRIPT_DIR}/config-env-override.test.sh"
   "${SCRIPT_DIR}/mode-branch-split.test.sh"
   "${SCRIPT_DIR}/debt-harvest.test.sh"
+  "${SCRIPT_DIR}/session-mode.test.sh"
 )
 
 TOTAL_PASS=0

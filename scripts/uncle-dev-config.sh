@@ -150,6 +150,25 @@ if [[ -n "${!ENV_KEY:-}" ]]; then
   exit 0
 fi
 
+# Session-flag tier (execution_profile only): a developer can switch guard
+# strictness mid-session via /uncle-dev-mode <strict|balanced|fast>, which writes
+# the chosen profile to ${CLAUDE_PROJECT_DIR:-$PWD}/.uncle-dev/session-mode. That
+# flag overrides the YAML execution_profile for this session WITHOUT touching the
+# YAML (R-7.2, R-7.3). The flag file is not the YAML — reading it keeps the helper
+# the sole YAML reader. Tier order: env -> session flag -> YAML -> default.
+if [[ "${KEY_PATH}" == "preferences.execution_profile" ]]; then
+  SESSION_MODE_FILE="${CLAUDE_PROJECT_DIR:-$PWD}/.uncle-dev/session-mode"
+  if [[ -f "${SESSION_MODE_FILE}" ]]; then
+    SESSION_MODE="$(head -n1 "${SESSION_MODE_FILE}" 2>/dev/null | tr -d '[:space:]')"
+    case "${SESSION_MODE}" in
+      strict|balanced|fast)
+        echo "${SESSION_MODE}"
+        exit 0
+        ;;
+    esac
+  fi
+fi
+
 if [[ ! -f "${CONFIG_FILE}" ]]; then
   echo "${DEFAULT}"
   exit 0
