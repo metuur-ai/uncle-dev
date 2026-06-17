@@ -7,26 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_Commit `045f983` (2026-06-02) — new skills for refactoring, design-concept synthesis, and ubiquitous language, plus the supporting wiring._
+_Work since `045f983` (2026-06-02): new Define/Brownfield/Review/Ship skills, a phased "ponytail patterns" adoption (drift guard, config tiers, debt markers, session modes, instruction adapters, benchmark harness), plus documentation skills and fixes._
 
 ### Added
 
-- **`uncle-dev-grill` skill** — builds a shared design concept by relentlessly interviewing the user (depth-first design-tree walk, no fixed question cap) and synthesizing the answers into a PRD that feeds `uncle-dev-spec`. New Define-phase entry.
-- **`uncle-dev-ubiquitous-language` skill** — builds and maintains a DDD-style domain glossary (`docs/ubiquitous-language.md`) via codebase-scan or conversation mode, flagging ambiguities and synonyms; loaded as context during spec and planning. New Define-phase entry.
+**New skills**
+
+- **`uncle-dev-grill`** — builds a shared design concept by relentlessly interviewing the user (depth-first design-tree walk, no fixed question cap) and synthesizing the answers into a PRD that feeds `uncle-dev-spec`. (Define)
+- **`uncle-dev-ubiquitous-language`** — builds and maintains a DDD-style domain glossary (`docs/ubiquitous-language.md`) via codebase-scan or conversation mode, flagging ambiguities and synonyms; loaded as context during spec and planning. (Define)
+- **`uncle-dev-verbalized-sampling`** — generates diverse edge cases for richer spec and test coverage. (Define)
+- **`uncle-dev-brownfield`** — reverse-engineers LLD + EARS specs from a `/uncle-dev-feature-map` output via a 5-agent swarm: maps domains to segments, writes specs, drafts LLDs, and anchors `@spec` annotations. (Brownfield)
+- **`uncle-dev-over-engineering-audit`** — finds removable bloat; one line per finding tagged exactly one of `delete|stdlib|native|yagni|shrink`, ranked biggest-cut-first, ending `net: -N lines, -M deps possible`. Diff and whole-repo scopes (whole-repo reuses the existing parallel-orchestration + review-synthesizer agent). (Review)
+- **`uncle-dev-pre-mortem`** — imagines a plan has already failed and works backward to surface hidden risks before a launch or major decision. (Review)
+- **`uncle-dev-speech`** — refines human-facing prose, with phrase, structure, and example references. (Ship)
+- **`uncle-dev-changelog`** — generates user-facing changelogs from git history, translating technical commits into clear user-visible outcomes, with tone and example references. (Ship)
+
+**New commands & capabilities**
+
+- **`/uncle-dev-debt`** + the `// @debt <ceiling>, <upgrade>` marker convention (documented in `uncle-dev-spec-annotations`, both fields mandatory) — `harvest-debt.py` gathers markers into a ledger with location/ceiling/upgrade, flags malformed markers as silent-rot risk and sorts them to the top, and exits non-zero on rot risk.
+- **`/uncle-dev-mode <strict|balanced|fast>`** — session-switchable strictness via a `UserPromptSubmit` hook that writes a session flag (`.uncle-dev/session-mode`, never mutates the YAML); `uncle-dev-config.sh` gains a session-flag tier for `execution_profile` (env → session flag → YAML → default). Rendered as `[UNCLE-DEV:<PROFILE>]` in the statusline without hijacking an existing one (Claude Code only).
+- **Full-coverage instruction adapters** — installer now emits per-tool instruction files: GitHub Copilot (`.github/copilot-instructions.md`), Cline (`.clinerules/`), Kiro (`.kiro/steering/`), and Pi (`.pi/rules/`), each writing the always-on AGENTS.md-derived rule plus curated on-demand skill copies. `check-manifest.sh --adapters <dir>` drift-guards generated adapters so hand-edits fail.
+- **Benchmark harness** (`benchmarks/`) — promptfoo-based no-skill vs uncle-dev arms (same pinned model at temp 0) over three tasks (spec-first feature, interface-preserving refactor, review catch-rate with a planted off-by-one bug and an orphaned `@spec` id), with an offline grader and a byte-stable reproducible Markdown report.
+- **Drift guard** (`scripts/check-manifest.sh`) — asserts marketplace/manifest skill + agent counts, README skill/command counts, and the plugin command set against the canonical roots minus an allowlist; wired into the test suite and install verify.
+- **Env-var config override tier** — `uncle-dev-config.sh` resolves `UNCLE_DEV_<KEY>` env overrides above YAML and defaults, without mutating config.
+- **Opt-in install-time skill-branch split** — `UNCLE_DEV_SPLIT_SKILLS=1` drops the inactive `sdd_mode` branch from dual-branch skills at install time (default ships verbatim).
+- **nori-lint integration** for linting `SKILL.md` files.
+- **Documentation skills** (`.claude/skills/`) — `docs-style`, `howto-docs`, `reference-docs`, `tutorial-docs`, `explanation-docs`, `review-ai-writing`, plus drafting/improvement helpers (`draft-docs`, `ensure-docs`, `improve-doc`, `humanize-beagle`).
+- Expanded reference docs — Golden Circle model, FAQ & Troubleshooting, Learning Paths, tool-integration guides, and a prompts-by-skill reference.
+
+**Earlier Unreleased work (from `045f983`)**
+
 - **`request-refactor-plan` reference** (under `uncle-dev-dev-code-simplification`) — interviews the user and breaks a large refactor into a tiny-commit plan.
 - **`design-an-interface` reference** (under `uncle-dev-dev-code-simplification`) — "Design It Twice": generates and compares radically different interface shapes by module depth.
 - **Module Depth** section in `uncle-dev-api-and-interface-design` — deep vs shallow modules, with an AI-navigability rationale, rationalizations, a red flag, and a verification item.
-- **Research docs** in `.uncle-dev/research/` — software-fundamentals principles mapping and the corresponding improvement plan.
-- **Draft skills** staged under `tmp/` — `edit-article`, `to-prd`, and `improve-codebase-architecture` (with `DEEPENING.md`, `HTML-REPORT.md`, `INTERFACE-DESIGN.md`, `LANGUAGE.md`).
 
 ### Changed
 
+- **Command location** — commands moved from `.claude/commands/` to `commands/` (the `.claude/` prefix is dropped); install scripts and tests updated to match.
+- **README** rewritten as accurate uncle-dev documentation.
+- **Docs** — task and requirement definitions gained explicit "why" sections for clarity; skill descriptions refreshed across many skills.
 - **`uncle-dev-dev-code-simplification`** — added an "Escalating Beyond Inline Simplification" section that routes interface-shape problems to `design-an-interface` (design phase) and too-large refactors to `request-refactor-plan` (build phase).
 - **Glossary integration** — `uncle-dev-spec-driven-development` and `uncle-dev-planning-and-task-breakdown` now load the ubiquitous-language glossary and flag off-glossary terms.
 - **Cross-phase wiring** — `design-architecture-docs` points to `design-an-interface` for uncertain module boundaries; `incremental-implementation` and `planning-and-task-breakdown` point to `request-refactor-plan` for large refactors.
 - **Framing** — named "software entropy" in `dev-code-simplification`; added gray-box risk-tiering (strategic architect / tactical programmer) to `design-architecture-docs`; `idea-refine` now hands off to `grill`.
 - **Code review** — added a module-depth check to the Architecture axis of `uncle-dev-code-review-and-quality`.
-- **Registration** — added the two new skills to both marketplace manifests, the Define phase in `CLAUDE.md`, and `scripts/setup-project.sh`.
+- **Registration** — new skills and commands added to both marketplace manifests, the relevant phases in `CLAUDE.md`, and `scripts/setup-project.sh`; drift guard kept green throughout.
+
+### Fixed
+
+- **Spec scanner monorepo support** — `packages` added to default roots so `@spec` annotations under `packages/*/src/` (yarn workspaces and similar) are detected and the graph builder can establish spec-to-code relationships.
+- **Research document paths** corrected from `.uncle-dev/research/` to `.devlocal/research/`.
 
 ## [1.4.0] - 2026-05-30
 
