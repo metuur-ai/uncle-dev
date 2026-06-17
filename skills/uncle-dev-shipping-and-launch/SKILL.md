@@ -17,6 +17,7 @@ SDD_MODE=$(bash "$_cfg" preferences.sdd_mode "" 2>/dev/null || true)
 echo "$SDD_MODE"
 ```
 
+<!-- UNCLE_DEV:BRANCH:lid-ears:START -->
 ### lid-ears mode — Pre-Ship Verification
 
 If sdd_mode is `lid-ears`: run these checks INSTEAD of the OpenSpec CLI section below. Do NOT run any `openspec` command.
@@ -26,7 +27,9 @@ If sdd_mode is `lid-ears`: run these checks INSTEAD of the OpenSpec CLI section 
 3. Docs current — Confirm `docs/hld/<slug>.md`, `docs/lld/<slug>.md`, `docs/ears/<slug>.md` reflect the shipped implementation. Flag any stale sections.
 
 Skip the OpenSpec CLI Integration section entirely and continue to The Pre-Launch Checklist.
+<!-- UNCLE_DEV:BRANCH:lid-ears:END -->
 
+<!-- UNCLE_DEV:BRANCH:openspec:START -->
 ### OpenSpec CLI Integration
 
 If sdd_mode is `openspec`: Check if the OpenSpec CLI is available (`openspec --version`). When available, use it during the ship workflow:
@@ -37,6 +40,7 @@ If sdd_mode is `openspec`: Check if the OpenSpec CLI is available (`openspec --v
 - `openspec list --specs` — Verify specs were updated after archiving
 
 If the CLI is not installed, recommend `npm install -g openspec` and proceed with manual verification.
+<!-- UNCLE_DEV:BRANCH:openspec:END -->
 
 ## The Pre-Launch Checklist
 

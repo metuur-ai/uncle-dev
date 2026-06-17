@@ -27,6 +27,7 @@ bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
 
 ---
 
+<!-- UNCLE_DEV:BRANCH:lid-ears:START -->
 ## Phase 0-LID — LID+EARS Documentation Chain
 
 Only when `sdd_mode: lid-ears`.
@@ -176,9 +177,11 @@ Do NOT open openspec-workflow.md or run any openspec command.
 - [ ] `/uncle-dev-pre-mortem` run against HLD + LLD + EARS; Top 5 Risks presented at Step 5
 - [ ] User has explicitly confirmed specs and risk profile before anything downstream was touched
 - [ ] After YES, `/uncle-dev-plan` was invoked in the same turn (do not leave the user at a "run X next" pointer)
+<!-- UNCLE_DEV:BRANCH:lid-ears:END -->
 
 ---
 
+<!-- UNCLE_DEV:BRANCH:openspec:START -->
 ## OpenSpec Mode
 
 When `sdd_mode` is `openspec`, read and follow `references/openspec-workflow.md`. It covers:
@@ -189,3 +192,4 @@ When `sdd_mode` is `openspec`, read and follow `references/openspec-workflow.md`
 - Writing proposal, design, tasks, execution, handoff artifacts
 - EARS spec ID declarations (Phase 3.5)
 - Verification checklist
+<!-- UNCLE_DEV:BRANCH:openspec:END -->

@@ -4,9 +4,18 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
+# Install-time mode-branch split (Unit 3, #9). Opt-in and OFF by default
+# (R-3.6): with UNCLE_DEV_SPLIT_SKILLS unset, installed SKILL.md copies are
+# byte-identical to canonical. When set to 1, dual-branch skills are trimmed to
+# the single branch matching the resolved sdd_mode.
+UNCLE_DEV_SPLIT_SKILLS="${UNCLE_DEV_SPLIT_SKILLS:-0}"
+# shellcheck source=lib/split-skill-branch.sh
+. "${SCRIPT_DIR}/lib/split-skill-branch.sh"
+
 FORCE=0
 SCOPE="local"
 WORKSPACE_WAS_OMITTED=0
+SPLIT_SDD_MODE=""
 
 usage() {
   cat <<'EOF'
@@ -114,12 +123,41 @@ same_file_content() {
   [[ -f "$dest" ]] && cmp -s "$src" "$dest"
 }
 
+# Resolve sdd_mode once (only when the split is enabled), via the config helper
+# — never read the YAML directly (project rule).
+resolve_sdd_mode() {
+  if [[ -n "$SPLIT_SDD_MODE" ]]; then
+    printf '%s\n' "$SPLIT_SDD_MODE"
+    return 0
+  fi
+  SPLIT_SDD_MODE="$(bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.sdd_mode "lid-ears" 2>/dev/null || echo "lid-ears")"
+  [[ -n "$SPLIT_SDD_MODE" ]] || SPLIT_SDD_MODE="lid-ears"
+  printf '%s\n' "$SPLIT_SDD_MODE"
+}
+
+# Place <src> at <dest>: a verbatim copy, or — when the split is enabled and the
+# source is a SKILL.md — a single-branch trim matching the resolved sdd_mode.
+place_file() {
+  local src="$1"
+  local dest="$2"
+
+  if [[ "$UNCLE_DEV_SPLIT_SKILLS" == "1" && "$(basename "$src")" == "SKILL.md" ]]; then
+    local mode
+    mode="$(resolve_sdd_mode)"
+    split_skill_branch "$src" "$dest" "$mode" \
+      || fail "mode-branch split failed for $src (sdd_mode=$mode)"
+    return 0
+  fi
+
+  cp "$src" "$dest"
+}
+
 copy_file() {
   local src="$1"
   local dest="$2"
   mkdir -p "$(dirname "$dest")"
 
-  if same_file_content "$src" "$dest"; then
+  if [[ "$UNCLE_DEV_SPLIT_SKILLS" != "1" ]] && same_file_content "$src" "$dest"; then
     return 0
   fi
 
@@ -128,7 +166,7 @@ copy_file() {
     return 0
   fi
 
-  cp "$src" "$dest"
+  place_file "$src" "$dest"
 }
 
 copy_path() {

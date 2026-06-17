@@ -17,7 +17,7 @@ Skills encode the workflows, quality gates, and best practices that senior engin
 
 ## Commands
 
-Slash commands that map to the development lifecycle. Each one activates the right skills automatically.
+The plugin ships 24 commands. The table below highlights the main lifecycle entry points; each one activates the right skills automatically.
 
 | What you're doing           | Command                       | Key principle                       |
 | --------------------------- | ----------------------------- | ----------------------------------- |
@@ -149,9 +149,9 @@ Skills are plain Markdown - they work with any agent that accepts system prompts
 
 ---
 
-## All 21 Skills
+## All 43 Skills
 
-The commands above are the entry points. Under the hood, they activate these 21 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
+The commands above are the entry points. Under the hood, they activate these 43 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
 
 ### Define - Clarify what to build
 

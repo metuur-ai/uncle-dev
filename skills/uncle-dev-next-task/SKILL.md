@@ -87,6 +87,7 @@ echo "$SDD_MODE"
 
 ---
 
+<!-- UNCLE_DEV:BRANCH:lid-ears:START -->
 ### Path A — LID-EARS Resolution
 
 Only when `sdd_mode: lid-ears`. Do NOT run any openspec command.
@@ -156,9 +157,11 @@ Failure modes (lid-ears):
 - No `docs/tasks/` directory or all files empty → exit: "no task files found; run `/uncle-dev-plan` first."
 - All stories checked → exit: "all tasks complete; run `/uncle-dev-ship`."
 - Ready set empty but unchecked stories exist → list each with its blocking dep(s)
+<!-- UNCLE_DEV:BRANCH:lid-ears:END -->
 
 ---
 
+<!-- UNCLE_DEV:BRANCH:openspec:START -->
 ### Path B — OpenSpec Resolution
 
 Only when `sdd_mode: openspec`.
@@ -301,6 +304,7 @@ If two stories tie on all four, pick the one whose change-id sorts first alphabe
 By default, the skill emits the handoff but does NOT acquire a lock. Locks are acquired only when the caller passes `--claim` or when invoked from a "start now" command like `/uncle-dev-build continue`. This keeps `--ready` and `--story <id>` (preview) calls side-effect-free.
 
 When claiming, write `.devlocal/_locks/<change-id>/<story-id>.lock` with agent id, timestamp, and pid (see `parallelism-and-locks.md`).
+<!-- UNCLE_DEV:BRANCH:openspec:END -->
 
 ## Working with Multiple Agents in Parallel
 

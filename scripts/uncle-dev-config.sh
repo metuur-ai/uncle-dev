@@ -139,6 +139,17 @@ if [[ -z "${KEY_PATH}" ]]; then
   exit 1
 fi
 
+# Env-var override tier (scalar lookups only): resolve UNCLE_DEV_<KEY> ahead of
+# the YAML file, where <KEY> is the dotted path uppercased with dots->underscores
+# (e.g. preferences.sdd_mode -> UNCLE_DEV_PREFERENCES_SDD_MODE). A set, non-empty
+# value wins without touching the YAML; an unset/empty var falls through to the
+# file. (--list mode handled above is intentionally not env-overridable.)
+ENV_KEY="UNCLE_DEV_$(printf '%s' "${KEY_PATH}" | tr '.a-z' '_A-Z')"
+if [[ -n "${!ENV_KEY:-}" ]]; then
+  echo "${!ENV_KEY}"
+  exit 0
+fi
+
 if [[ ! -f "${CONFIG_FILE}" ]]; then
   echo "${DEFAULT}"
   exit 0

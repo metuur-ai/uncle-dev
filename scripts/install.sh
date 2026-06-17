@@ -61,6 +61,7 @@ case "$TOOL" in
     echo "Done. Run './scripts/install.sh opencode --scope global' to install for OpenCode." >&2
     ;;
   verify)
+    "${SCRIPT_DIR}/check-manifest.sh"
     exec "${SCRIPT_DIR}/tests/run-all.sh"
     ;;
   -h|--help)

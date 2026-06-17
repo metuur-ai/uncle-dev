@@ -24,6 +24,7 @@ Route based on result:
 
 ---
 
+<!-- UNCLE_DEV:BRANCH:lid-ears:START -->
 ### Step 1-LID — Plan Mode (lid-ears)
 
 ABSOLUTE PROHIBITION: Do NOT run any `openspec` command in this path.
@@ -60,9 +61,11 @@ Rules:
 No `execution.md` in lid-ears mode. Cross-story coordination notes go in `.devlocal/`.
 
 Do NOT write code during planning. The output is `docs/tasks/<slug>.md` only. Skip to Step 2 (dependency graph — conceptually map before writing; no separate execution artifact needed).
+<!-- UNCLE_DEV:BRANCH:lid-ears:END -->
 
 ---
 
+<!-- UNCLE_DEV:BRANCH:openspec:START -->
 ### Step 1-OpenSpec — Plan Mode (openspec)
 
 Before writing any code, operate in read-only mode. Check if the OpenSpec CLI is available (`openspec --version`). When available, use it to gather context:
@@ -81,6 +84,7 @@ If the CLI is not installed, recommend `npm install -g openspec` and read files 
 - Note risks and unknowns
 
 Do NOT write code during planning. The outputs are `tasks.md` and `execution.md`, not implementation.
+<!-- UNCLE_DEV:BRANCH:openspec:END -->
 
 ---
 
