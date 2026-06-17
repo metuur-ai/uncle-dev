@@ -176,15 +176,15 @@ Source of truth: `docs/ears/ponytail-patterns-adoption.md`. Stories are grouped 
 
 ### Unit 9: Benchmark harness
 
-- [ ] 9.1 Scaffold `benchmarks/` no-skill vs uncle-dev harness (est: ~50m)
+- [x] 9.1 Scaffold `benchmarks/` no-skill vs uncle-dev harness (est: ~50m)
   - acceptance: R-9.1 — promptfoo harness comparing no-skill vs uncle-dev arms on a representative task set.
   - verify: `benchmarks/` runs and produces per-arm results; promptfoo + model IDs pinned.
 
-- [ ] 9.2 Representative task set (deps: 9.1, est: ~40m)
+- [x] 9.2 Representative task set (deps: 9.1, est: ~40m)
   - acceptance: R-9.2 — ≥1 task each for spec-first feature, refactor, review catch-rate (e.g. injected `@spec` orphans / planted bugs).
   - verify: task set includes all three categories; the review task is validated to detect a known planted bug.
 
-- [ ] 9.3 Reproducible comparison table (deps: 9.2, est: ~20m)
+- [x] 9.3 Reproducible comparison table (deps: 9.2, est: ~20m)
   - acceptance: R-9.3 — harness emits a reproducible comparison table across arms × tasks.
   - verify: two runs with pinned versions emit the same table structure/values.
 

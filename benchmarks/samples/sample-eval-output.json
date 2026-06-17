@@ -1,0 +1,43 @@
+{
+  "evalId": "sample-fixed-for-report-test",
+  "results": {
+    "results": [
+      {
+        "prompt": { "label": "uncle-dev", "id": "file://prompts/uncle-dev.txt" },
+        "testCase": { "description": "review-catch-rate" },
+        "success": true,
+        "score": 1.0
+      },
+      {
+        "prompt": { "label": "no-skill", "id": "file://prompts/no-skill.txt" },
+        "testCase": { "description": "spec-first-feature" },
+        "success": false,
+        "score": 0.0
+      },
+      {
+        "prompt": { "label": "uncle-dev", "id": "file://prompts/uncle-dev.txt" },
+        "testCase": { "description": "spec-first-feature" },
+        "success": true,
+        "score": 1.0
+      },
+      {
+        "prompt": { "label": "no-skill", "id": "file://prompts/no-skill.txt" },
+        "testCase": { "description": "review-catch-rate" },
+        "success": false,
+        "score": 0.0
+      },
+      {
+        "prompt": { "label": "no-skill", "id": "file://prompts/no-skill.txt" },
+        "testCase": { "description": "refactor" },
+        "success": true,
+        "score": 1.0
+      },
+      {
+        "prompt": { "label": "uncle-dev", "id": "file://prompts/uncle-dev.txt" },
+        "testCase": { "description": "refactor" },
+        "success": true,
+        "score": 1.0
+      }
+    ]
+  }
+}

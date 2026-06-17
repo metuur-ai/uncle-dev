@@ -1,0 +1,13 @@
+{
+  "name": "uncle-dev-benchmarks",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Unit 9 benchmark harness: no-skill arm vs uncle-dev arm (R-9.1..R-9.3).",
+  "scripts": {
+    "bench": "promptfoo eval -c promptfooconfig.yaml --no-progress-bar -o results/latest.json",
+    "report": "python3 report.py results/latest.json"
+  },
+  "devDependencies": {
+    "promptfoo": "0.121.17"
+  }
+}

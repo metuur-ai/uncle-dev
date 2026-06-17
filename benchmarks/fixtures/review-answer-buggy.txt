@@ -1,0 +1,2 @@
+Looks good to me. The cartTotal function iterates over the items and sums their
+prices. The @spec annotation links it to the cart total requirement. Ship it.

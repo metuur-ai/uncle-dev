@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+#
+# Unit 9 — Benchmark harness (EARS R-9.1..R-9.3).
+# Compares a NO-SKILL arm against an UNCLE-DEV arm on three representative tasks.
+#
+# Reproducibility (R-9.3):
+#   - The model id is PINNED below (single model for the whole benchmark).
+#   - The promptfoo version is PINNED in package.json.
+#   - temperature: 0 reduces sampling variance; report.py emits a stable table.
+#
+# Running this needs ANTHROPIC_API_KEY (see README.md). The repo's own test
+# (scripts/tests/benchmarks.test.sh) does NOT call the API.
+
+description: 'uncle-dev benchmark: no-skill arm vs uncle-dev arm'
+
+# ── Arms ──────────────────────────────────────────────────────────────────────
+# Each arm is a prompt template (system prompt differs; the {{task}} var is the
+# same per test). promptfoo runs every prompt against every provider/test, so
+# the two prompts are the two arms.
+prompts:
+  - id: file://prompts/no-skill.txt
+    label: no-skill
+  - id: file://prompts/uncle-dev.txt
+    label: uncle-dev
+
+# ── Pinned provider (single model for the whole benchmark) ─────────────────────
+providers:
+  - id: anthropic:messages:claude-sonnet-4-6
+    label: claude-sonnet-4-6
+    config:
+      temperature: 0
+      max_tokens: 1500
+
+# ── Representative task set (R-9.2) ────────────────────────────────────────────
+# One task each: spec-first feature, refactor, review catch-rate.
+tests:
+  # (a) SPEC-FIRST FEATURE WORK — the uncle-dev arm should produce
+  #     acceptance-criteria / EARS phrasing BEFORE code.
+  - description: spec-first-feature
+    vars:
+      task: >-
+        Implement a function that, given a list of cart line items (each with a
+        price and quantity), returns the order subtotal. Provide the
+        implementation.
+    assert:
+      - type: regex
+        # EARS-style obligation language signals spec-first behavior.
+        value: '(?i)THE SYSTEM SHALL|acceptance criteria|WHEN .* SHALL'
+
+  # (b) REFACTORING — a checkable behavior-preserving property: the refactor
+  #     must keep the public function name `formatName` (interface stable).
+  - description: refactor
+    vars:
+      task: >-
+        Refactor this function to remove duplication while preserving its
+        observable behavior and public interface. Return the refactored code.
+
+        function formatName(first, last) {
+          if (first && last) { return first + ' ' + last; }
+          if (first && !last) { return first; }
+          if (!first && last) { return last; }
+          return '';
+        }
+    assert:
+      - type: icontains
+        # Public interface preserved: the function name must survive the refactor.
+        value: 'formatName'
+
+  # (c) REVIEW CATCH-RATE — the arm must flag BOTH planted defects in the
+  #     snippet. Graded by the pure-string grader (grader.py), validated offline.
+  - description: review-catch-rate
+    vars:
+      task: >-
+        Review the following code for defects. The known valid spec ids are:
+        CART-TOTAL-001, CART-ADD-001, CART-REMOVE-001. Report every defect you
+        find, including any @spec annotation that references a spec id not in
+        that list.
+
+        // @spec CART-TOTAL-999
+        function cartTotal(items) {
+          let total = 0;
+          for (let i = 0; i <= items.length; i++) {
+            total += items[i].price;
+          }
+          return total;
+        }
+    assert:
+      - type: python
+        value: file://grader.py

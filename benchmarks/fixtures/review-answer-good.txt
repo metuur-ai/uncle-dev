@@ -1,0 +1,11 @@
+Two defects found:
+
+1. Off-by-one bug in cartTotal: the loop uses `i <= items.length`, which reads
+   items[items.length] (undefined) on the final iteration and produces NaN. The
+   condition must be `i < items.length`.
+
+2. Orphaned @spec annotation: `@spec CART-TOTAL-999` references a spec id that
+   does not exist in the known spec ids (the real id is CART-TOTAL-001). This is
+   an orphaned forward reference and must be corrected.
+
+Do not ship until both are fixed.

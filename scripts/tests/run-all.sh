@@ -13,6 +13,7 @@ TESTS=(
   "${SCRIPT_DIR}/debt-harvest.test.sh"
   "${SCRIPT_DIR}/session-mode.test.sh"
   "${SCRIPT_DIR}/instruction-adapters.test.sh"
+  "${SCRIPT_DIR}/benchmarks.test.sh"
 )
 
 TOTAL_PASS=0
