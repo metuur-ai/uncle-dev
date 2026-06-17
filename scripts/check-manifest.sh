@@ -22,6 +22,56 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 source "${SCRIPT_DIR}/lib/manifest.sh"
 # shellcheck source=lib/manifest-allowlist.sh
 source "${SCRIPT_DIR}/lib/manifest-allowlist.sh"
+# shellcheck source=lib/instruction-adapter.sh
+source "${SCRIPT_DIR}/lib/instruction-adapter.sh"
+
+# Host-correct relative paths of every generated always-on instruction adapter
+# (R-8.2). Kept in sync with install-plugin.sh's install_* targets. The guard
+# (R-8.3) asserts each adapter's body equals the canonical AGENTS.md-derived
+# content from lib/instruction-adapter.sh, so any hand-edit fails the suite.
+ADAPTER_RULE_PATHS=(
+  ".github/copilot-instructions.md"
+  ".clinerules/uncle-dev.md"
+  ".kiro/steering/uncle-dev.md"
+  ".pi/rules/uncle-dev.md"
+)
+
+# --adapters <dir>: drift-guard mode for generated instruction adapters.
+# Scans a target workspace produced by install-plugin.sh and asserts each
+# present always-on adapter matches the AGENTS.md-derived body. Exits non-zero
+# with a per-adapter message on any divergence (hand-edit). The default
+# (no args) invocation never enters this mode and stays green on a clean tree.
+if [[ "${1:-}" == "--adapters" ]]; then
+  ADAPTER_DIR="${2:-}"
+  [[ -n "$ADAPTER_DIR" ]] || { echo "Usage: check-manifest.sh --adapters <target-dir>" >&2; exit 2; }
+  [[ -d "$ADAPTER_DIR" ]] || { echo "DRIFT: adapter dir not found: $ADAPTER_DIR" >&2; exit 1; }
+
+  expected="$(adapter_rule_body "${REPO_ROOT}/AGENTS.md")"
+  adapter_failures=0
+  found=0
+  echo "── instruction-adapter drift guard (R-8.3) ───────────────────"
+  echo "Canonical rule source: AGENTS.md (derived via lib/instruction-adapter.sh)"
+  for rel in "${ADAPTER_RULE_PATHS[@]}"; do
+    path="${ADAPTER_DIR}/${rel}"
+    [[ -f "$path" ]] || continue
+    found=$((found + 1))
+    if printf '%s' "$expected" | cmp -s - "$path"; then
+      echo "  [OK] ${rel}"
+    else
+      echo "DRIFT: ${rel}: body diverges from AGENTS.md-derived always-on rule (hand-edit?)." >&2
+      adapter_failures=$((adapter_failures + 1))
+    fi
+  done
+  if [[ "$found" -eq 0 ]]; then
+    echo "  (no instruction adapters present under ${ADAPTER_DIR})"
+  fi
+  if [[ "$adapter_failures" -gt 0 ]]; then
+    echo "FAIL: ${adapter_failures} adapter(s) diverge from canonical AGENTS.md." >&2
+    exit 1
+  fi
+  echo "OK: all present instruction adapters match canonical AGENTS.md."
+  exit 0
+fi
 
 cd "${REPO_ROOT}"
 

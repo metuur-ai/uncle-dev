@@ -11,6 +11,8 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 UNCLE_DEV_SPLIT_SKILLS="${UNCLE_DEV_SPLIT_SKILLS:-0}"
 # shellcheck source=lib/split-skill-branch.sh
 . "${SCRIPT_DIR}/lib/split-skill-branch.sh"
+# shellcheck source=lib/instruction-adapter.sh
+. "${SCRIPT_DIR}/lib/instruction-adapter.sh"
 
 FORCE=0
 SCOPE="local"
@@ -25,6 +27,9 @@ Usage:
 
 Targets:
   copilot
+  cline
+  kiro
+  pi
   cursor
   gemini
   getting-started
@@ -36,6 +41,7 @@ Examples:
   ./scripts/install-plugin.sh cursor ~/code/my-app
   ./scripts/install-plugin.sh --scope global gemini
   ./scripts/install-plugin.sh copilot,opencode ~/code/my-app
+  ./scripts/install-plugin.sh cline,kiro,pi ~/code/my-app
   ./scripts/install-plugin.sh all .
 
 Options:
@@ -225,17 +231,34 @@ write_file() {
   printf '%s' "$content" > "$dest"
 }
 
+# Write the always-on rule derived from canonical AGENTS.md to <dest>, then
+# mirror the curated on-demand skill copies under <skills_dir>. Shared by every
+# instruction-only host (copilot, cline, kiro, pi) so they all derive the same
+# rule from one place (R-8.1). The body is computed by lib/instruction-adapter.sh.
+install_instruction_adapter() {
+  local rule_dest="$1"
+  local skills_dir="$2"
+
+  write_file "$rule_dest" "$(adapter_rule_body "$REPO_ROOT/AGENTS.md")"
+
+  local skill
+  for skill in "${ADAPTER_ONDEMAND_SKILLS[@]}"; do
+    copy_file \
+      "$REPO_ROOT/skills/${skill}/SKILL.md" \
+      "${skills_dir}/${skill}/SKILL.md"
+  done
+}
+
 install_copilot() {
   local workspace="$1"
   require_local_scope "copilot"
   log "Installing for GitHub Copilot in $workspace"
 
-  copy_file \
-    "$REPO_ROOT/skills/uncle-dev-test-driven-development/SKILL.md" \
-    "$workspace/.github/skills/uncle-dev-test-driven-development/SKILL.md"
-  copy_file \
-    "$REPO_ROOT/skills/uncle-dev-code-review-and-quality/SKILL.md" \
-    "$workspace/.github/skills/uncle-dev-code-review-and-quality/SKILL.md"
+  # Always-on rule (R-8.1/R-8.2): GitHub Copilot reads .github/copilot-instructions.md.
+  install_instruction_adapter \
+    "$workspace/.github/copilot-instructions.md" \
+    "$workspace/.github/skills"
+
   copy_file \
     "$REPO_ROOT/agents/uncle-dev-ag-code-reviewer.md" \
     "$workspace/.github/agents/uncle-dev-ag-code-reviewer.md"
@@ -307,6 +330,40 @@ install_windsurf() {
     "$rules_dir/uncle-dev-code-review-and-quality.md"
 }
 
+install_cline() {
+  local workspace="$1"
+  require_local_scope "cline"
+  log "Installing for Cline in $workspace"
+
+  # Cline reads always-on rules from the .clinerules/ directory (R-8.2).
+  install_instruction_adapter \
+    "$workspace/.clinerules/uncle-dev.md" \
+    "$workspace/.clinerules/skills"
+}
+
+install_kiro() {
+  local workspace="$1"
+  require_local_scope "kiro"
+  log "Installing for Kiro in $workspace"
+
+  # Kiro reads steering docs from the .kiro/steering/ directory (R-8.2).
+  install_instruction_adapter \
+    "$workspace/.kiro/steering/uncle-dev.md" \
+    "$workspace/.kiro/steering/skills"
+}
+
+install_pi() {
+  local workspace="$1"
+  require_local_scope "pi"
+  log "Installing for pi in $workspace"
+
+  # pi's host-correct rules path is .pi/rules/ (assumption — see Unit 8 notes;
+  # if pi documents a different steering path, update this single line) (R-8.2).
+  install_instruction_adapter \
+    "$workspace/.pi/rules/uncle-dev.md" \
+    "$workspace/.pi/rules/skills"
+}
+
 install_opencode() {
   local workspace="$1"
   local agents_dest
@@ -328,6 +385,9 @@ run_target() {
 
   case "$target" in
     copilot) install_copilot "$workspace" ;;
+    cline) install_cline "$workspace" ;;
+    kiro) install_kiro "$workspace" ;;
+    pi) install_pi "$workspace" ;;
     cursor) install_cursor "$workspace" ;;
     gemini) install_gemini "$workspace" ;;
     getting-started) install_getting_started "$workspace" ;;
@@ -408,7 +468,7 @@ else
 fi
 
 if [[ "${TARGETS[0]}" == "all" && ${#TARGETS[@]} -eq 1 ]]; then
-  TARGETS=(copilot cursor gemini getting-started windsurf opencode)
+  TARGETS=(copilot cline kiro pi cursor gemini getting-started windsurf opencode)
 fi
 
 for target in "${TARGETS[@]}"; do

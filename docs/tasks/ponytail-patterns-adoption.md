@@ -158,15 +158,15 @@ Source of truth: `docs/ears/ponytail-patterns-adoption.md`. Stories are grouped 
 
 ### Unit 8: Full-coverage instruction adapters
 
-- [ ] 8.1 AGENTS.md-derived always-on rule + on-demand copies (est: ~30m)
+- [x] 8.1 AGENTS.md-derived always-on rule + on-demand copies (est: ~30m)
   - acceptance: R-8.1 — instruction-only host install writes an always-on rule from canonical `AGENTS.md` plus on-demand skill copies.
   - verify: install for an instruction host produces the AGENTS.md-derived rule file.
 
-- [ ] 8.2 Add copilot/clinerules/kiro/pi targets (deps: 8.1, est: ~40m)
+- [x] 8.2 Add copilot/clinerules/kiro/pi targets (deps: 8.1, est: ~40m)
   - acceptance: R-8.2 — generate `copilot-instructions.md`, `.clinerules/`, `.kiro/steering/`, pi adapters alongside existing Cursor/Windsurf/Copilot copies.
   - verify: install emits each adapter at its host-correct path.
 
-- [ ] 8.3 Register adapters with drift guard (deps: 8.2, 1.2, est: ~20m)
+- [x] 8.3 Register adapters with drift guard (deps: 8.2, 1.2, est: ~20m)
   - acceptance: R-8.3 — generated adapters covered by `check-manifest.sh`; divergence fails the suite.
   - verify: hand-editing a generated adapter makes the guard fail.
 
