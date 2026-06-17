@@ -149,9 +149,9 @@ Skills are plain Markdown - they work with any agent that accepts system prompts
 
 ---
 
-## All 43 Skills
+## All 44 Skills
 
-The commands above are the entry points. Under the hood, they activate these 43 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
+The commands above are the entry points. Under the hood, they activate these 44 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
 
 ### Define - Clarify what to build
 
@@ -192,6 +192,7 @@ The commands above are the entry points. Under the hood, they activate these 43 
 | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | [code-review-and-quality](skills/uncle-dev-code-review-and-quality/SKILL.md)   | Five-axis review, change sizing (~100 lines), severity labels (Nit/Optional/FYI), review speed norms, splitting strategies | Before merging any change                                         |
 | [dev-code-simplification](skills/uncle-dev-dev-code-simplification/SKILL.md)   | Chesterton's Fence, Rule of 500, reduce complexity while preserving exact behavior                                         | Code works but is harder to read or maintain than it should be    |
+| [over-engineering-audit](skills/uncle-dev-over-engineering-audit/SKILL.md)     | Ranked, tagged cut-list (`delete`/`stdlib`/`native`/`yagni`/`shrink`) ending in a `net: -N lines, -M deps` summary         | You need to find removable bloat — dead code, reinvented stdlib, speculative flexibility |
 | [security-and-hardening](skills/uncle-dev-security-and-hardening/SKILL.md)     | OWASP Top 10 prevention, auth patterns, secrets management, dependency auditing, three-tier boundary system                | Handling user input, auth, data storage, or external integrations |
 | [performance-optimization](skills/uncle-dev-performance-optimization/SKILL.md) | Measure-first approach - Core Web Vitals targets, profiling workflows, bundle analysis, anti-pattern detection             | Performance requirements exist or you suspect regressions         |
 

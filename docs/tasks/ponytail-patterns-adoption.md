@@ -82,23 +82,23 @@ Source of truth: `docs/ears/ponytail-patterns-adoption.md`. Stories are grouped 
 
 ### Unit 4: Over-engineering audit skill
 
-- [ ] 4.1 Scaffold `uncle-dev-over-engineering-audit` per skill-anatomy (est: ~40m)
+- [x] 4.1 Scaffold `uncle-dev-over-engineering-audit` per skill-anatomy (est: ~40m)
   - acceptance: R-4.1, R-4.6 — distinct audit capability; Overview/When to Use/Process/Common Rationalizations/Red Flags/Verification sections.
   - verify: SKILL.md has valid frontmatter (name, description) and all six required sections.
 
-- [ ] 4.2 Define output contract — tagged findings (deps: 4.1, est: ~20m)
+- [x] 4.2 Define output contract — tagged findings (deps: 4.1, est: ~20m)
   - acceptance: R-4.2 — one line per finding tagged exactly one of `delete|stdlib|native|yagni|shrink`.
   - verify: sample run output: every finding line carries exactly one tag.
 
-- [ ] 4.3 Ranking + `net:` summary (deps: 4.2, est: ~15m)
+- [x] 4.3 Ranking + `net:` summary (deps: 4.2, est: ~15m)
   - acceptance: R-4.3 — findings ranked biggest-cut-first, ending `net: -N lines, -M deps possible`.
   - verify: sample output ordered by cut size; final line matches the `net:` format.
 
-- [ ] 4.4 Diff + whole-repo scopes via existing orchestration (deps: 4.1, est: ~30m)
+- [x] 4.4 Diff + whole-repo scopes via existing orchestration (deps: 4.1, est: ~30m)
   - acceptance: R-4.4 — both scopes supported, reusing parallel-orchestration + review-synthesizer.
   - verify: skill documents both scopes and references the existing synthesizer pattern (no new orchestration engine).
 
-- [ ] 4.5 Non-destructive to existing skills (deps: 4.1, est: ~10m)
+- [x] 4.5 Non-destructive to existing skills (deps: 4.1, est: ~10m)
   - acceptance: R-4.5 — clarity-first simplify and 5-axis review unchanged.
   - verify: git diff shows no edits to `uncle-dev-dev-code-simplification` or `uncle-dev-code-review-and-quality`.
 
