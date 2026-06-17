@@ -49,3 +49,6 @@ _Baseline preceding `6692486` (overrides/companions support was added on top of 
 [Unreleased]: https://github.com/javierhbr/production-grade-agent-skills/compare/276f84b...HEAD
 [1.4.0]: https://github.com/javierhbr/production-grade-agent-skills/compare/6692486~1...276f84b
 [1.3.0]: https://github.com/javierhbr/production-grade-agent-skills/releases/tag/v1.3.0
+
+this repo https://github.com/javierhbr/production-grade-agent-skills. its a fork from https://github.com/addyosmani/agent-skills .
+the remote repo have https://github.com/addyosmani/agent-skills/releases and I want to know that change from version 0.5.0 til the latest version.

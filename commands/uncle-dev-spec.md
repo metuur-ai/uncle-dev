@@ -132,12 +132,14 @@ Use exactly these keywords:
 - `IF <condition>, THE SYSTEM SHALL` — conditional / compliance gate
 - `WHERE <context>, THE SYSTEM SHALL` — location or environment scoped
 
-One table per logical unit of work:
+One table per logical unit of work. Each unit states its **why** — the intent behind its requirements:
 
 ```markdown
 # <Feature Title> — EARS Specifications
 
 ## Unit 1: <name>
+
+**Why:** <the intent this unit of work serves — the goal or user need behind these requirements>
 
 | ID    | EARS statement            |
 | ----- | ------------------------- |

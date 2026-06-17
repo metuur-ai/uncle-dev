@@ -110,7 +110,7 @@ Detailed modular breakdown. Audience: engineers implementing or reviewing the ch
 
 ### Step 4 — Write `docs/ears/<slug>.md`
 
-Exact, structured behavioral requirements. Agents use these to generate tests and implementation. One table per logical unit of work.
+Exact, structured behavioral requirements. Agents use these to generate tests and implementation. One table per logical unit of work. Each unit states its why — the intent behind its requirements — so downstream tasks and tests inherit the reason, not just the rule.
 
 EARS keywords — use exactly as written:
 
@@ -124,6 +124,8 @@ EARS keywords — use exactly as written:
 # <Feature Title> — EARS Specifications
 
 ## Unit 1: <name>
+
+**Why:** <the intent this unit of work serves — the goal or user need behind these requirements>
 
 | ID    | EARS statement            |
 | ----- | ------------------------- |

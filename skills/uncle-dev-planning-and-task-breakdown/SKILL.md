@@ -44,15 +44,18 @@ Write `docs/tasks/<slug>.md` using this format:
 ## <Unit 1 name from EARS>
 
 - [ ] 1.1 <story title> (est: ~Xm)
+  - why: <the intent this story serves — the reason it exists, not a restatement of the title>
   - acceptance: R-1.1 — WHEN … THE SYSTEM SHALL …
   - verify: <how to confirm>
 
 - [ ] 1.2 <story title> (deps: 1.1, est: ~Xm)
+  - why: …
   - acceptance: R-1.2 — …
   - verify: …
 ```
 
 Rules:
+- Every story states its `why:` — the intent behind it (which goal/requirement/user need it serves). If you cannot name a why, the story is busywork; cut it or merge it.
 - One story per EARS requirement (or one per closely related group if trivially small)
 - `deps:` must reference story IDs in this same file — no cross-file deps
 - `(mutex: tag)` when two stories cannot run concurrently (e.g., both modify the same file)
@@ -191,6 +194,8 @@ Each story should follow this structure:
 ```markdown
 ## Story [ID]: [Short descriptive title]
 
+**Why:** The intent behind this story — the goal, requirement, or user need it serves. (The reason, not the restated title. If there is no why, cut the story.)
+
 **Outcome:** One paragraph explaining what this story accomplishes.
 
 **Acceptance criteria:**
@@ -278,6 +283,8 @@ When to break a story down further:
 # tasks.md
 
 ## Story STORY-101: [Title]
+
+**Why:** [the intent this story serves — the reason behind it]
 
 **Outcome:** [...]
 

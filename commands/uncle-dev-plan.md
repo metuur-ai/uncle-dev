@@ -63,21 +63,25 @@ Then write `docs/tasks/<slug>.md` using this format:
 ## <Unit 1 name from EARS>
 
 - [ ] 1.1 <story title> (est: ~Xm)
+  - why: <the intent this story serves — the reason it exists, not a restatement of the title>
   - acceptance: R-1.1 — WHEN … THE SYSTEM SHALL …
   - verify: <how to confirm the requirement is met>
 
 - [ ] 1.2 <story title> (deps: 1.1, est: ~Xm)
+  - why: …
   - acceptance: R-1.2 — …
   - verify: …
 
 ## <Unit 2 name from EARS>
 
 - [ ] 2.1 <story title> (est: ~Xm)
+  - why: …
   - acceptance: R-2.1 — …
   - verify: …
 ```
 
 Rules:
+- Every story states its `why:` — the intent behind it (goal, requirement, or user need it serves). No why ⇒ it's busywork; cut or merge.
 - One story per EARS requirement (or one story per closely related group if trivially small)
 - `deps:` must match story IDs declared in this same file — no cross-file deps
 - `(mutex: tag)` when two stories cannot run concurrently (e.g., both modify the same schema)
@@ -123,7 +127,7 @@ Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading di
 1. Enter plan mode — read only, no code changes
 2. Identify the dependency graph between components
 3. Slice work into shared story-level items, not code-level subtasks
-4. Write shared stories with acceptance criteria and verification steps into `tasks.md`
+4. Write shared stories with their **why** (the intent each serves), acceptance criteria, and verification steps into `tasks.md`
 5. Record cross-story ordering, blockers, and coordination notes in `execution.md`
 6. Keep private technical breakdown in `.devlocal/<user>/<story-id>/scratchpad.md`
 7. When CLI is available, run `openspec validate <change-id>` to verify artifacts
