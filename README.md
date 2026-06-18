@@ -13,13 +13,13 @@ Uncle Dev is a Claude Code plugin (also installable for Codex, OpenCode, Gemini,
    /uncle-dev-spec           /uncle-dev-plan          /uncle-dev-build        /uncle-dev-test         /uncle-dev-review       /uncle-dev-ship
 ```
 
-The plugin ships **44 skills**, **26 commands**, and **9 specialist agent personas**, all under the `uncle-dev-` namespace.
+The plugin ships **44 skills**, **28 commands**, and **9 specialist agent personas**, all under the `uncle-dev-` namespace.
 
 ---
 
 ## Commands
 
-The 26 commands are the lifecycle entry points; each one activates the right skills automatically. The table highlights the main ones.
+The 28 commands are the lifecycle entry points; each one activates the right skills automatically. The table highlights the main ones.
 
 | What you're doing            | Command                       | Key principle                       |
 | ---------------------------- | ----------------------------- | ----------------------------------- |
@@ -33,8 +33,10 @@ The 26 commands are the lifecycle entry points; each one activates the right ski
 | Build the spec graph         | `/uncle-dev-spec-graph`       | HLD → LLD → spec → test → code       |
 | Review before merge          | `/uncle-dev-review`           | Improve code health                 |
 | Simplify the code            | `/uncle-dev-code-simplify`    | Clarity over cleverness             |
+| Detect over-engineering      | `/uncle-dev-overkill-detector`| `review` / `audit` / `debt` scopes  |
 | Harvest deliberate debt      | `/uncle-dev-debt`             | `@debt` markers → ledger            |
 | Switch strictness mid-session| `/uncle-dev-mode`             | `strict` / `balanced` / `fast`      |
+| Operate as a senior peer     | `/uncle-dev-pro`              | Senior-collaborator working habits  |
 | Ship to production           | `/uncle-dev-ship`             | Faster is safer                     |
 | Surface past learnings       | `/uncle-dev-proactive-memory` | Context injection                   |
 

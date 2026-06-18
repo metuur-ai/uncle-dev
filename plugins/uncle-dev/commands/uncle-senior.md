@@ -51,7 +51,10 @@ SIMPLEST PATH:
 REUSABILITY:
 SCALE RISK:
 VERDICT:
+DEFERRED:
 ```
+
+For every aspect the verdict cuts, tie it off in `DEFERRED:` with a **ceiling** (the condition that forces revisiting) and an **upgrade path** — a cut with no ceiling is a silent "later→never," not a scope decision. If a deferral will live as a shortcut in code, record it as `// @debt <ceiling>, <upgrade>` (grammar: `uncle-dev-spec-annotations`) so `/uncle-dev-overkill-detector debt` can harvest it later.
 
 End with the verdict and a concrete next step — `uncle-dev-planning-and-task-breakdown` if proceeding, or the specific aspect to reconsider.
 
@@ -65,6 +68,7 @@ Open with: "Tell me what's on your mind." Then follow the question depth ladder:
 Level 1 → Restate the goal
 Level 2 → Probe assumptions
 Level 3 → Pull toward minimum
+Level 3+ → Surface the ceiling ("what would make you need it later?")
 Level 4 → Name the smell as a question
 ```
 
