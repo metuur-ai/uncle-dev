@@ -13,10 +13,22 @@ PLUGINS_DIR="${HOME}/.claude/plugins"
 MARKETPLACES_FILE="${PLUGINS_DIR}/known_marketplaces.json"
 INSTALLED_FILE="${PLUGINS_DIR}/installed_plugins.json"
 
-MARKETPLACE_ID="uncle-dev-agent-skills"
-PLUGIN_NAME="uncle-dev-agent-skills"
+command -v jq >/dev/null 2>&1 || fail "jq is required but not found. Install: brew install jq"
+
+# Identity is derived from the manifests (single source of truth), never hardcoded.
+#   marketplace id ← .claude-plugin/marketplace.json ".name"
+#   plugin name    ← .claude-plugin/plugin.json      ".name"  (drives the /<name>: namespace)
+#   version        ← .claude-plugin/plugin.json      ".version"
+# Hardcoding the plugin name as the marketplace id previously produced a second,
+# mis-keyed registration (uncle-dev-agent-skills@… instead of the canonical
+# uncle-dev@…), so the plugin appeared installed twice.
+MARKETPLACE_ID="$(jq -r '.name' "${REPO_ROOT}/.claude-plugin/marketplace.json")"
+PLUGIN_NAME="$(jq -r '.name' "${REPO_ROOT}/${ASSET_PLUGIN_META}")"
+VERSION="$(jq -r '.version' "${REPO_ROOT}/${ASSET_PLUGIN_META}")"
+[[ -n "${MARKETPLACE_ID}" && "${MARKETPLACE_ID}" != "null" ]] || fail "Could not read marketplace name from marketplace.json"
+[[ -n "${PLUGIN_NAME}" && "${PLUGIN_NAME}" != "null" ]] || fail "Could not read plugin name from plugin.json"
+[[ -n "${VERSION}" && "${VERSION}" != "null" ]] || fail "Could not read version from plugin.json"
 PLUGIN_KEY="${PLUGIN_NAME}@${MARKETPLACE_ID}"
-VERSION="1.4.0"
 CACHE_PATH="${PLUGINS_DIR}/cache/${MARKETPLACE_ID}/${PLUGIN_NAME}/${VERSION}"
 DIST_DIR="${REPO_ROOT}/dist"
 
@@ -38,14 +50,12 @@ Also generates dist/uncle-dev-claude.tar.gz for distribution.
 Options:
   --scope   Plugin scope: user (default) or local
   --force   Overwrite an existing installation
-  --dev     Serve directly from source repo (no cache copy, symlinked commands).
+  --dev     Serve directly from source repo (no cache copy).
             Changes to source files take effect immediately — no reinstall needed.
             $CLAUDE_PLUGIN_ROOT will point to the repo root.
   -h, --help  Show this help message
 EOF
 }
-
-command -v jq >/dev/null 2>&1 || fail "jq is required but not found. Install: brew install jq"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -168,51 +178,14 @@ jq \
   "${INSTALLED_FILE}" > "${INSTALLED_FILE}.tmp"
 mv "${INSTALLED_FILE}.tmp" "${INSTALLED_FILE}"
 
-# ── promote commands to ~/.claude/commands/ ───────────────────────────────────
-
-USER_COMMANDS_DIR="${HOME}/.claude/commands"
-mkdir -p "${USER_COMMANDS_DIR}"
-
-if [[ "$DEV" -eq 1 ]]; then
-  log "Symlinking commands to ${USER_COMMANDS_DIR} (dev mode)"
-
-  # Walk source commands dir; create symlinks so edits take effect immediately
-  while IFS= read -r -d '' cmd_file; do
-    rel="${cmd_file#"${REPO_ROOT}/${ASSET_COMMANDS_ROOT}/"}"
-    dest="${USER_COMMANDS_DIR}/${rel}"
-    mkdir -p "$(dirname "$dest")"
-
-    if [[ -L "${dest}" && "$(readlink "${dest}")" == "${cmd_file}" ]]; then
-      continue  # already pointing at the right target
-    fi
-
-    if [[ -e "${dest}" && "${FORCE}" -ne 1 ]]; then
-      log "  Skipping ${rel} (already exists, use --force to overwrite)"
-    else
-      ln -sf "${cmd_file}" "${dest}"
-      log "  Symlinked ${rel}"
-    fi
-  done < <(find "${REPO_ROOT}/${ASSET_COMMANDS_ROOT}" -type f -name '*.md' -print0 | sort -z)
-else
-  log "Promoting commands to ${USER_COMMANDS_DIR}"
-
-  # Walk recursively so opsx/ subdir structure is preserved under ~/.claude/commands/opsx/
-  while IFS= read -r -d '' cmd_file; do
-    rel="${cmd_file#"${CACHE_PATH}/commands/"}"
-    dest="${USER_COMMANDS_DIR}/${rel}"
-    mkdir -p "$(dirname "$dest")"
-
-    if [[ -f "${dest}" && "${FORCE}" -ne 1 ]]; then
-      if cmp -s "${cmd_file}" "${dest}"; then
-        continue
-      fi
-      log "  Skipping ${rel} (already exists, use --force to overwrite)"
-    else
-      cp "${cmd_file}" "${dest}"
-      log "  Copied ${rel}"
-    fi
-  done < <(find "${CACHE_PATH}/commands" -type f -name '*.md' -print0 | sort -z)
-fi
+# ── commands are served from the plugin (no loose promotion) ──────────────────
+# Claude Code surfaces a plugin's commands directly from the installed package,
+# namespaced as /uncle-dev:<command>. We intentionally do NOT copy them into
+# ~/.claude/commands/: that produced duplicate, un-namespaced entries in the
+# slash menu and a second copy to keep in sync. The plugin registration above
+# (marketplace + installed_plugins, scope "${SCOPE}") is the complete, global
+# install — in --dev mode installPath points at the repo, so source edits take
+# effect with no reinstall.
 
 # ── generate distributable archive (skipped in --dev mode) ───────────────────
 

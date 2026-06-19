@@ -81,9 +81,14 @@ for rule in "${ASSET_RULES[@]}"; do
   assert_file "${CACHE}/${rule}"
 done
 
-# commands promoted to ~/.claude/commands/
-assert_dir  "${FAKE_HOME}/.claude/commands"
-assert_file "${FAKE_HOME}/.claude/commands/uncle-dev-spec.md"
+# commands are served from the plugin package (namespaced /uncle-dev:<command>),
+# NOT promoted into ~/.claude/commands/. Guard against the duplication regression.
+assert_file "${CACHE}/commands/uncle-dev-spec.md"
+if [[ ! -e "${FAKE_HOME}/.claude/commands/uncle-dev-spec.md" ]]; then
+  ok "commands not promoted to ~/.claude/commands/ (served from plugin)"
+else
+  fail "commands were promoted to ~/.claude/commands/ (should be plugin-only)"
+fi
 
 # archive
 assert_file "${REPO_ROOT}/dist/uncle-dev-claude.tar.gz"
@@ -94,8 +99,12 @@ import json
 mm = json.load(open('${PLUGINS_DIR}/known_marketplaces.json'))
 assert 'uncle-dev-agent-skills' in mm, 'marketplace not registered'
 ip = json.load(open('${PLUGINS_DIR}/installed_plugins.json'))
-assert any('uncle-dev-agent-skills' in k for k in ip.get('plugins', {})), 'plugin not registered'
-" && ok "marketplace and plugin registered" || fail "marketplace or plugin not registered"
+keys = list(ip.get('plugins', {}))
+# Canonical key: <plugin.json name>@<marketplace.json name> = uncle-dev@uncle-dev-agent-skills.
+# Guards against the regression where the marketplace id was used as the plugin name.
+assert 'uncle-dev@uncle-dev-agent-skills' in keys, f'canonical plugin key missing; got {keys}'
+assert 'uncle-dev-agent-skills@uncle-dev-agent-skills' not in keys, f'mis-keyed registration present; got {keys}'
+" && ok "plugin registered under canonical key uncle-dev@uncle-dev-agent-skills" || fail "plugin not registered under canonical key"
 
 # ── result ────────────────────────────────────────────────────────────────────
 
