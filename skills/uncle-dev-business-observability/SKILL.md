@@ -166,5 +166,5 @@ After applying this skill to a journey, confirm:
 - [ ] Each step has an SLI, an SLO target, and an error budget.
 - [ ] Instrumentation depth matches the journey's criticality tier.
 - [ ] An executive dashboard tile drills to engineering telemetry in one click.
-- [ ] Burn-rate alerts (fast + slow) are wired, routed by severity, and carry business context.
+- [ ] Burn-rate alerts (fast + slow) are wired, routed by severity, link a runbook, carry business context, and were test-fired once.
 - [ ] The incident-retro loop is established (catches were verified, or gaps were filed).
