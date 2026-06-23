@@ -1,6 +1,6 @@
 ---
 name: uncle-dev-business-observability
-description: Connects technical telemetry to business outcomes by instrumenting Critical User Journeys with OpenTelemetry, journey-scoped SLOs, and error-budget alerting. Use when adding observability to a service, when alerts fire that nobody can tie to user or revenue impact, when defining SLOs/SLIs, when on-call suffers alert fatigue, or when a stakeholder asks "is this incident actually hurting customers?". NOT for raw infrastructure monitoring setup (CPU/disk dashboards) or pure log aggregation.
+description: Brings an observability mindset to feature work — decides conceptually whether a custom metric is warranted, what it should measure, whether it's a business or operational metric, and whether dimensions are needed, then delegates tool-specific implementation to a configured companion skill. Also covers connecting telemetry to business outcomes via Critical User Journeys, journey-scoped SLOs, and error-budget alerting. Use during spec or task breakdown to decide "should we add a metric here / what should we measure"; when adding observability to a service; when alerts fire that nobody can tie to user or revenue impact; when defining SLOs/SLIs; when on-call suffers alert fatigue; or when a stakeholder asks "is this incident actually hurting customers?". Stays technology-agnostic — NOT for picking a telemetry library, writing emit code, or raw infrastructure monitoring setup.
 ---
 ## Overview
 
@@ -10,6 +10,7 @@ SKILL.md is the entry point — a 7-step procedure. Deep material lives in coloc
 
 | Load when you reach… | Reference |
 | --- | --- |
+| Deciding if a custom metric is warranted — decision tree, worked examples, metric-spec contract, delegation lookup | `references/metric-necessity-test.md` |
 | Strategy, maturity model, value framing, criticality tiers | `references/strategy-and-maturity.md` |
 | Step 3/6 — SLI PromQL, error-budget math, burn-rate thresholds, SLO targets by tier | `references/slo-cookbook.md` |
 | Step 6 — alert patterns, routing/escalation, runbook template, noise metrics | `references/alert-design.md` |
@@ -25,6 +26,75 @@ SKILL.md is the entry point — a 7-step procedure. Deep material lives in coloc
 - A PM/exec asks for a dashboard that speaks in conversion/revenue, not p99.
 
 **NOT for:** standing up raw infrastructure dashboards (CPU/disk/memory), log-aggregation plumbing, or APM tool installation in isolation. Those are inputs to this skill, not the goal.
+
+## Decide First: Is a Custom Metric Warranted?
+
+Before instrumenting anything, run this conceptual gate. **The default is NO.** Generic auto-instrumentation (RED per endpoint, USE per resource), logs, and traces already answer most questions; a *custom* metric must earn its place. Do not put a metric on every method, class, or branch — instrument meaningful business behavior, not code structure.
+
+**Where metrics usually earn their place** — these are *candidates*, not mandates; each still has to pass the five gates below:
+
+- Calls to **downstream APIs** — success vs failure rates.
+- Important **business events** / domain event types.
+- **Authentication and authorization failures.**
+- **Database operations** whose failure is significant to a specific business flow.
+- **Publishing to queues / streams / topics** — success and error outcomes.
+- Specific **response codes** returned by downstream systems or databases.
+- **Error codes/conditions that trigger compensating actions**, retries, alerts, or alternative flows.
+- Critical **business decisions or state transitions** worth monitoring.
+
+Add these intentionally and sparingly. Excessive metrics create noise and cardinality and make observability *less* useful, not more.
+
+A candidate metric is warranted only if it passes **all five gates**:
+
+1. **Action** — a named person/role changes a decision based on the value. (No action → vanity metric, drop.)
+2. **Coverage** — it is *invisible* to generic instrumentation/logs/traces. (Already covered → use what exists.)
+3. **Aggregate** — the question is "how many / how often / how much / how fast, in aggregate." ("What happened in this one case / why did THIS fail?" → that's a **log or trace**, not a metric.)
+4. **Durable** — the behavior deserves a long-lived named series and dashboard panel, not a one-off look. (Curiosity → query logs ad-hoc.)
+5. **Worth it** — the ongoing storage/cardinality cost is justified (re-check after dimensions).
+
+For each metric that survives, answer the four questions this skill exists to answer:
+
+- **Business or operational?** Litmus: *if the system were fine but this number moved, would a non-engineer care?* Yes → **business** (domain outcome; product owns it; executive dashboard). No → **operational** (system health; SRE owns it; engineering dashboard).
+- **What to measure?** The outcome at the **business-meaningful boundary**, not the method call — `payment_captured` (confirmed), not `capture() invoked`. Pick the conceptual instrument by question shape: **counter** (how many), **distribution** (how long/big, read as percentiles), **gauge** (how many right now).
+- **Why is it valuable?** Write the one-line question it answers. If you can't, it fails gate 1.
+- **Dimensions?** Add one *only* when someone will segment by it to make a decision — and you can name the comparison ("failing more on `provider=stripe` vs `adyen`?"). Dimensions must be **bounded/low-cardinality**; never IDs, emails, raw amounts, or free text (those belong on logs/traces).
+
+For the full decision tree, the worked good/bad examples, and the metric-spec contract, load `references/metric-necessity-test.md`.
+
+### The output: a Measurement Plan (technology-agnostic)
+
+The product of this gate is **not** emit code — it is a list of **metric specs**, each stating name, kind (business/operational), instrument, the question it answers, dimensions + the reason for each, and owner. Example:
+
+```yaml
+metric:
+  name: payments_captured          # domain language, not code symbol
+  kind: business                   # business | operational
+  instrument: counter              # counter | distribution | gauge (conceptual)
+  question: "How many payments succeed, trending by provider and plan?"
+  dimensions:
+    - { name: provider, reason: "compare success across providers" }   # bounded set
+    - { name: plan_tier, reason: "are paid customers disproportionately hit?" }
+  owner: payments-team
+  dashboard_layer: executive       # executive | engineering
+  implementation: delegated
+```
+
+### Where this runs in the lifecycle
+
+- **Spec** (`uncle-dev-spec-driven-development`): for each behavior/acceptance criterion, run the test; attach surviving specs as the Measurement Plan. Most criteria yield zero metrics — expected and correct.
+- **Task breakdown** (`uncle-dev-planning-and-task-breakdown`): each surviving metric becomes one instrumentation subtask, owned by the implementation companion.
+- **Build**: the companion emits it; verify it actually answers its question.
+
+### Delegate implementation to a configured companion
+
+This skill stays conceptual. The *how* — OpenTelemetry, Prometheus, Datadog, CloudWatch, exporters, SDK calls, naming conventions — is owned by a project-configured companion skill, looked up via the project config helper (never read the YAML directly):
+
+```bash
+bash scripts/uncle-dev-config.sh --list skills.companions.uncle-dev-business-observability path
+```
+
+- **Companion path returned** → load it and hand over each metric spec to implement in the project's telemetry stack (it maps `kind`/`instrument`/`dimensions` onto its library and cardinality limits).
+- **Empty** → deliver the Measurement Plan and **stop**. Tell the user no telemetry-implementation companion is configured and that one can be added via `/uncle-dev-custom-me companion uncle-dev-business-observability <name>` or by editing `skills.companions` in `.agents/uncle-dev-setup.yaml`. **Never guess a telemetry library or write emit code.**
 
 ## Core Process
 
@@ -146,6 +216,10 @@ After every incident, confirm the journey instrumentation actually detected it a
 | "We'll add the business context tags later." | Later never comes, and retrofitting trace attributes across services is far costlier than adding them at instrumentation time. |
 | "The APM vendor's auto-instrumentation covers it." | Auto-instrumentation captures spans, not *business* meaning. `journey.name`/`journey.step` are yours to add. |
 | "One big dashboard is fine for everyone." | Execs can't read p99 and engineers can't act on 'conversion down'. Two linked layers serve both and cut decision latency. |
+| "Instrument every method so we have full coverage." | Coverage ≠ insight. A metric per method is cost and noise that buries the few that matter. Default to NO; pass the five gates first. |
+| "Just make it a metric so we can see what happened to this request." | Per-case "what happened / why" is a log or trace. Metrics answer aggregate questions; forcing a per-case question into a metric explodes cardinality. |
+| "Add every field as a dimension, might need them later." | Each dimension multiplies series and cost. Add one only when you can name the decision-driving comparison; IDs/emails/amounts never. |
+| "Pick the telemetry library now while we're here." | This skill decides *what/why*. The library/emit code is the companion's job — guessing it here couples conceptual decisions to one tool. |
 
 ## Red Flags
 
@@ -156,10 +230,23 @@ After every incident, confirm the journey instrumentation actually detected it a
 - Dashboards that only show infra metrics, with no journey/business tile.
 - Disconnected traces — services starting new trace IDs instead of propagating context.
 - "Observability" project that never names a single Critical User Journey.
+- A metric added per method/class/branch rather than per meaningful business behavior.
+- A custom metric that no named role acts on, or that duplicates auto-instrumentation/logs.
+- A per-case "why did THIS fail" question implemented as a metric instead of a log/trace.
+- Dimensions that are unbounded (IDs, emails, amounts, free text) or that map to no stated comparison.
+- A metric whose spec doesn't declare business-vs-operational, owner, or the question it answers.
+- Tool-specific emit code written by this skill instead of delegated to the configured companion.
 
 ## Verification
 
-After applying this skill to a journey, confirm:
+When deciding whether to add a metric, confirm:
+
+- [ ] Each proposed metric passed all five gates (action, coverage, aggregate, durable, worth it); rejected candidates were left to logs/traces/auto-instrumentation.
+- [ ] Each surviving metric has a spec declaring kind (business/operational), instrument, the question it answers, dimensions + per-dimension reason, and owner.
+- [ ] Every dimension is bounded; no IDs/emails/amounts/free text as dimensions.
+- [ ] Implementation was delegated: the companion lookup ran, and either a companion implemented it or the Measurement Plan was delivered with a note that none is configured. No telemetry library was guessed here.
+
+When applying this skill to a journey, confirm:
 
 - [ ] One Critical User Journey is written as objective → action → success condition, approved by a non-engineer.
 - [ ] A real end-to-end trace shows every step with `journey.*` business attributes and no high-cardinality/PII tags.
