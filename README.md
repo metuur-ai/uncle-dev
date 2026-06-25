@@ -13,13 +13,13 @@ Uncle Dev is a Claude Code plugin (also installable for Codex, OpenCode, Gemini,
    /uncle-dev-spec           /uncle-dev-plan          /uncle-dev-build        /uncle-dev-test         /uncle-dev-review       /uncle-dev-ship
 ```
 
-The plugin ships **44 skills**, **28 commands**, and **9 specialist agent personas**, all under the `uncle-dev-` namespace.
+The plugin ships **46 skills**, **29 commands**, and **9 specialist agent personas**, all under the `uncle-dev-` namespace.
 
 ---
 
 ## Commands
 
-The 28 commands are the lifecycle entry points; each one activates the right skills automatically. The table highlights the main ones.
+The 29 commands are the lifecycle entry points; each one activates the right skills automatically. The table highlights the main ones.
 
 | What you're doing            | Command                       | Key principle                       |
 | ---------------------------- | ----------------------------- | ----------------------------------- |
@@ -158,7 +158,7 @@ Skills are plain Markdown — they work with any agent that accepts system promp
 
 ## All 44 Skills
 
-The commands above are the entry points. Under the hood, they activate these 44 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
+The commands above are the entry points. Under the hood, they activate these 46 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
 
 ### Define — Clarify what to build
 
@@ -318,7 +318,7 @@ Every skill follows a consistent anatomy:
 
 ```
 agent-skills/
-├── skills/                 # 44 skills (SKILL.md per directory, colocated references)
+├── skills/                 # 46 skills (SKILL.md per directory, colocated references)
 ├── agents/                 # 9 specialist personas (uncle-dev-ag-*, uncle-lead, uncle-po, uncle-senior)
 ├── commands/               # 26 slash commands
 ├── hooks/                  # Session lifecycle hooks (session-start, spec-coherence-guard,
