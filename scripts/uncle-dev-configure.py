@@ -583,10 +583,13 @@ def pick_target(ui, categories, allow_manual=True):
 
 def _prompt_path_name(ui, path_initial="", name_initial=""):
     """Shared prompt for override/companion entries. Returns dict or None."""
-    p = ui.prompt_text("path to SKILL.md (from project root):", path_initial)
+    p = ui.prompt_text(
+        "path to SKILL.md, e.g. .agents/skills/team-tdd-rules/SKILL.md:",
+        path_initial,
+    )
     if not p:
         return None
-    n = ui.prompt_text("short name (optional):", name_initial)
+    n = ui.prompt_text("short name (optional), e.g. team-tdd-rules:", name_initial)
     entry = {"path": p}
     if n:
         entry["name"] = n
@@ -800,7 +803,13 @@ def main(argv):
 
     schema = load_schema()
     cfg, is_new = load_current()
-    curses.wrapper(main_tui, schema, cfg, is_new)
+    try:
+        curses.wrapper(main_tui, schema, cfg, is_new)
+    except KeyboardInterrupt:
+        # curses.wrapper() already restored the terminal; report cleanly.
+        print("Cancelled — nothing saved (use Save & validate to persist).",
+              file=sys.stderr)
+        return 130
     return 0
 
 
