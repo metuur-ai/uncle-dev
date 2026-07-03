@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import copy
 import datetime
+import glob
 import json
 import os
 import subprocess
@@ -38,6 +39,54 @@ SCHEMA_FILE = os.path.join(SCRIPT_DIR, "uncle-dev-setup.schema.json")
 TEMPLATE_FILE = os.path.join(
     PROJECT_ROOT, "skills", "uncle-dev-setup", "uncle-dev-setup.template.yaml"
 )
+
+# uncle-dev lifecycle phases (the v2 per-phase companion form keys on these).
+PHASES = [
+    "define", "plan", "build", "verify",
+    "review", "ship", "capture", "maintain",
+]
+
+_SKILLS_CACHE = None
+_COMMANDS_CACHE = None
+
+
+def _candidate_roots():
+    """Directories that may hold a `skills/` and `commands/` tree: this repo, an
+    explicit plugin root, and installed plugin locations. Lets the picker list
+    real uncle-dev skills whether run from the repo or an installed plugin."""
+    roots = [PROJECT_ROOT]
+    env_root = os.environ.get("CLAUDE_PLUGIN_ROOT")
+    if env_root:
+        roots.append(env_root)
+    home_plugins = os.path.expanduser("~/.claude/plugins")
+    roots.extend(glob.glob(os.path.join(home_plugins, "*")))
+    roots.extend(glob.glob(os.path.join(home_plugins, "*", "*")))
+    return roots
+
+
+def uncle_dev_skills():
+    """All bundled uncle-dev skill names (dirs with a SKILL.md). Cached."""
+    global _SKILLS_CACHE
+    if _SKILLS_CACHE is None:
+        found = set()
+        for root in _candidate_roots():
+            for md in glob.glob(os.path.join(root, "skills", "uncle-dev-*", "SKILL.md")):
+                found.add(os.path.basename(os.path.dirname(md)))
+        _SKILLS_CACHE = sorted(found)
+    return _SKILLS_CACHE
+
+
+def uncle_dev_commands():
+    """All uncle-dev slash-command names (without .md). Cached."""
+    global _COMMANDS_CACHE
+    if _COMMANDS_CACHE is None:
+        found = set()
+        for root in _candidate_roots():
+            for md in glob.glob(os.path.join(root, "commands", "uncle-dev-*.md")):
+                found.add(os.path.basename(md)[:-3])
+        _COMMANDS_CACHE = sorted(found)
+    return _COMMANDS_CACHE
+
 
 # Declarative section/field tree. Structure is stable (mirrors the schema's
 # required lists); volatile details (enum options, integer bounds) are read
@@ -219,6 +268,10 @@ class UI:
         self.curses = curses
         self.stdscr = stdscr
         curses.curs_set(0)
+        try:
+            curses.set_escdelay(25)  # make ESC-to-cancel feel instant
+        except (AttributeError, curses.error):
+            pass
         curses.use_default_colors()
         try:
             curses.init_pair(1, curses.COLOR_CYAN, -1)
@@ -267,6 +320,57 @@ class UI:
                 return idx if items else None
             elif key in (ord("q"), 27):  # q or ESC
                 return None
+
+    def pick(self, title, options, subtitle=None):
+        """Searchable single-choice picker. Type to filter, ↑/↓ to move,
+        Enter to select, ESC to cancel. Returns the chosen string or None."""
+        curses = self.curses
+        flt = ""
+        idx = 0
+        top = 0
+        footer = "type to filter · ↑/↓ move · Enter select · ESC cancel"
+        while True:
+            filtered = [o for o in options if flt.lower() in o.lower()]
+            if idx >= len(filtered):
+                idx = max(0, len(filtered) - 1)
+            self.stdscr.erase()
+            max_y, max_x = self.stdscr.getmaxyx()
+            _addstr(self.stdscr, 0, 2, title, self.color(1) | curses.A_BOLD)
+            hl = 2
+            if subtitle:
+                _addstr(self.stdscr, 1, 2, subtitle, curses.A_DIM)
+                hl = 3
+            _addstr(self.stdscr, hl, 2, f"filter: {flt}▏", self.color(4))
+            list_top = hl + 1
+            body_h = max_y - list_top - 1
+            if idx < top:
+                top = idx
+            elif idx >= top + body_h:
+                top = idx - body_h + 1
+            if not filtered:
+                _addstr(self.stdscr, list_top, 2, "  (no match)", curses.A_DIM)
+            for row, i in enumerate(range(top, min(len(filtered), top + body_h))):
+                attr = curses.A_REVERSE if i == idx else 0
+                _addstr(self.stdscr, list_top + row, 2, "  " + filtered[i], attr)
+            _addstr(self.stdscr, max_y - 1, 2, footer, curses.A_DIM)
+            self.stdscr.refresh()
+
+            key = self.stdscr.getch()
+            if key == curses.KEY_UP:
+                idx = max(0, idx - 1)
+            elif key == curses.KEY_DOWN:
+                idx = min(len(filtered) - 1, idx + 1) if filtered else 0
+            elif key in (curses.KEY_ENTER, 10, 13):
+                if filtered:
+                    return filtered[idx]
+            elif key == 27:  # ESC cancels
+                return None
+            elif key in (curses.KEY_BACKSPACE, 127, 8):
+                flt = flt[:-1]
+                idx = 0
+            elif 32 <= key <= 126:
+                flt += chr(key)
+                idx = 0
 
     def prompt_text(self, prompt, initial=""):
         """Single-line text editor at the bottom. Enter=confirm, ESC=cancel(None)."""
@@ -445,6 +549,38 @@ def edit_object(ui, schema, cfg, label, subfields):
         edit_field(ui, schema, cfg, slabel, spath, skind)
 
 
+def pick_target(ui, categories, allow_manual=True):
+    """Pick a base target from one or more categories of options.
+
+    categories: ordered dict-like {label: [names]}. With a single category and
+    no manual entry, goes straight to the picker. Otherwise shows a category
+    chooser first. ESC/cancel at the top level returns None (aborts). ESC inside
+    an item picker steps back to the category chooser. Returns the chosen string
+    or None.
+    """
+    cats = [(lbl, items) for lbl, items in categories.items() if items]
+    if len(cats) == 1 and not allow_manual:
+        return ui.pick(cats[0][0], cats[0][1], subtitle="type to filter")
+    while True:
+        menu_items = [(f"{lbl}", f"{len(items)}") for lbl, items in cats]
+        if allow_manual:
+            menu_items.append(("✎ type manually…", None))
+        menu_items.append(("← cancel", None))
+        sel = ui.menu("Choose base — pick a category", menu_items,
+                      subtitle="skills are loaded by the runtime; commands/phases are advisory")
+        if sel is None or sel == len(menu_items) - 1:
+            return None
+        if allow_manual and sel == len(cats):
+            val = ui.prompt_text("base name (manual):", "")
+            if val:
+                return val
+            continue
+        lbl, items = cats[sel]
+        chosen = ui.pick(f"Choose from {lbl}", items, subtitle="type to filter · ESC back")
+        if chosen is not None:
+            return chosen
+
+
 def _prompt_path_name(ui, path_initial="", name_initial=""):
     """Shared prompt for override/companion entries. Returns dict or None."""
     p = ui.prompt_text("path to SKILL.md (from project root):", path_initial)
@@ -478,7 +614,7 @@ def edit_map_override(ui, cfg, path):
         elif key in (curses.KEY_DOWN, ord("j")):
             idx = (idx + 1) % len(rows)
         elif key == ord("a") or (key in (curses.KEY_ENTER, 10, 13) and idx == len(keys)):
-            base = ui.prompt_text("base uncle-dev skill name:", "")
+            base = pick_target(ui, {"Skills": uncle_dev_skills()}, allow_manual=True)
             if base:
                 entry = _prompt_path_name(ui)
                 if entry:
@@ -518,7 +654,11 @@ def edit_map_companion(ui, cfg, path):
         elif key in (curses.KEY_DOWN, ord("j")):
             idx = (idx + 1) % len(rows)
         elif key == ord("a") or (key in (curses.KEY_ENTER, 10, 13) and idx == len(keys)):
-            base = ui.prompt_text("base uncle-dev skill name:", "")
+            base = pick_target(ui, {
+                "Skills": uncle_dev_skills(),
+                "Commands": uncle_dev_commands(),
+                "Phases": PHASES,
+            }, allow_manual=True)
             if base and base not in mapping:
                 mapping[base] = []
                 idx = len(mapping) - 1
