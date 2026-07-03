@@ -32,7 +32,9 @@ import sys
 
 import yaml
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# realpath (not abspath) so the script still finds its bundled schema/helper
+# when launched through a symlink such as ~/.local/bin/uncle-dev-configure.
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 # PLUGIN_ROOT holds the BUNDLED assets (schema, template, skills/, commands/).
 # When run from the repo this is the repo root; when installed it is the plugin
 # dir. It is NOT the project being configured.

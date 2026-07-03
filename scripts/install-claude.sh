@@ -210,4 +210,11 @@ if [[ "$DEV" -eq 1 ]]; then
   log "\$CLAUDE_PLUGIN_ROOT will be: ${REPO_ROOT}"
   log "Edit source files directly — no reinstall needed."
 fi
+# ── put `uncle-dev-configure` on PATH (interactive config TUI) ───────────────
+# Symlinks ~/.local/bin/uncle-dev-configure -> the installed configurator so
+# users can run it from any project. Non-fatal if it can't be linked.
+if [[ -f "${INSTALL_PATH}/scripts/link-configurator.sh" ]]; then
+  bash "${INSTALL_PATH}/scripts/link-configurator.sh" || true
+fi
+
 log "Restart Claude Code for the changes to take effect."
