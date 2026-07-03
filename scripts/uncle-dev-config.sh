@@ -91,6 +91,90 @@ PYEOF
   exit 0
 fi
 
+# --dump — emit the entire config as JSON on stdout (for the interactive
+# configurator to load current values). Missing file -> "{}". Reads only; the
+# helper remains the sole reader of the YAML.
+if [[ "${KEY_PATH}" == "--dump" ]]; then
+  if [[ ! -f "${CONFIG_FILE}" ]]; then
+    echo "{}"
+    exit 0
+  fi
+  python3 - "${CONFIG_FILE}" <<'PYEOF'
+import json
+import sys
+
+import yaml
+
+with open(sys.argv[1], "r", encoding="utf-8") as f:
+    data = yaml.safe_load(f) or {}
+json.dump(data, sys.stdout)
+PYEOF
+  exit 0
+fi
+
+# --write-doc — read a full config document as JSON from stdin, validate it
+# against the schema, and (only if valid) write it to the YAML file atomically.
+# This is the SOLE writer of the YAML — the interactive configurator pipes here
+# so no other script ever opens the file. Invalid input is rejected without
+# touching the existing file.
+if [[ "${KEY_PATH}" == "--write-doc" ]]; then
+  if [[ ! -f "${SCHEMA_FILE}" ]]; then
+    echo "invalid: missing ${SCHEMA_FILE}" >&2
+    exit 1
+  fi
+  python3 - "${CONFIG_FILE}" "${SCHEMA_FILE}" <<'PYEOF'
+import json
+import os
+import sys
+
+import yaml
+from jsonschema import ValidationError, validate
+
+conf_file = sys.argv[1]
+schema_file = sys.argv[2]
+
+raw = sys.stdin.read()
+try:
+    config = json.loads(raw)
+except json.JSONDecodeError as exc:
+    print(f"invalid: stdin is not valid JSON: {exc}", file=sys.stderr)
+    sys.exit(1)
+
+with open(schema_file, "r", encoding="utf-8") as f:
+    schema = json.load(f)
+
+try:
+    validate(instance=config, schema=schema)
+except ValidationError as exc:
+    path = ".".join(str(p) for p in exc.path)
+    if path:
+        print(f"invalid: {path}: {exc.message}", file=sys.stderr)
+    else:
+        print(f"invalid: {exc.message}", file=sys.stderr)
+    sys.exit(1)
+
+header = (
+    "# .agents/uncle-dev-setup.yaml\n"
+    "# yaml-language-server: $schema=../scripts/uncle-dev-setup.schema.json\n"
+    "# Uncle Dev project configuration.\n"
+    "# Managed by scripts/uncle-dev-configure.py. Hand edits are fine; keep it\n"
+    "# schema-valid (bash scripts/uncle-dev-config.sh --validate).\n\n"
+)
+body = yaml.safe_dump(
+    config, sort_keys=False, default_flow_style=False, allow_unicode=True
+)
+
+os.makedirs(os.path.dirname(conf_file) or ".", exist_ok=True)
+tmp = conf_file + ".tmp"
+with open(tmp, "w", encoding="utf-8") as f:
+    f.write(header)
+    f.write(body)
+os.replace(tmp, conf_file)
+print("written")
+PYEOF
+  exit $?
+fi
+
 if [[ "${KEY_PATH}" == "--validate" ]]; then
   if [[ ! -f "${CONFIG_FILE}" ]]; then
     echo "invalid: missing ${CONFIG_FILE}" >&2
