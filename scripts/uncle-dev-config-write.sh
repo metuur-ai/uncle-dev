@@ -22,8 +22,12 @@
 set -euo pipefail
 
 MODE="${1:-}"
-CONFIG_FILE=".agents/uncle-dev-setup.yaml"
-SCHEMA_FILE="scripts/uncle-dev-setup.schema.json"
+# CONFIG_FILE is relative to cwd (the project being configured). SCHEMA_FILE
+# defaults to the repo layout but can be overridden with an absolute path when
+# the schema is bundled elsewhere (e.g. installed as a plugin) — the TUI sets
+# UNCLE_DEV_SCHEMA_FILE so validation works from any project directory.
+CONFIG_FILE="${UNCLE_DEV_CONFIG_FILE:-.agents/uncle-dev-setup.yaml}"
+SCHEMA_FILE="${UNCLE_DEV_SCHEMA_FILE:-scripts/uncle-dev-setup.schema.json}"
 
 case "${MODE}" in
   --dump)

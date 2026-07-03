@@ -33,12 +33,33 @@ import sys
 import yaml
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+# PLUGIN_ROOT holds the BUNDLED assets (schema, template, skills/, commands/).
+# When run from the repo this is the repo root; when installed it is the plugin
+# dir. It is NOT the project being configured.
+PLUGIN_ROOT = os.path.dirname(SCRIPT_DIR)
 HELPER = os.path.join(SCRIPT_DIR, "uncle-dev-config-write.sh")
 SCHEMA_FILE = os.path.join(SCRIPT_DIR, "uncle-dev-setup.schema.json")
 TEMPLATE_FILE = os.path.join(
-    PROJECT_ROOT, "skills", "uncle-dev-setup", "uncle-dev-setup.template.yaml"
+    PLUGIN_ROOT, "skills", "uncle-dev-setup", "uncle-dev-setup.template.yaml"
 )
+
+
+def find_target_dir():
+    """The project being configured — where .agents/uncle-dev-setup.yaml lives.
+    Walk up from the current directory to the nearest .agents/ or .git/ root so
+    the tool works from a subdirectory; fall back to cwd for a fresh init."""
+    cur = os.getcwd()
+    while True:
+        if os.path.isdir(os.path.join(cur, ".agents")) or \
+           os.path.isdir(os.path.join(cur, ".git")):
+            return cur
+        parent = os.path.dirname(cur)
+        if parent == cur:
+            return os.getcwd()
+        cur = parent
+
+
+TARGET_DIR = find_target_dir()
 
 # uncle-dev lifecycle phases (the v2 per-phase companion form keys on these).
 PHASES = [
@@ -54,7 +75,7 @@ def _candidate_roots():
     """Directories that may hold a `skills/` and `commands/` tree: this repo, an
     explicit plugin root, and installed plugin locations. Lets the picker list
     real uncle-dev skills whether run from the repo or an installed plugin."""
-    roots = [PROJECT_ROOT]
+    roots = [PLUGIN_ROOT]
     env_root = os.environ.get("CLAUDE_PLUGIN_ROOT")
     if env_root:
         roots.append(env_root)
@@ -148,13 +169,20 @@ WRAP_TRIGGER_FIELDS = [
 # Config + schema helpers (no curses)
 # --------------------------------------------------------------------------- #
 def run_helper(args, input_text=None):
-    """Invoke uncle-dev-config-write.sh from the project root; return CompletedProcess."""
+    """Invoke uncle-dev-config-write.sh against the TARGET project.
+
+    cwd is the project being configured (so the relative .agents/ config path
+    resolves there), and the schema path is passed explicitly via env so the
+    helper finds the bundled schema regardless of where the project lives."""
+    env = dict(os.environ)
+    env["UNCLE_DEV_SCHEMA_FILE"] = SCHEMA_FILE
     return subprocess.run(
         ["bash", HELPER, *args],
         input=input_text,
         capture_output=True,
         text=True,
-        cwd=PROJECT_ROOT,
+        cwd=TARGET_DIR,
+        env=env,
     )
 
 
@@ -194,7 +222,7 @@ def template_defaults():
         data = {}
     proj = data.setdefault("project", {})
     if proj.get("name") in (None, "", "__PROJECT_NAME__"):
-        proj["name"] = os.path.basename(PROJECT_ROOT)
+        proj["name"] = os.path.basename(TARGET_DIR)
     if proj.get("setup_date") in (None, "", "__SETUP_DATE__"):
         proj["setup_date"] = datetime.date.today().isoformat()
     return data
