@@ -18,6 +18,11 @@ ASSET_HOOKS="hooks"
 # scripts/ — project setup and utility scripts (setup-project.sh, install-*.sh, lib/)
 ASSET_SCRIPTS="scripts"
 
+# Codex-only agent manifests that are copied into the bundled skill trees
+# during install-codex.sh. Keeping them under the plugin namespace avoids
+# polluting the shared skills/ directory with Codex-specific metadata.
+ASSET_CODEX_AGENT_MANIFESTS="plugins/uncle-dev/agent-manifests"
+
 # .claude-plugin/plugin.json — Claude Code plugin manifest
 ASSET_PLUGIN_META=".claude-plugin/plugin.json"
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Uncle Senior"
+  short_description: "Principal engineer for challenge-mode design critique"
+  default_prompt: "Use $uncle-dev-grill to challenge assumptions, simplify the approach, and push the design toward the smallest thing that actually works."

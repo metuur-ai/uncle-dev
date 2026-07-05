@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DIST_DIR="${REPO_ROOT}/dist"
 PLUGIN_NAME="uncle-dev"
-PLUGIN_VERSION="1.4.0"
+PLUGIN_VERSION="1.4.1"
 PLUGIN_DESCRIPTION="Production-grade engineering skills — spec-driven development from idea to shipped feature."
 
 SCOPE="user"

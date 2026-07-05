@@ -1,0 +1,4 @@
+interface:
+  display_name: "Uncle Lead"
+  short_description: "Technical lead for architecture, contracts, and technical risk"
+  default_prompt: "Use $uncle-dev-design-architecture-docs to evaluate architecture decisions, package boundaries, migration safety, and technical review quality."

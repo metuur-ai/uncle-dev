@@ -22,12 +22,12 @@ That's the minimum. Add Python modules, sub-packages, or data files as needed.
 
 ```yaml
 name: my-plugin
-version: 1.4.0
+version: 1.4.1
 description: "One-line description of what this plugin does."
 
 # Optional: pip packages to auto-install on first use
 pip_dependencies:
-  - some-package>=1.2.0
+  - some-package>=1.4.1
   - another-package
 
 # Optional: environment variables the plugin needs (informational)
@@ -66,7 +66,7 @@ touch plugins/my-skill-pack/__init__.py
 ```yaml
 # plugins/my-skill-pack/plugin.yaml
 name: my-skill-pack
-version: 1.4.0
+version: 1.4.1
 description: "Domain-specific skills for [purpose]."
 ```
 
@@ -88,7 +88,7 @@ skills/
 name: my-skill
 description: >
   Use when [specific trigger condition]. Does [what it accomplishes].
-version: 1.4.0
+version: 1.4.1
 author: Your Name
 license: MIT
 metadata:
@@ -160,10 +160,10 @@ plugins/
 
 ```yaml
 name: my-memory
-version: 1.4.0
+version: 1.4.1
 description: "Long-term memory via [backend]."
 pip_dependencies:
-  - my-memory-client>=1.4.0
+  - my-memory-client>=1.4.1
 requires_env:
   - MY_MEMORY_API_KEY
 hooks:
@@ -332,7 +332,7 @@ skills/software-development/
 ```yaml
 # plugins/uncle-dev/plugin.yaml
 name: uncle-dev
-version: 1.4.0
+version: 1.4.1
 description: "Production-grade engineering skills — spec-driven development from idea to shipped feature."
 ```
 

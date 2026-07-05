@@ -1,0 +1,4 @@
+interface:
+  display_name: "Review Synthesizer"
+  short_description: "Synthesizer that combines parallel review signals into one verdict"
+  default_prompt: "Use $uncle-dev-using-agent-skills to consolidate review findings into one verdict without inventing new issues."

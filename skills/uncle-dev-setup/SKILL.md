@@ -2,6 +2,7 @@
 name: uncle-dev-setup
 description: Wires uncle-dev fully into a target project for Claude Code, Codex, and/or OpenCode. Installs the plugin for each detected tool, scaffolds required directories, writes the project config file, injects hooks into .claude/settings.json (Claude Code only), and adds uncle-dev rules to CLAUDE.md or AGENTS.md. Use when setting up uncle-dev in a new or existing project, when hooks are not firing, or when the session does not load the Skill Discovery flowchart on start.
 ---
+
 ## Overview
 
 The install scripts (`install-claude.sh`, `install-codex.sh`, `install-opencode.sh`) copy plugin files globally but do not configure any target project. This skill closes that gap: it detects which AI coding tools are active, runs the correct install for each, and wires uncle-dev into the current project directory — hooks, rules, directories, and config — so every subsequent session is fully equipped.
@@ -22,7 +23,7 @@ The script ships inside the plugin cache after `install-claude.sh` runs. Locate 
 
 ```bash
 # Preferred: plugin cache (always present after install)
-SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.0/scripts/setup-project.sh"
+SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.1/scripts/setup-project.sh"
 
 # Fallback: local repo clone
 [ -f "${SETUP_SCRIPT}" ] || SETUP_SCRIPT="$(

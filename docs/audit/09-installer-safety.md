@@ -28,7 +28,7 @@ cmp-skip, no confirmation (every other installer refuses to overwrite without
 
 ### Finding C — `install-hermes.sh` drift
 
-- Line 8: `PLUGIN_VERSION="1.4.0"` hardcoded (matches plugin.json today;
+- Line 8: `PLUGIN_VERSION="1.4.1"` hardcoded (matches plugin.json today;
   silently drifts on the next bump — `install-claude.sh:27` derives the
   version from the manifest precisely to avoid this).
 - Lines 47-75: duplicates `copy_file`/`copy_dir_contents` instead of sourcing

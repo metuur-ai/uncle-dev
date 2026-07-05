@@ -12,7 +12,7 @@ Load and execute the `uncle-dev-setup` skill located at `skills/uncle-dev-setup/
 1. Locate the setup script (plugin cache first, repo clone as fallback):
 
 ```bash
-SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.0/scripts/setup-project.sh"
+SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.1/scripts/setup-project.sh"
 [ -f "${SETUP_SCRIPT}" ] || SETUP_SCRIPT="$(
   for d in "${UNCLE_DEV_ROOT:-}" ~/others/ai-agents/production-grade-agent-skills ~/agent-skills; do
     [ -f "${d}/scripts/setup-project.sh" ] && echo "${d}/scripts/setup-project.sh" && break

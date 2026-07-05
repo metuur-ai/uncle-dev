@@ -40,6 +40,7 @@ Installs Uncle Dev as a native Codex plugin assembled at install time from share
 - `plugins/uncle-dev/.codex-plugin/plugin.json` — Codex plugin manifest
 - `plugins/uncle-dev/commands/` — Codex command entrypoints (`uncle-dev-spec`, `uncle-dev-plan`, etc.)
 - `plugins/uncle-dev/skills/` — copied from the shared root `skills/` directory at install time
+- `plugins/uncle-dev/agent-manifests/` — Codex-only `openai.yaml` agent manifests copied into the bundled skill trees at install time
 - `plugins/uncle-dev/agents/` — copied from the shared root `agents/` directory at install time
 - `.agents/plugins/marketplace.json` — marketplace metadata for Codex plugin discovery
 

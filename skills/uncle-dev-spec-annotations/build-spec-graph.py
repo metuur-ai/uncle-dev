@@ -70,19 +70,34 @@ def parse_hld(path: str) -> List[Dict[str, str]]:
 def parse_arrows_index(path: str) -> Dict[str, Dict[str, Any]]:
     """Minimal YAML reader for docs/arrows/index.yaml — returns {segment: meta}.
 
-    No PyYAML dependency. Supports the schema documented in the template:
+    No PyYAML dependency. Supports two schemas:
+
+      # (a) map schema (original template):
       arrows:
         <segment>:
           status: ...
           prefix: ...
           detail: ...
-          ...
+
+      # (b) list schema (lid-ears layout):
+      segments:
+        - name: AUTH
+          prefix: AUTH-*
+          lld: docs/lld/auth.md
+          arrows: docs/arrows/auth.md
     """
     if not os.path.isfile(path):
         return {}
     segments: Dict[str, Dict[str, Any]] = {}
     current_seg: Optional[str] = None
     in_arrows = False
+    in_segments = False
+
+    kv_re = re.compile(r"^([a-zA-Z_][a-zA-Z0-9_]*):\s*(.*)$")
+
+    def clean(val: str) -> Optional[str]:
+        val = val.strip().strip('"').strip("'")
+        return None if val in ("~", "null", "") else val
 
     with open(path, encoding="utf-8") as f:
         lines = f.readlines()
@@ -93,28 +108,48 @@ def parse_arrows_index(path: str) -> Dict[str, Dict[str, Any]]:
         if not line.strip() or line.strip().startswith("#"):
             continue
         indent = len(line) - len(line.lstrip())
+        stripped = line.strip()
 
-        if indent == 0 and line.startswith("arrows:"):
-            in_arrows = True
+        # Top-level keys switch context (arrows: / segments: / decisions: / other)
+        if indent == 0:
+            if line.startswith("arrows:"):
+                in_arrows, in_segments, current_seg = True, False, None
+                continue
+            if line.startswith("segments:"):
+                in_segments, in_arrows, current_seg = True, False, None
+                continue
+            # any other top-level key (e.g. decisions:) ends both contexts
+            in_arrows = in_segments = False
+            current_seg = None
             continue
+
+        # (b) list schema under `segments:`
+        if in_segments:
+            if stripped.startswith("- "):
+                m = kv_re.match(stripped[2:])
+                if m and m.group(1) == "name":
+                    current_seg = clean(m.group(2))
+                    if current_seg:
+                        segments[current_seg] = {}
+                continue
+            if current_seg:
+                m = kv_re.match(stripped)
+                if m:
+                    segments[current_seg][m.group(1)] = clean(m.group(2))
+            continue
+
+        # (a) map schema under `arrows:`
         if not in_arrows:
             continue
-
         if indent == 2 and line.endswith(":"):
-            current_seg = line.strip().rstrip(":")
-            segments[current_seg] = {"_indent": 2}
+            current_seg = stripped.rstrip(":")
+            segments[current_seg] = {}
             continue
         if current_seg and indent >= 4:
-            m = re.match(r"^(\s+)([a-zA-Z_][a-zA-Z0-9_]*):\s*(.*)$", line)
+            m = kv_re.match(stripped)
             if m:
-                key = m.group(2)
-                val = m.group(3).strip().strip('"').strip("'")
-                if val in ("~", "null", ""):
-                    val = None
-                segments[current_seg][key] = val
+                segments[current_seg][m.group(1)] = clean(m.group(2))
 
-    for s in segments.values():
-        s.pop("_indent", None)
     return segments
 
 
@@ -203,7 +238,15 @@ def build_graph(root: str) -> Dict[str, Any]:
 
     # 3. LLD nodes (one per registered segment)
     for seg_name, seg_meta in segments.items():
-        lld_path = os.path.join(llds_dir, f"{seg_name}.md")
+        # Prefer explicit `lld:` path from the index (lid-ears layout); fall back
+        # to the conventional docs/llds/<segment>.md, then a lowercased filename.
+        lld_rel = seg_meta.get("lld")
+        if lld_rel and os.path.isfile(os.path.join(root, lld_rel)):
+            lld_path = os.path.join(root, lld_rel)
+        else:
+            lld_path = os.path.join(llds_dir, f"{seg_name}.md")
+            if not os.path.isfile(lld_path):
+                lld_path = os.path.join(llds_dir, f"{seg_name.lower()}.md")
         if os.path.isfile(lld_path):
             nodes.append({
                 "id": f"lld:{seg_name}",
@@ -216,8 +259,13 @@ def build_graph(root: str) -> Dict[str, Any]:
 
     # 4. Edges from arrow segment docs (HLD → LLD)
     for seg_name, seg_meta in segments.items():
-        detail = seg_meta.get("detail") or f"{seg_name}.md"
-        seg_doc_path = os.path.join(arrows_dir, detail)
+        # Prefer explicit `arrows:` path from the index; fall back to detail/name.
+        arrows_rel = seg_meta.get("arrows")
+        if arrows_rel and os.path.isfile(os.path.join(root, arrows_rel)):
+            seg_doc_path = os.path.join(root, arrows_rel)
+        else:
+            detail = seg_meta.get("detail") or f"{seg_name.lower()}.md"
+            seg_doc_path = os.path.join(arrows_dir, detail)
         if not os.path.isfile(seg_doc_path):
             continue
         sections = parse_arrow_segment_doc(seg_doc_path)

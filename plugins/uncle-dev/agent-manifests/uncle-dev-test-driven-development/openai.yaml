@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test Engineer"
+  short_description: "Test strategist for proving behavior and coverage gaps"
+  default_prompt: "Use $uncle-dev-test-driven-development to design the smallest tests that prove the contract and catch regressions for the right reason."

@@ -61,7 +61,7 @@ _Work since `045f983` (2026-06-02): new Define/Brownfield/Review/Ship skills, a 
 - **Spec scanner monorepo support** — `packages` added to default roots so `@spec` annotations under `packages/*/src/` (yarn workspaces and similar) are detected and the graph builder can establish spec-to-code relationships.
 - **Research document paths** corrected from `.uncle-dev/research/` to `.devlocal/research/`.
 
-## [1.4.0] - 2026-05-30
+## [1.4.1] - 2026-05-30
 
 _Commits `276f84b`, `a8c6754`, `6692486`._
 
@@ -73,14 +73,14 @@ _Commits `276f84b`, `a8c6754`, `6692486`._
 ### Changed
 
 - Removed the "Documentation Index" section from SKILL.md files and refreshed descriptions across multiple skills.
-- Bumped version to `1.4.0` across plugin manifests, install scripts, and related paths.
+- Bumped version to `1.4.1` across plugin manifests, install scripts, and related paths.
 
 ## [1.3.0]
 
 _Baseline preceding `6692486` (overrides/companions support was added on top of this version)._
 
 [Unreleased]: https://github.com/javierhbr/production-grade-agent-skills/compare/276f84b...HEAD
-[1.4.0]: https://github.com/javierhbr/production-grade-agent-skills/compare/6692486~1...276f84b
+[1.4.1]: https://github.com/javierhbr/production-grade-agent-skills/compare/6692486~1...276f84b
 [1.3.0]: https://github.com/javierhbr/production-grade-agent-skills/releases/tag/v1.3.0
 
 this repo https://github.com/javierhbr/production-grade-agent-skills. its a fork from https://github.com/addyosmani/agent-skills .

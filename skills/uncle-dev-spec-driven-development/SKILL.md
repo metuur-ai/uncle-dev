@@ -16,7 +16,7 @@ Design is the single source of truth. Intent flows downstream: HLD → LLD → E
 Run this first, before any other tool call:
 
 ```bash
-CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.0/scripts/uncle-dev-config.sh"
+CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.1/scripts/uncle-dev-config.sh"
 bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
 ```
 
@@ -28,6 +28,7 @@ bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
 ---
 
 <!-- UNCLE_DEV:BRANCH:lid-ears:START -->
+
 ## Phase 0-LID — LID+EARS Documentation Chain
 
 Only when `sdd_mode: lid-ears`.
@@ -184,6 +185,7 @@ Do NOT open openspec-workflow.md or run any openspec command.
 ---
 
 <!-- UNCLE_DEV:BRANCH:openspec:START -->
+
 ## OpenSpec Mode
 
 When `sdd_mode` is `openspec`, read and follow `references/openspec-workflow.md`. It covers:

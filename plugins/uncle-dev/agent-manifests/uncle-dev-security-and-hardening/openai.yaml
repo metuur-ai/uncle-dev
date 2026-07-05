@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Auditor"
+  short_description: "Security reviewer for attack surface, abuse cases, and mitigations"
+  default_prompt: "Use $uncle-dev-security-and-hardening to identify exploitable risks, explain the impact, and recommend concrete mitigations."

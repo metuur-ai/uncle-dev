@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Reviewer"
+  short_description: "Staff-level reviewer for correctness, architecture, security, and performance"
+  default_prompt: "Use $uncle-dev-code-review-and-quality to review changes like a staff engineer, prioritize findings by severity, and stop when the diff is sound."

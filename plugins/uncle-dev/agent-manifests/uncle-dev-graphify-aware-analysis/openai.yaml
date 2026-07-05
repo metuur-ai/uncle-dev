@@ -1,0 +1,4 @@
+interface:
+  display_name: "Graph Analyst"
+  short_description: "Graphify specialist for structural and relational codebase analysis"
+  default_prompt: "Use $uncle-dev-graphify-aware-analysis to answer structural questions from the graph, label confidence clearly, and avoid unsupported claims."

@@ -36,6 +36,10 @@ copy_dir_contents() {
 
   mkdir -p "$dest_dir"
 
+  local nullglob_was_set=0
+  shopt -q nullglob && nullglob_was_set=1
+  shopt -s nullglob
+
   local entry name
   for entry in "$src_dir"/*; do
     name="$(basename "$entry")"
@@ -45,6 +49,8 @@ copy_dir_contents() {
       copy_file "$entry" "$dest_dir/$name" "$force"
     fi
   done
+
+  [[ "$nullglob_was_set" -eq 1 ]] || shopt -u nullglob
 }
 
 # ── pre-flight validation ─────────────────────────────────────────────────────

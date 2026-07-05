@@ -6,7 +6,7 @@ The real Claude Code plugin cache layout is:
 
 ```
 ~/.claude/plugins/cache/<marketplace-id>/<plugin-name>/<version>/
-= ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/1.4.0/
+= ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/1.4.1/
 ```
 
 (confirmed on disk; derivation in `scripts/install-claude.sh:32`;
@@ -23,7 +23,7 @@ install check uses a plugin key that can never match.
   segment)
 - `commands/uncle-dev-openspec-sync.md:38` (version glob, wrong plugin dir)
 - `commands/uncle-dev-setup.md:15` (wrong dir name AND hardcoded version
-  `1.4.0` — breaks on every version bump)
+  `1.4.1` — breaks on every version bump)
 - `hooks/spec-coherence-guard.sh` scanner fallback (same wrong layout; the
   spec-scan fallback in `commands/uncle-dev-spec-scan.md` matches)
 
@@ -69,8 +69,8 @@ are cached (also noted in audit file 04).
    2. Repo-local `./scripts/…` (running inside a checkout)
    3. Newest cache version:
       `ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1`
-   No personal paths, no hardcoded versions, no `uncle-dev-agent-skills`
-   doubled segment.
+      No personal paths, no hardcoded versions, no `uncle-dev-agent-skills`
+      doubled segment.
 2. **Apply it** to the 5 command files and
    `hooks/spec-coherence-guard.sh` listed in Finding A; replace `head -1`
    find fallbacks with the sort -V form (Finding E).
@@ -81,8 +81,8 @@ are cached (also noted in audit file 04).
 4. **Remove the personal path** (`uncle-dev-setup.md:17`); the canonical
    snippet's three tiers cover all legitimate cases.
 5. **Add frontmatter** to `commands/uncle-dev-setup.md` (`description:
-   "Wire uncle-dev into this project — plugin check, scaffolding, config,
-   hooks"`).
+"Wire uncle-dev into this project — plugin check, scaffolding, config,
+hooks"`).
 6. **Guard against recurrence**: add a check to `scripts/check-manifest.sh`:
    `grep -rn 'uncle-dev-agent-skills/uncle-dev-agent-skills' commands/ hooks/ skills/`
    must return empty, and

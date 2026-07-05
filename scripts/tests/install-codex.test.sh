@@ -42,6 +42,17 @@ echo "── Asset coverage ─────────────────�
 assert_dir  "${PLUGIN_ROOT}/skills"
 assert_count "${PLUGIN_ROOT}/skills" 43 "skills total"
 
+REPO_SKILL_AGENT_MANIFESTS="$(find "${REPO_ROOT}/skills" -path '*/agents/openai.yaml' -type f | wc -l | tr -d ' ')"
+[[ "${REPO_SKILL_AGENT_MANIFESTS}" -eq 0 ]] \
+  && ok "shared skills tree has no Codex agent manifests" \
+  || fail "shared skills tree still contains ${REPO_SKILL_AGENT_MANIFESTS} Codex agent manifests"
+
+SOURCE_AGENT_MANIFESTS="$(find "${REPO_ROOT}/plugins/uncle-dev/agent-manifests" -path '*/openai.yaml' -type f | wc -l | tr -d ' ')"
+INSTALLED_AGENT_MANIFESTS="$(find "${PLUGIN_ROOT}/skills" -path '*/agents/openai.yaml' -type f | wc -l | tr -d ' ')"
+[[ "${INSTALLED_AGENT_MANIFESTS}" -eq "${SOURCE_AGENT_MANIFESTS}" ]] \
+  && ok "skill-local openai.yaml manifests copied: ${INSTALLED_AGENT_MANIFESTS}" \
+  || fail "skill-local openai.yaml manifests copied: got ${INSTALLED_AGENT_MANIFESTS}, expected ${SOURCE_AGENT_MANIFESTS}"
+
 # agents
 assert_dir  "${PLUGIN_ROOT}/agents"
 assert_count "${PLUGIN_ROOT}/agents" 9 "agents"

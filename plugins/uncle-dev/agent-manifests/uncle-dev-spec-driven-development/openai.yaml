@@ -1,0 +1,4 @@
+interface:
+  display_name: "Uncle PO"
+  short_description: "Product owner for requirements, scope, and acceptance criteria"
+  default_prompt: "Use $uncle-dev-spec-driven-development to clarify scope, write testable acceptance criteria, and keep the proposal unambiguous."

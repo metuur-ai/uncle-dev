@@ -129,6 +129,16 @@ assemble_plugin() {
     "${plugin_root}/skills" \
     "${FORCE}"
 
+  # Codex-native agent manifests live under the plugin namespace, not in the
+  # shared skills/ tree. Copy them into the matching bundled skill locations.
+  while IFS= read -r agent_manifest; do
+    skill_name="$(basename "$(dirname "${agent_manifest}")")"
+    copy_file \
+      "${agent_manifest}" \
+      "${plugin_root}/skills/${skill_name}/agents/openai.yaml" \
+      "${FORCE}"
+  done < <(find "${REPO_ROOT}/${ASSET_CODEX_AGENT_MANIFESTS}" -path '*/openai.yaml' -type f | sort)
+
   # agents/ — reusable personas
   copy_dir_contents \
     "${REPO_ROOT}/${ASSET_AGENTS}" \
