@@ -5,28 +5,18 @@ description: Regenerate the OpenSpec global change tracker (openspec mode only)
 ## Step 0 — Read SDD mode (do this first)
 
 ```bash
-_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
-[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
-# Auto-detect from filesystem when config doesn't set a mode.
-# Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
-# setup-project.sh previously created openspec/ unconditionally — its presence
-# alone is not a reliable signal of openspec mode.
-if [[ -z "$SDD_MODE" ]]; then
-  if [[ -d "docs/ears" || -d "docs/hld" || -d "docs/lld" ]]; then
-    SDD_MODE="lid-ears"
-  elif [[ -d "openspec" ]]; then
-    SDD_MODE="openspec"
-  else
-    SDD_MODE="lid-ears"
-  fi
-fi
-echo "$SDD_MODE"
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
 ```
+
+If you could not run Step 0, treat the mode as `lid-ears`.
 
 **If sdd_mode is `lid-ears`:** This command is not applicable. There is no `openspec/tracker/` to regenerate in lid-ears mode. Work state is tracked in `docs/tasks/<slug>.md` files instead. Exit cleanly — no further action required.
 
-**If sdd_mode is `openspec` or missing:** Continue below.
+**If sdd_mode is `openspec`:** Continue below.
 
 ---
 
@@ -35,7 +25,8 @@ Regenerate `openspec/tracker/changes.yaml` from current task state.
 The generator script is `generate-tracker.py` in the `uncle-dev-spec-driven-development` skill.
 
 1. Locate the script. Search in this order:
-   - `~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/*/skills/uncle-dev-spec-driven-development/generate-tracker.py`
+   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-driven-development/generate-tracker.py`
+   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-driven-development/generate-tracker.py`
    - The agent-skills repo if cloned locally
 
 2. Run it with the project's openspec path:

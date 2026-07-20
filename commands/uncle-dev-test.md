@@ -11,14 +11,30 @@ description: Run TDD workflow — write failing tests, implement, verify. For bu
 
 ---
 
+## Step 0 — Read SDD mode (do this first)
+
+```bash
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
+```
+
+If you could not run Step 0, treat the mode as `lid-ears`.
+
+**Map test output to the active mode's requirement source:**
+
+- **`lid-ears` mode** — Link each failing or passing test to the requirement IDs in `docs/ears/<slug>.md` (e.g. `R-5.1` that the test covers). Reference the relevant EARS requirement in the test description or comment so coverage is traceable.
+- **`openspec` mode** — Link each test to the active change's acceptance criteria or task entries in `openspec/changes/<change-id>/tasks.md` so the test outcome maps to a tracked deliverable.
+
+---
+
 Resolve the active skill (and any project overrides/companions) first, then read runtime preferences:
 
 ```bash
-_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
-[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-
-_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
-[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+_cfg="${_scripts}/uncle-dev-config.sh"
+_loader="${_scripts}/uncle-dev-load-skill.sh"
 bash "$_loader" uncle-dev-test-driven-development
 
 TDD_MODE=$(bash "$_cfg" preferences.tdd-mode lite 2>/dev/null || echo "lite")

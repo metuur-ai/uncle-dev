@@ -14,6 +14,12 @@ TESTS=(
   "${SCRIPT_DIR}/session-mode.test.sh"
   "${SCRIPT_DIR}/instruction-adapters.test.sh"
   "${SCRIPT_DIR}/benchmarks.test.sh"
+  "${SCRIPT_DIR}/detect-mode.test.sh"
+  "${SCRIPT_DIR}/hook-toggles.test.sh"
+  "${SCRIPT_DIR}/plan-next-task-roundtrip.test.sh"
+  "${SCRIPT_DIR}/installer-safety.test.sh"
+  "${SCRIPT_DIR}/hook-contract.test.sh"
+  "${SCRIPT_DIR}/skill-loader.test.sh"
 )
 
 TOTAL_PASS=0

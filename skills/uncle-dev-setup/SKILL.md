@@ -13,7 +13,7 @@ Supported tools: Claude Code, Codex, OpenCode. All three can be configured in a 
 
 - The project is the uncle-dev repository itself — do not run setup inside `agent-skills/`
 - uncle-dev is already fully configured — check Step 1 before re-running
-- You are using Cursor, Windsurf, or GitHub Copilot — see `docs/cursor-setup.md`, `docs/windsurf-setup.md`, `docs/copilot-setup.md`
+- You are using Cursor, Windsurf, or GitHub Copilot — see `docs/originals/cursor-setup.md`, `docs/originals/windsurf-setup.md`, `docs/originals/copilot-setup.md`
 
 ## Fast Path — setup-project.sh
 
@@ -22,15 +22,11 @@ MANDATORY: Steps 1, 3, 4, 5, and 6 MUST be executed by running the setup script 
 The script ships inside the plugin cache after `install-claude.sh` runs. Locate it:
 
 ```bash
-# Preferred: plugin cache (always present after install)
-SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.1/scripts/setup-project.sh"
-
-# Fallback: local repo clone
+# Resolution order: CLAUDE_PLUGIN_ROOT → newest versioned plugin cache
+SETUP_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/setup-project.sh"
 [ -f "${SETUP_SCRIPT}" ] || SETUP_SCRIPT="$(
-  echo "${UNCLE_DEV_ROOT:-}" \
-    ~/others/ai-agents/production-grade-agent-skills \
-    ~/agent-skills \
-  | tr ' ' '\n' | xargs -I{} sh -c '[ -f "{}/scripts/setup-project.sh" ] && echo "{}/scripts/setup-project.sh"' 2>/dev/null | head -1
+  _cache_dir=$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)
+  echo "${_cache_dir}scripts/setup-project.sh"
 )"
 ```
 
@@ -50,11 +46,10 @@ The agent must NOT answer these on the user's behalf. If the script cannot run i
 After the script completes, only Step 2 (plugin installation) may need manual attention:
 
 ```bash
-jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
-  ~/.claude/plugins/installed_plugins.json
+jq '.plugins | keys[]' ~/.claude/plugins/installed_plugins.json 2>/dev/null | grep -q '^"uncle-dev@'
 ```
 
-If `false`: `bash <AGENT_SKILLS_ROOT>/scripts/install-claude.sh`, then restart Claude Code.
+If the key is not present: `bash <AGENT_SKILLS_ROOT>/scripts/install-claude.sh`, then restart Claude Code.
 
 Proceed with the manual steps below only if `setup-project.sh` fails or bash is unavailable.
 
@@ -113,8 +108,7 @@ Record the path as `AGENT_SKILLS_ROOT`. If not found, guide the user to clone it
 Check if already installed:
 
 ```bash
-jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
-  ~/.claude/plugins/installed_plugins.json 2>/dev/null || echo "false"
+jq '.plugins | keys[]' ~/.claude/plugins/installed_plugins.json 2>/dev/null | grep -q '^"uncle-dev@' && echo "true" || echo "false"
 ```
 
 If not installed:
@@ -125,8 +119,7 @@ If not installed:
 Re-verify:
 
 ```bash
-jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
-  ~/.claude/plugins/installed_plugins.json
+jq '.plugins | keys[]' ~/.claude/plugins/installed_plugins.json 2>/dev/null | grep -q '^"uncle-dev@' && echo "true" || echo "false"
 # must return: true
 ```
 
@@ -218,7 +211,7 @@ bash scripts/uncle-dev-config.sh --validate
 
 If validation fails, fix `.agents/uncle-dev-setup.yaml` using the schema in `scripts/uncle-dev-setup.schema.json` and re-run validation.
 
-If `.agents/uncle-dev-setup.yaml` already exists, read it first and preserve fields that are already customized. Only update `tool.*` fields and any preference whose current value is still the template default.
+If `.agents/uncle-dev-setup.yaml` already exists, read the current values via `bash scripts/uncle-dev-config.sh <key.path>` and preserve fields that are already customized. Never open `.agents/uncle-dev-setup.yaml` directly — use the helper for all reads. Only update `tool.*` fields and any preference whose current value is still the template default.
 
 ---
 
@@ -226,7 +219,7 @@ If `.agents/uncle-dev-setup.yaml` already exists, read it first and preserve fie
 
 Skip this step if Claude Code was not detected in Step 1.
 
-Read `.agents/uncle-dev-setup.yaml` `hooks.*` toggles. Read the existing `.claude/settings.json` (create `{}` if missing). Merge only hooks whose `command` string is not already present — never duplicate.
+Read `hooks.*` toggles via `bash scripts/uncle-dev-config.sh --list hooks` (or per-key scalar calls such as `bash scripts/uncle-dev-config.sh hooks.pre_commit`). Never open `.agents/uncle-dev-setup.yaml` directly. Read the existing `.claude/settings.json` (create `{}` if missing). Merge only hooks whose `command` string is not already present — never duplicate.
 
 Full hook set (include only those whose toggle is `true`):
 
@@ -353,7 +346,7 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 
 ### Skill loading
 
-When a command prints `SKILL: <ref>` lines, read each `<ref>` as the active skill — if `<ref>` is `agent-skills:<name>`, use the bundled skill; if it is a file path, read that file instead. When a command also prints `COMPANION: <path>` lines, read each companion file **after** the active skill and merge its `## Companion Additions` (plus any optional `## Additional Red Flags`, `## Project-Specific Patterns`, `## Local Verification Steps`) into your working context. (Claude Code only — Codex and OpenCode commands do not emit these lines today; they fall back to the base skill.)
+When a command prints `SKILL: <ref>` lines, read each `<ref>` as the active skill — if `<ref>` is `uncle-dev:<name>`, use the bundled plugin skill; if it is a file path, read that file instead. When a command also prints `COMPANION: <path>` lines, read each companion file **after** the active skill and merge its `## Companion Additions` (plus any optional `## Additional Red Flags`, `## Project-Specific Patterns`, `## Local Verification Steps`) into your working context. (Claude Code only — Codex and OpenCode commands do not emit these lines today; they fall back to the base skill.)
 
 ### Workflow rules
 
@@ -460,7 +453,7 @@ Next steps:
 
 Claude Code:
 
-- [ ] `jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' ~/.claude/plugins/installed_plugins.json` returns `true`
+- [ ] `jq '.plugins | keys[]' ~/.claude/plugins/installed_plugins.json 2>/dev/null | grep -q '^"uncle-dev@'` exits 0
 - [ ] `.claude/settings.json` contains `session-start.sh` in a SessionStart hook
 - [ ] `CLAUDE.md` contains `<!-- uncle-dev -->` and `<!-- /uncle-dev -->`
 - [ ] Restart Claude Code in the project — session prints the Skill Discovery flowchart

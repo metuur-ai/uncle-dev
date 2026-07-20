@@ -16,14 +16,19 @@ Design is the single source of truth. Intent flows downstream: HLD → LLD → E
 Run this first, before any other tool call:
 
 ```bash
-CONFIG_LOOKUP="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.1/scripts/uncle-dev-config.sh"
-bash "${CONFIG_LOOKUP}" preferences.sdd_mode ""
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
 ```
 
-| Result     | Path                                                            |
+| `$_mode`   | Path                                                            |
 | ---------- | --------------------------------------------------------------- |
 | `lid-ears` | Follow Phase 0-LID below. Never touch OpenSpec.                 |
 | `openspec` | Read `references/openspec-workflow.md` and follow that process. |
+
+If you could not run Phase 0, treat the mode as `lid-ears`.
 
 ---
 

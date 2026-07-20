@@ -80,6 +80,24 @@ fi
 
 PLUGIN_DEST="${BUNDLE_ROOT}/plugins/${PLUGIN_NAME}"
 
+# ── repo-root guard ───────────────────────────────────────────────────────────
+# Refuse to delete plugin source that lives inside this repo's checkout.
+# Mirrors the guard in install-hermes.sh:200 (every installer has this;
+# the uninstaller must too — audit Finding A).
+TRACKED_PLUGIN_DIR="${REPO_ROOT}/plugins/${PLUGIN_NAME}"
+
+# Resolve both paths to canonical form so symlinks and ".." segments don't
+# bypass the check (bash 3.2: no realpath, use cd-and-pwd).
+_dest_resolved="$(cd "${PLUGIN_DEST}" 2>/dev/null && pwd || true)"
+_tracked_resolved="$(cd "${TRACKED_PLUGIN_DIR}" 2>/dev/null && pwd || true)"
+
+if [[ -n "$_tracked_resolved" && -n "$_dest_resolved" ]]; then
+  if [[ "$_dest_resolved" == "$_tracked_resolved" ]] || \
+     [[ "$_dest_resolved" == "${REPO_ROOT}"* ]]; then
+    fail "Refusing: destination '${PLUGIN_DEST}' resolves inside the plugin source repository (${REPO_ROOT}). Aborting to protect checked-in source. Pass --scope user or a workspace path outside the repo."
+  fi
+fi
+
 # ── confirm removal ───────────────────────────────────────────────────────────
 
 if [[ ! -d "$PLUGIN_DEST" ]]; then

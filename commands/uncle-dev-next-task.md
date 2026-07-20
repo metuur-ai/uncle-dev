@@ -5,24 +5,14 @@ description: Pick the next ready task — from docs/tasks/ in lid-ears mode, or 
 ## Step 0 — Read SDD mode (do this first)
 
 ```bash
-_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
-[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
-# Auto-detect from filesystem when config doesn't set a mode.
-# Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
-# setup-project.sh previously created openspec/ unconditionally — its presence
-# alone is not a reliable signal of openspec mode.
-if [[ -z "$SDD_MODE" ]]; then
-  if [[ -d "docs/ears" || -d "docs/hld" || -d "docs/lld" ]]; then
-    SDD_MODE="lid-ears"
-  elif [[ -d "openspec" ]]; then
-    SDD_MODE="openspec"
-  else
-    SDD_MODE="lid-ears"
-  fi
-fi
-echo "$SDD_MODE"
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
 ```
+
+If you could not run Step 0, treat the mode as `lid-ears`.
 
 **Route based on result — pick exactly one path:**
 
@@ -30,7 +20,7 @@ echo "$SDD_MODE"
 
 ## Path A — `lid-ears` mode
 
-**If sdd_mode is `lid-ears`: follow this path. Do NOT invoke the agent-skills:uncle-dev-next-task skill.**
+**If sdd_mode is `lid-ears`: follow this path. Do NOT invoke the uncle-dev:uncle-dev-next-task skill.**
 
 Work items live in `docs/tasks/<slug>.md` (produced by `/uncle-dev-plan`).
 
@@ -68,7 +58,7 @@ NEXT ACTION: pick recommended, or pass --story <id> to override.
 
 **Failure modes:**
 - No `docs/tasks/` or all files empty → exit: "no task files found; run `/uncle-dev-plan` first."
-- All stories checked → exit: "all tasks complete; run `/uncle-dev-ship`."
+- All stories checked → exit: "all tasks complete; run `/uncle-dev-review` (then `/uncle-dev-ship`)."
 - Ready set empty but unchecked stories exist → list each with its blocking dep(s)
 
 **Arguments work the same as openspec mode:**
@@ -82,7 +72,7 @@ NEXT ACTION: pick recommended, or pass --story <id> to override.
 
 ## Path B — `openspec` mode (default)
 
-**If sdd_mode is `openspec` or missing: follow this path.**
+**If sdd_mode is `openspec`: follow this path.**
 
 Resolve the active skill and honor any project overrides/companions:
 

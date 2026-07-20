@@ -51,7 +51,7 @@ skills:
   #     name: tdd-plus
   #
   # The override replaces the base skill FULLY — your SKILL.md must include
-  # every standard section (see docs/skill-anatomy.md). Authored via
+  # every standard section (see docs/originals/skill-anatomy.md). Authored via
   # /uncle-dev-custom-me override <base> <new-name>.
   #
   # Note: free-form per-skill knobs (e.g., test_runner) are also tolerated
@@ -86,10 +86,7 @@ preferences:
   level: "strict" # strict | lite (shared strictness level for dev/test skills)
   execution_profile: "balanced" # fast | balanced | strict (workflow speed vs guardrail strictness)
   sdd_required: true # require /uncle-dev-spec (OpenSpec artifact) before coding
-  sdd_mode:
-    "lid-ears" # openspec | lid-ears
-    #   openspec  → scaffold OpenSpec change first, EARS near end
-    #   lid-ears  → elicit requirements via LID EARS first, OpenSpec tracks them after (default)
+  sdd_mode: "lid-ears"  # lid-ears | openspec
   tdd-mode: lite # strict | lite
   spec_annotations: true # require @spec IDs linking code to specs
   graphify: false # set true after running: graphify . (creates graphify-out/)

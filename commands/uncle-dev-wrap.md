@@ -12,11 +12,29 @@ argument-hint: "What will the next session focus on?"
 
 ---
 
+## Step 0 — Read SDD mode (do this first)
+
+```bash
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
+```
+
+If you could not run Step 0, treat the mode as `lid-ears`.
+
+Record the resolved `_mode` value in the handoff document and link the active artifacts for that mode:
+
+- **`lid-ears` mode** — link relevant `docs/tasks/<slug>.md` file(s) and `docs/hld/`, `docs/lld/`, `docs/ears/` docs that describe the work in progress.
+- **`openspec` mode** — link the active change directory `openspec/changes/<change-id>/` (proposal.md, design.md, tasks.md).
+
+---
+
 Resolve the active skill and honor any project overrides/companions:
 
 ```bash
-_loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
-[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+_loader="${_scripts}/uncle-dev-load-skill.sh"
 bash "$_loader" uncle-dev-wrap
 ```
 

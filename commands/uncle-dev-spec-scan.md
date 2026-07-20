@@ -8,7 +8,7 @@ The scanner script is `scan-spec-coherence.py` in the `uncle-dev-spec-annotation
 
 1. Locate the script. Search in this order:
    - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-annotations/scan-spec-coherence.py`
-   - `~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/skills/uncle-dev-spec-annotations/scan-spec-coherence.py`
+   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-annotations/scan-spec-coherence.py`
    - The agent-skills repo if cloned locally
 
 2. Run the scanner from the project root. Default mode (text output, fail on orphans only):

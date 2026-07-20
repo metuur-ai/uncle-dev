@@ -110,7 +110,7 @@ flowchart TB
 ## What to do next
 
 1. Skim the map and the diagram — confirm the big items and tiers look right.
-2. For each flagged ADR, run `/uncle-dev-documentation-and-adrs` to settle the decision.
-3. For each item ready to build, run `/uncle-dev-spec` (or `/uncle-dev-grill` first for a PRD) on its
+2. For each flagged ADR, use the `uncle-dev-documentation-and-adrs` skill to settle the decision.
+3. For each item ready to build, run `/uncle-dev-spec` (or use the `uncle-dev-grill` skill first for a PRD) on its
    stub — the stub's four lenses seed the spec.
 4. Then `/uncle-dev-plan` → `/uncle-dev-build` per component, in the tracker's tier/critical-path order.

@@ -24,9 +24,9 @@ Output (the handoff contract):
 READY SET (3 available, 2 parallel-safe, 1 blocked)
   ┌─ recommended
   │  source:     openspec
-  │  change:     PF-001-foundations-cross-cutting
+  │  change:     001-foundations-cross-cutting
   │  story:      1.3 Add config loader
-  │  file:       openspec/changes/PF-001-.../tasks.md:42
+  │  file:       openspec/changes/001-foundations-cross-cutting/tasks.md:42
   │  deps:       [1.1 ✓, 1.2 ✓]
   │  mutex:      none
   │  est:        ~45m
@@ -34,7 +34,7 @@ READY SET (3 available, 2 parallel-safe, 1 blocked)
   │  scratchpad: .devlocal/javierhbr/1.3/scratchpad.md (will create)
   │
   ├─ parallel-safe alternatives
-  │  • 1.4 Logger middleware    [PF-001]  mutex: none
+  │  • 1.4 Logger middleware    [001-foundations-cross-cutting]  mutex: none
   │  • 2.1 Theme tokens         [dashboard-refactor]  mutex: none
   │
   └─ blocked
@@ -74,9 +74,13 @@ Callers (`/uncle-dev-build`, `/uncle-dev-test`, etc.) MUST surface this output v
 Run this before any other step. The result determines which path to follow.
 
 ```bash
-_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
-[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode "" 2>/dev/null || true)
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+SDD_MODE=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
+# If the script is unavailable, default to lid-ears (R-5.6)
+SDD_MODE="${SDD_MODE:-lid-ears}"
 echo "$SDD_MODE"
 ```
 
@@ -84,6 +88,7 @@ echo "$SDD_MODE"
 |--------|------|
 | `lid-ears` | Follow Path A — LID-EARS below. Never check for `openspec/`. |
 | `openspec` | Follow Path B — OpenSpec below. |
+| (empty / unavailable) | Follow Path A — default is `lid-ears` (R-5.6). |
 
 ---
 

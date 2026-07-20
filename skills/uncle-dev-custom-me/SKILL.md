@@ -23,7 +23,7 @@ Replace an uncle-dev skill with your own full SKILL.md. The override's body is l
 3. The slash command scaffolds `.agents/skills/<new-name>/SKILL.md` from `templates/override-skill.md` and prints the YAML registration block.
 4. Paste the YAML block into `.agents/uncle-dev-setup.yaml` under `skills.overrides`.
 5. Validate: `bash scripts/uncle-dev-config.sh --validate` → exit 0.
-6. Edit `.agents/skills/<new-name>/SKILL.md` and fill in every TODO section. Your override must include all 6 standard sections per `docs/skill-anatomy.md` — there is no partial override; missing sections are gone.
+6. Edit `.agents/skills/<new-name>/SKILL.md` and fill in every TODO section. Your override must include all 6 standard sections per `docs/originals/skill-anatomy.md` — there is no partial override; missing sections are gone.
 7. Verify loading: `bash scripts/uncle-dev-load-skill.sh <base-skill>` should print `SKILL: .agents/skills/<new-name>/SKILL.md`.
 
 ### Pattern 2 — Companion
@@ -39,7 +39,7 @@ Add a delta on top of an uncle-dev skill. The base skill loads first, then the c
 3. The slash command prints the YAML block. Paste it into `.agents/uncle-dev-setup.yaml` under `skills.companions`.
 4. Validate: `bash scripts/uncle-dev-config.sh --validate` → exit 0.
 5. Edit `.agents/skills/<new-name>/SKILL.md` and add your delta inside `## Companion Additions`. Optionally add `## Additional Red Flags`, `## Project-Specific Patterns`, or `## Local Verification Steps` — these are the only other sections allowed.
-6. Verify loading: `bash scripts/uncle-dev-load-skill.sh <base-skill>` should print `SKILL: agent-skills:<base>` (or your override) followed by `COMPANION: .agents/skills/<new-name>/SKILL.md`.
+6. Verify loading: `bash scripts/uncle-dev-load-skill.sh <base-skill>` should print `SKILL: uncle-dev:<base>` (or your override) followed by `COMPANION: .agents/skills/<new-name>/SKILL.md`.
 
 ### Validation loop (every customization ends here)
 
@@ -78,7 +78,7 @@ Multiple companions on the same base are allowed; the loader emits one `COMPANIO
 
 ## Gotchas
 
-- `SKILL: agent-skills:<name>` is a literal sentinel — not a file path. The `agent-skills:` prefix means "use the bundled skill." Treat anything else as a project-relative file path.
+- `SKILL: uncle-dev:<name>` is a literal sentinel — not a file path. The `uncle-dev:` prefix means "use the bundled plugin skill." Treat anything else as a project-relative file path.
 - `.agents/uncle-dev-setup.yaml` is YAML, not JSON. The slash command prints the registration block ready to paste. Do not reformat or re-indent it.
 - Per-phase `skills.companions.<phase>` (e.g., `build`, `ship`) is permitted by the schema but not loaded in v1. Use the per-skill form keyed by base skill name.
 - Codex and OpenCode commands do not run shell, so they do not emit `SKILL:`/`COMPANION:` lines. Off Claude Code, your customization does not load — read the file yourself.
@@ -112,7 +112,7 @@ Multiple companions on the same base are allowed; the loader emits one `COMPANIO
 After authoring a customization, confirm each item before considering it shipped:
 
 - [ ] `.agents/skills/<new-name>/SKILL.md` exists.
-- [ ] For overrides: all 6 standard sections present per `docs/skill-anatomy.md`. Frontmatter has `overrides: <base-skill>`.
+- [ ] For overrides: all 6 standard sections present per `docs/originals/skill-anatomy.md`. Frontmatter has `overrides: <base-skill>`.
 - [ ] For companions: only `## Companion Additions` plus any of the four allowed optional sections. Frontmatter has `companion_to: <base-skill>`. `grep -E "^## (Overview|When to Use|Process|Common Rationalizations|Red Flags|Verification)" .agents/skills/<new-name>/SKILL.md` returns nothing.
 - [ ] `bash scripts/uncle-dev-config.sh --validate` → exit 0.
 - [ ] `bash scripts/uncle-dev-load-skill.sh <base-skill>` prints the expected `SKILL:` and/or `COMPANION:` line(s), no `WARN:` on stderr.

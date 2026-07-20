@@ -1,8 +1,33 @@
 #!/bin/bash
 # agent-skills session start hook
 # Injects the using-agent-skills meta-skill into every new session
+# R-10.6: exit 0 silently if not an uncle-dev project (no .agents/uncle-dev-setup.yaml).
+
+command -v jq >/dev/null 2>&1 || exit 0
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
+
+# R-10.6: scope to uncle-dev projects only — transparent in unrelated repos.
+# shellcheck source=lib/hook-contract.sh
+source "${SCRIPT_DIR}/lib/hook-contract.sh"
+hook_require_project
+
+CFG_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
+[ -f "$CFG_SCRIPT" ] || CFG_SCRIPT="$SCRIPT_DIR/../scripts/uncle-dev-config.sh"
+
+# Honor hooks.session_start toggle (R-2.10): exit 0 if disabled in project config.
+# Run from PROJECT_DIR so uncle-dev-config.sh resolves .agents/ relative to project root.
+[[ "$(cd "$PROJECT_DIR" && bash "$CFG_SCRIPT" hooks.session_start true 2>/dev/null || echo true)" == "false" ]] && exit 0
+
+# R-10.7: clear .uncle-dev/session-mode at session start so mode strictness is not
+# permanently sticky across unrelated sessions.  The mode command sets this file to
+# override strictness for the current session only; a new session starts fresh.
+SESSION_MODE_FILE="$PROJECT_DIR/.uncle-dev/session-mode"
+if [ -f "$SESSION_MODE_FILE" ]; then
+  python3 -c "import os; os.remove('${SESSION_MODE_FILE}')" 2>/dev/null || true
+fi
+
 SKILLS_DIR="$(dirname "$SCRIPT_DIR")/skills"
 META_SKILL="$SKILLS_DIR/uncle-dev-using-agent-skills/SKILL.md"
 

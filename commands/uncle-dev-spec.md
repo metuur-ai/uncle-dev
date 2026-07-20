@@ -5,24 +5,14 @@ description: Start spec-driven development — define requirements before writin
 ## Step 0 — Read SDD mode (do this first, before anything else)
 
 ```bash
-_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
-[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
-# Auto-detect from filesystem when config doesn't set a mode.
-# Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
-# setup-project.sh previously created openspec/ unconditionally — its presence
-# alone is not a reliable signal of openspec mode.
-if [[ -z "$SDD_MODE" ]]; then
-  if [[ -d "docs/ears" || -d "docs/hld" || -d "docs/lld" ]]; then
-    SDD_MODE="lid-ears"
-  elif [[ -d "openspec" ]]; then
-    SDD_MODE="openspec"
-  else
-    SDD_MODE="lid-ears"
-  fi
-fi
-echo "$SDD_MODE"
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
 ```
+
+If you could not run Step 0, treat the mode as `lid-ears`.
 
 **Route based on result — pick exactly one path and follow it:**
 
@@ -199,7 +189,7 @@ Then **immediately invoke `/uncle-dev-plan`** in the same turn — do not stop, 
 
 ## Path B — `openspec` mode (default)
 
-**If sdd_mode is `openspec` or missing: follow this path.**
+**If sdd_mode is `openspec`: follow this path.**
 
 Resolve the active skill and honor any project overrides/companions:
 
@@ -214,9 +204,9 @@ Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading di
 1. Check `openspec --version` — init if needed
 2. Read current specs (`openspec list --specs`) and open changes (`openspec list`)
 3. Derive next change ID from `openspec/changes/` (format `NNN-slug`), propose to user
-4. `openspec change create <id>` + `openspec artifact add <id> execution.md` + `handoff.md`
+4. `openspec change create <id>` + `openspec artifact add <id> execution.md`
 5. Ask clarifying questions (objective, users, acceptance criteria, constraints, boundaries)
-6. Populate all five artifacts: `proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`
+6. Populate all four required artifacts: `proposal.md`, `design.md`, `tasks.md`, `execution.md`
 7. `openspec validate <id>` and ask the user to confirm before proceeding (HARD GATE)
 8. After explicit YES, **immediately invoke `/uncle-dev-plan`** in the same turn to continue into shared planning. The plan step has its own gate before any code is written.
 

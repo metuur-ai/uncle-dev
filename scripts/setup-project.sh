@@ -174,16 +174,22 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
   echo ""
   GRAPHIFY="$(ask_yn "Have you run 'graphify .' on this project?" "n")"
 else
-  # Read existing values (best-effort via grep, no yq dependency)
-  if grep -qE '^[[:space:]]*tdd_mode:' "${CONFIG_FILE}" 2>/dev/null; then
+  # Read existing values via uncle-dev-config.sh (single-reader boundary — R-2.3).
+  # Check for legacy key name (warn only, do not block).
+  if bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.tdd_mode 2>/dev/null | grep -q .; then
     warn "Detected legacy key 'tdd_mode' in .agents/uncle-dev-setup.yaml. Use 'tdd-mode' instead."
     warn "Run --update and confirm choices to rewrite the config with canonical keys."
   fi
-  SDD_MODE="$(grep 'sdd_mode:' "${CONFIG_FILE}" 2>/dev/null | awk -F'"' '{print $2}' || echo "lid-ears")"
-  SPEC_ANNOTATIONS="$(grep 'spec_annotations:' "${CONFIG_FILE}" 2>/dev/null | awk '{print $2}' || echo "true")"
-  TDD_MODE="$(grep 'tdd-mode:' "${CONFIG_FILE}" 2>/dev/null | awk '{print $2}' || echo "lite")"
-  EXECUTION_PROFILE="$(grep 'execution_profile:' "${CONFIG_FILE}" 2>/dev/null | awk -F'"' '{print $2}' || echo "balanced")"
-  GRAPHIFY="$(grep 'graphify:' "${CONFIG_FILE}" 2>/dev/null | awk '{print $2}' || echo "false")"
+  SDD_MODE="$(bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.sdd_mode "" 2>/dev/null)"
+  SDD_MODE="${SDD_MODE:-lid-ears}"
+  SPEC_ANNOTATIONS="$(bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.spec_annotations "" 2>/dev/null)"
+  SPEC_ANNOTATIONS="${SPEC_ANNOTATIONS:-true}"
+  TDD_MODE="$(bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.tdd-mode "" 2>/dev/null)"
+  TDD_MODE="${TDD_MODE:-lite}"
+  EXECUTION_PROFILE="$(bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.execution_profile "" 2>/dev/null)"
+  EXECUTION_PROFILE="${EXECUTION_PROFILE:-balanced}"
+  GRAPHIFY="$(bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.graphify "" 2>/dev/null)"
+  GRAPHIFY="${GRAPHIFY:-false}"
 fi
 
 # ── step 3: create directories and write config ───────────────────────────────
@@ -231,6 +237,13 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
     "${TEMPLATE}" > "${CONFIG_FILE}"
 
   ok ".agents/uncle-dev-setup.yaml written (sdd_mode=${SDD_MODE})"
+  # Post-write assertion: verify sdd_mode was written correctly (R-2.1).
+  # Run from PROJECT_ROOT so uncle-dev-config.sh resolves .agents/ correctly.
+  WRITTEN_MODE="$(cd "${PROJECT_ROOT}" && bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.sdd_mode "" 2>/dev/null || true)"
+  WRITTEN_MODE="${WRITTEN_MODE:-}"
+  if [[ "${WRITTEN_MODE}" != "${SDD_MODE}" ]]; then
+    fail "Config write assertion failed: preferences.sdd_mode expected '${SDD_MODE}' but reads '${WRITTEN_MODE}'. Check the template for two-line scalar form."
+  fi
 else
   # Update only tool.active and agent_skills_root in existing config
   TMPFILE="${CONFIG_FILE}.tmp"
@@ -343,6 +356,10 @@ ${SDD_SECTION}
 **Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-documentation-and-adrs
 **Capture:** uncle-dev-knowledge-capture
 **Maintain:** uncle-dev-knowledge-maintenance
+
+### Skill loading
+
+When a command prints \`SKILL: <ref>\` lines, read each \`<ref>\` as the active skill — if \`<ref>\` is \`uncle-dev:<name>\`, use the bundled plugin skill; if it is a file path, read that file instead. When a command also prints \`COMPANION: <path>\` lines, read each companion file **after** the active skill and merge its \`## Companion Additions\` into your working context.
 
 ### Conventions
 - Personal scratchpad in \`.devlocal/<user>/\` (gitignored, not shared)

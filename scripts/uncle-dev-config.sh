@@ -174,6 +174,19 @@ if [[ ! -f "${CONFIG_FILE}" ]]; then
   exit 0
 fi
 
+# Python3 + PyYAML dependency check (R-2.11): warn once to stderr and return
+# default rather than silently evaporating all configuration.
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "uncle-dev-config: warning: python3 not found — returning default for ${KEY_PATH}" >&2
+  echo "${DEFAULT}"
+  exit 0
+fi
+if ! python3 -c 'import yaml' 2>/dev/null; then
+  echo "uncle-dev-config: warning: PyYAML not importable — returning default for ${KEY_PATH}" >&2
+  echo "${DEFAULT}"
+  exit 0
+fi
+
 # Validate config when schema exists. If invalid, return default for safety.
 if [[ -f "${SCHEMA_FILE}" ]]; then
   if ! python3 - "${CONFIG_FILE}" "${SCHEMA_FILE}" <<'PYEOF'

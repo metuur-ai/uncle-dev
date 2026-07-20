@@ -4,7 +4,8 @@
     "name": "Uncle Dev"
   },
   "metadata": {
-    "description": "Production-grade engineering skills for AI coding agents — covering the full software development lifecycle from spec to ship."
+    "description": "Production-grade engineering skills for AI coding agents — covering the full software development lifecycle from spec to ship.",
+    "commands_count": 31
   },
   "plugins": [
     {

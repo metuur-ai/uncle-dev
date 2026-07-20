@@ -1,3 +1,7 @@
+---
+description: "Wire uncle-dev into this project — plugin check, scaffolding, config, hooks"
+---
+
 Load and execute the `uncle-dev-setup` skill located at `skills/uncle-dev-setup/SKILL.md`.
 
 ## Arguments
@@ -9,14 +13,13 @@ Load and execute the `uncle-dev-setup` skill located at `skills/uncle-dev-setup/
 
 ## Execution
 
-1. Locate the setup script (plugin cache first, repo clone as fallback):
+1. Locate the setup script. Resolution order: `CLAUDE_PLUGIN_ROOT` (set by Claude Code) → repo-local checkout → newest versioned plugin cache:
 
 ```bash
-SETUP_SCRIPT="${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/1.4.1/scripts/setup-project.sh"
+SETUP_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/setup-project.sh"
 [ -f "${SETUP_SCRIPT}" ] || SETUP_SCRIPT="$(
-  for d in "${UNCLE_DEV_ROOT:-}" ~/others/ai-agents/production-grade-agent-skills ~/agent-skills; do
-    [ -f "${d}/scripts/setup-project.sh" ] && echo "${d}/scripts/setup-project.sh" && break
-  done
+  _cache_dir=$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)
+  echo "${_cache_dir}scripts/setup-project.sh"
 )"
 ```
 
@@ -42,8 +45,7 @@ By default, setup config includes wrap thresholds used by hooks:
 5. Check plugin installation:
 
 ```bash
-jq '.plugins | has("uncle-dev-agent-skills@uncle-dev-agent-skills")' \
-  ~/.claude/plugins/installed_plugins.json
+jq '.plugins | keys[]' ~/.claude/plugins/installed_plugins.json 2>/dev/null | grep -q '^"uncle-dev@'
 ```
 
-If `false`: run `bash <AGENT_SKILLS_ROOT>/scripts/install-claude.sh`, then restart Claude Code.
+If the key is not present: run `bash <AGENT_SKILLS_ROOT>/scripts/install-claude.sh`, then restart Claude Code.

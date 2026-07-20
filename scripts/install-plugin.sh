@@ -191,6 +191,9 @@ copy_path() {
 
     local entry
     for entry in "$src"/*; do
+      # bash 3.2 compatibility: nullglob is not available across subshells;
+      # guard against the literal glob string when the directory is empty.
+      [[ -e "$entry" ]] || continue
       copy_path "$entry" "$dest/$(basename "$entry")"
     done
     return 0
@@ -207,6 +210,8 @@ copy_dir_contents() {
 
   local entry
   for entry in "$src_dir"/*; do
+    # bash 3.2 compatibility: guard against literal glob when directory is empty.
+    [[ -e "$entry" ]] || continue
     local name
     name="$(basename "$entry")"
     local dest="$dest_dir/$name"

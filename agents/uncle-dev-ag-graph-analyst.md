@@ -20,6 +20,25 @@ When spawned, you receive:
 
 ## Core Process
 
+### Step 0: Guard — verify graph exists
+
+Before doing anything else, check:
+
+```bash
+[ -f graphify-out/graph.json ] && echo GRAPH_ON || echo GRAPH_OFF
+```
+
+If `graphify-out/graph.json` does not exist, return the following immediately and exit:
+
+```
+GRAPH UNAVAILABLE
+
+graphify-out/graph.json not found. Cannot perform graph analysis.
+Recommendation: Use standard grep/Read-based exploration.
+```
+
+Do not proceed to Step 1.
+
 ### Step 1: Read GRAPH_REPORT.md
 
 Always start here. Read `graphify-out/GRAPH_REPORT.md` and extract:

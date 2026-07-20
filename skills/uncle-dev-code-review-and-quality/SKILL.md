@@ -240,13 +240,15 @@ For significant changes, run three specialized subagents in parallel then synthe
          └──────────────────────┘  │
                                    │     ┌────────────────────────┐
          ┌──────────────────────┐  ├────▶│ uncle-dev-ag-          │
-         │ plan-reviewer        │  │     │ review-synthesizer      │
-         │ (architecture)       │  │     └────────────────────────┘
+         │ uncle-dev-ag-        │  │     │ review-synthesizer      │
+         │ code-reviewer        │  │     └────────────────────────┘
+         │ (architecture lens)  │  │
          └──────────────────────┘  │
                                    │
          ┌──────────────────────┐  │
-         │ plan-reviewer        │ ─┘
-         │ (change impact)      │
+         │ uncle-dev-ag-        │ ─┘
+         │ code-reviewer        │
+         │ (change-impact lens) │
          └──────────────────────┘
 
          Parallel                        Sequential
@@ -265,8 +267,8 @@ For significant changes, run three specialized subagents in parallel then synthe
 | Agent | Focus | Five-Axis Coverage |
 |---|---|---|
 | `uncle-dev-ag-code-reviewer` | Code quality, correctness, readability | Correctness, Readability, Performance |
-| `plan-reviewer` (architecture) | Pattern adherence, system fit, module boundaries | Architecture |
-| `plan-reviewer` (change impact) | Risk, backward compatibility, regressions, security implications | Security, risk |
+| `uncle-dev-ag-code-reviewer` (architecture lens) | Pattern adherence, system fit, module boundaries | Architecture |
+| `uncle-dev-ag-code-reviewer` (change-impact lens) | Risk, backward compatibility, regressions, security implications | Security, risk |
 | `uncle-dev-ag-graph-analyst` | Structural blast radius via semantic graph | Architecture (graph-layer) — conditional |
 
 When to spawn `uncle-dev-ag-graph-analyst`: Only when graphify is ON AND the change exceeds ~300 lines OR touches a god node identified in GRAPH_REPORT.md. Pass it: the primary changed module names and the question `"what is the structural blast radius of changes to [modules]?"`. Run it in background alongside the existing parallel agents; its findings feed the architecture reviewer.
@@ -277,24 +279,27 @@ For `--security` mode, add `uncle-dev-ag-security-auditor` to the parallel phase
 
 ```
 Task(
-  subagent_type="uncle-dev-ag-code-reviewer",
+  subagent_type="code-reviewer",
   prompt="Review code quality for: [SCOPE]. Evaluate correctness, readability, performance. Output: issues with severity (critical/major/minor).",
   run_in_background=true
 )
 
 Task(
-  subagent_type="general-purpose",
+  subagent_type="code-reviewer",
   prompt="Review architecture alignment for: [SCOPE]. Check: follows established patterns, consistent with system design, no architectural violations. Output: alignment assessment with concerns.",
   run_in_background=true
 )
 
 Task(
-  subagent_type="general-purpose",
+  subagent_type="code-reviewer",
   prompt="Review change impact for: [SCOPE]. Assess: risk level, affected systems, backward compatibility, potential regressions, security implications. Output: risk assessment.",
   run_in_background=true
 )
 
 # Wait for all three before proceeding
+# Non-plugin fallback: if subagent_type="code-reviewer" does not resolve in your
+# environment, use subagent_type="general-purpose" and paste the content of
+# agents/uncle-dev-ag-code-reviewer.md into the prompt as a persona header.
 ```
 
 ### Phase 2: Synthesis
@@ -303,7 +308,7 @@ Pass all three outputs to `uncle-dev-ag-review-synthesizer`:
 
 ```
 Task(
-  subagent_type="uncle-dev-ag-review-synthesizer",
+  subagent_type="review-synthesizer",
   prompt="""
   Synthesize reviews for: [SCOPE]
 
@@ -433,8 +438,8 @@ Rule: Prefer standard library and existing utilities over new dependencies. Ever
 ```
 ## See Also
 
-- For detailed security review guidance, see `references/security-checklist.md`
-- For performance review checks, see `references/performance-checklist.md`
+- For detailed security review guidance, see `skills/uncle-dev-security-and-hardening/security-checklist.md`
+- For performance review checks, see `skills/uncle-dev-performance-optimization/performance-checklist.md`
 
 ## Common Rationalizations
 

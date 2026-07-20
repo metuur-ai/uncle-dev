@@ -14,24 +14,14 @@ description: Run the pre-launch checklist and prepare for production deployment
 ## Step 0 — Read SDD mode (do this first)
 
 ```bash
-_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
-[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
-# Auto-detect from filesystem when config doesn't set a mode.
-# Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
-# setup-project.sh previously created openspec/ unconditionally — its presence
-# alone is not a reliable signal of openspec mode.
-if [[ -z "$SDD_MODE" ]]; then
-  if [[ -d "docs/ears" || -d "docs/hld" || -d "docs/lld" ]]; then
-    SDD_MODE="lid-ears"
-  elif [[ -d "openspec" ]]; then
-    SDD_MODE="openspec"
-  else
-    SDD_MODE="lid-ears"
-  fi
-fi
-echo "$SDD_MODE"
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
 ```
+
+If you could not run Step 0, treat the mode as `lid-ears`.
 
 **Route based on result — pick exactly one path:**
 
@@ -54,7 +44,7 @@ Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading di
 Pre-ship verification (run before the checklist):
 
 1. **Tasks complete** — Read `docs/tasks/*.md`; confirm all items are `- [x]`. List any unchecked items and stop if found.
-2. **EARS coverage** — Read `docs/ears/*.md`; for each requirement (R-x.y), confirm at least one test asserts it. List any uncovered requirements and stop if found.
+2. **EARS coverage** *(MANUAL CHECK — no automated mechanism exists)* — Read `docs/ears/*.md`; for each requirement (R-x.y), manually verify that at least one test or observable behaviour asserts it. EARS `R-x.y` IDs are a manually-reviewed track; the `@spec` scanner does not validate them. List any uncovered requirements and flag them before proceeding. (Contrast: `@spec` annotations using `SEG-AREA-NNN` IDs are scanner-enforced via `scan-spec-coherence.py`.)
 3. **Docs current** — Confirm `docs/hld/<slug>.md`, `docs/lld/<slug>.md`, `docs/ears/<slug>.md` reflect the shipped implementation. Flag any stale sections.
 
 Then run the standard pre-launch checklist:
@@ -73,7 +63,7 @@ Define the rollback plan before proceeding.
 
 ## Path B — `openspec` mode (default)
 
-**If sdd_mode is `openspec` or missing: follow this path.**
+**If sdd_mode is `openspec`: follow this path.**
 
 Resolve the active skill and honor any project overrides/companions:
 

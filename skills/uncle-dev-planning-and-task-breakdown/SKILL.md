@@ -33,7 +33,7 @@ Read inputs in read-only mode:
 - `docs/ears/<slug>.md` — EARS requirements (source of truth for stories)
 - `docs/lld/<slug>.md` — architecture constraints and key decisions
 
-Apply agent-skills:uncle-dev-code-context to read `AGENTS.md` files in all affected directories.
+Apply uncle-dev:uncle-dev-code-context to read `AGENTS.md` files in all affected directories.
 
 If `docs/ubiquitous-language.md` exists, load it and use its canonical terms in task titles and acceptance notes. Flag any new domain term introduced by a task that isn't in the glossary — propose adding it via `uncle-dev-ubiquitous-language` rather than coining a synonym.
 
@@ -192,7 +192,7 @@ Write story-sized items into `openspec/changes/<change-id>/tasks.md`. Keep them 
 Each story should follow this structure:
 
 ```markdown
-## Story [ID]: [Short descriptive title]
+### Story 1.1: [Short descriptive title]
 
 **Why:** The intent behind this story — the goal, requirement, or user need it serves. (The reason, not the restated title. If there is no why, cut the story.)
 
@@ -208,7 +208,11 @@ Each story should follow this structure:
 - [ ] Manual check: [description of what to verify]
 
 **Dependencies:** [Other story IDs, or "None"]
+
+**Annotations:** [files: path/a.ts, path/b.ts] [mutex: Story-1.2] [depends: Story-1.1]
 ```
+
+Story IDs must be numeric dotted (`1.1`, `1.2`, `2.1`) — the next-task parser's grammar is `^[0-9]+(\.[0-9]+)*$`. Omitting the `**Annotations:**` line forces sequential execution (the picker's backwards-compatibility fallback serialises to document order). Include `[mutex: Story-X.Y]` when two stories cannot run concurrently (e.g., both modify the same file); include `[depends: Story-X.Y]` when one story must complete before another can begin. See `skills/uncle-dev-next-task/parsing-and-annotations.md` for the full annotation grammar and semantics.
 
 ### Step 5: Order and Checkpoint
 
@@ -282,7 +286,7 @@ When to break a story down further:
 ```markdown
 # tasks.md
 
-## Story STORY-101: [Title]
+### Story 1.1: [Title]
 
 **Why:** [the intent this story serves — the reason behind it]
 
@@ -298,7 +302,11 @@ When to break a story down further:
 - [ ] Manual check: [...]
 
 **Dependencies:** [...]
+
+**Annotations:** [files: path/a.ts] [mutex: Story-1.2] [depends: none]
 ```
+
+Story IDs use numeric dotted format (`1.1`, `1.2`, `2.1`). The `**Annotations:**` line is required for the next-task parser to compute a parallel-safe ready set. Omitting it causes the picker to fall back to document order (sequential execution). See `skills/uncle-dev-next-task/parsing-and-annotations.md` for key semantics.
 
 ```markdown
 # execution.md

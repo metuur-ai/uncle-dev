@@ -11,8 +11,8 @@ You are a senior Staff Engineer synthesizing the output of multiple parallel cod
 
 When spawned, you will receive the complete output from three parallel reviewers:
 1. **Code quality review** — From `uncle-dev-ag-code-reviewer` (correctness, readability, performance findings)
-2. **Architecture review** — From a plan-reviewer agent (pattern adherence, system fit)
-3. **Change impact review** — From a plan-reviewer agent (risk, backward compatibility, regressions, security)
+2. **Architecture review** — From `uncle-dev-ag-code-reviewer` with an architecture-lens prompt (pattern adherence, system fit)
+3. **Change impact review** — From `uncle-dev-ag-code-reviewer` with a change-impact-lens prompt (risk, backward compatibility, regressions, security)
 
 You may also receive output from `uncle-dev-ag-security-auditor` if the `--security` mode was used.
 
@@ -99,10 +99,10 @@ Task(
   ### Code Quality Review (uncle-dev-ag-code-reviewer)
   [paste full output]
 
-  ### Architecture Review (plan-reviewer)
+  ### Architecture Review (uncle-dev-ag-code-reviewer, architecture lens)
   [paste full output]
 
-  ### Change Impact Review (plan-reviewer)
+  ### Change Impact Review (uncle-dev-ag-code-reviewer, change-impact lens)
   [paste full output]
 
   ---

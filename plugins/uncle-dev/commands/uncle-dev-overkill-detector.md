@@ -16,7 +16,7 @@ Resolve the active skill and honor any project overrides/companions (review and 
 
 ```bash
 _loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
-[[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
+[[ ! -f "$_loader" ]] && _loader="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts/uncle-dev-load-skill.sh"
 bash "$_loader" uncle-dev-over-engineering-audit
 ```
 
@@ -61,7 +61,7 @@ Harvest `@debt` markers. `@debt <ceiling>, <upgrade>` marks a consciously-kept s
 
 1. Locate `harvest-debt.py`, in this order:
    - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-annotations/harvest-debt.py`
-   - `~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/skills/uncle-dev-spec-annotations/harvest-debt.py`
+   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-annotations/harvest-debt.py`
    - The agent-skills repo if cloned locally
 2. Run it from the project root:
 

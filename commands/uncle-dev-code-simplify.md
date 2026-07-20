@@ -16,7 +16,7 @@ Resolve the active skill and honor any project overrides/companions:
 ```bash
 _loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
 [[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
-bash "$_loader" uncle-dev-code-simplification
+bash "$_loader" uncle-dev-dev-code-simplification
 ```
 
 Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.

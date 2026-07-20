@@ -14,28 +14,20 @@ description: Implement the next task incrementally — build, test, verify, comm
 ## Step 0: Read SDD mode and execution profile, then resolve the next task
 
 ```bash
-_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
-[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
+_cfg="${_scripts}/uncle-dev-config.sh"
 EXECUTION_PROFILE=$(bash "$_cfg" preferences.execution_profile balanced 2>/dev/null || echo "balanced")
 TDD_MODE=$(bash "$_cfg" preferences.tdd-mode lite 2>/dev/null || echo "lite")
-# Auto-detect from filesystem when config doesn't set a mode.
-# Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
-# setup-project.sh previously created openspec/ unconditionally — its presence
-# alone is not a reliable signal of openspec mode.
-if [[ -z "$SDD_MODE" ]]; then
-  if [[ -d "docs/ears" || -d "docs/hld" || -d "docs/lld" ]]; then
-    SDD_MODE="lid-ears"
-  elif [[ -d "openspec" ]]; then
-    SDD_MODE="openspec"
-  else
-    SDD_MODE="lid-ears"
-  fi
-fi
-echo "$SDD_MODE"
+echo "$_mode"
 echo "$EXECUTION_PROFILE"
 echo "$TDD_MODE"
 ```
+
+If you could not run Step 0, treat the mode as `lid-ears`.
 
 Run `/uncle-dev-next-task --claim` (which is now sdd_mode-aware) to:
 
@@ -97,7 +89,7 @@ Honor the `SKILL:` and `COMPANION:` lines emitted above before debugging.
 
 ## Path B — `openspec` mode
 
-**If sdd_mode is `openspec` or missing: follow this path.**
+**If sdd_mode is `openspec`: follow this path.**
 
 Resolve the active skills and honor any project overrides/companions:
 

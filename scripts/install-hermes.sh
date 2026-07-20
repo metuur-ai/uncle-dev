@@ -5,8 +5,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 DIST_DIR="${REPO_ROOT}/dist"
 PLUGIN_NAME="uncle-dev"
-PLUGIN_VERSION="1.4.1"
+# Derive version from plugin.json (same pattern as install-claude.sh:27) so a
+# version bump in the manifest propagates with zero manual edits (R-9.4).
+command -v jq >/dev/null 2>&1 || { echo "Error: jq is required but not installed." >&2; exit 1; }
+PLUGIN_VERSION="$(jq -r '.version' "${REPO_ROOT}/.claude-plugin/plugin.json")"
+[[ -n "${PLUGIN_VERSION}" && "${PLUGIN_VERSION}" != "null" ]] || { echo "Error: Could not read version from .claude-plugin/plugin.json" >&2; exit 1; }
 PLUGIN_DESCRIPTION="Production-grade engineering skills — spec-driven development from idea to shipped feature."
+
+# Shared copy helpers (copy_file, copy_dir_contents) sourced from lib (R-9.5).
+# shellcheck source=lib/install-common.sh
+source "${SCRIPT_DIR}/lib/install-common.sh"
 
 SCOPE="user"
 FORCE=0
@@ -43,36 +51,6 @@ EOF
 
 log()  { echo "$*" >&2; }
 fail() { log "Error: $*"; exit 1; }
-
-copy_file() {
-  local src="$1"
-  local dest="$2"
-  mkdir -p "$(dirname "$dest")"
-  if [[ -f "$dest" ]] && cmp -s "$src" "$dest"; then
-    return 0
-  fi
-  if [[ -e "$dest" && "$FORCE" -ne 1 ]]; then
-    fail "Refusing to overwrite existing file: $dest (rerun with --force)"
-  fi
-  cp "$src" "$dest"
-}
-
-copy_dir_contents() {
-  local src_dir="$1"
-  local dest_dir="$2"
-  mkdir -p "$dest_dir"
-  local entry
-  for entry in "$src_dir"/*; do
-    [[ -e "$entry" ]] || continue
-    local name
-    name="$(basename "$entry")"
-    if [[ -d "$entry" ]]; then
-      copy_dir_contents "$entry" "$dest_dir/$name"
-    else
-      copy_file "$entry" "$dest_dir/$name"
-    fi
-  done
-}
 
 write_plugin_yaml() {
   local dest="$1"
@@ -143,7 +121,7 @@ assemble_plugin() {
   for entry in "${REPO_ROOT}/skills"/*/; do
     [[ -d "$entry" ]] || continue
     name="$(basename "$entry")"
-    copy_dir_contents "$entry" "$plugin_root/skills/$name"
+    copy_dir_contents "$entry" "$plugin_root/skills/$name" "$FORCE"
   done
 }
 

@@ -15,7 +15,7 @@ echo "$SDD_MODE"
 | Result                | Path                                                                                                                                                                                                                                       |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 <!-- UNCLE_DEV:BRANCH:lid-ears:START -->
-| `lid-ears`            | Exit immediately. Tell the user: "This project uses lid-ears mode. Design decisions are captured as ADRs in `docs/decisions/`. Run `/uncle-dev-documentation-and-adrs` to write one." Do NOT create any `openspec/acknowledge/` files. |
+| `lid-ears`            | Exit immediately. Tell the user: "This project uses lid-ears mode. Design decisions are captured as ADRs in `docs/decisions/`. Use the `uncle-dev-documentation-and-adrs` skill to write one." Do NOT create any `openspec/acknowledge/` files. |
 <!-- UNCLE_DEV:BRANCH:lid-ears:END -->
 <!-- UNCLE_DEV:BRANCH:openspec:START -->
 | `openspec`            | Continue with the full process below.                                                                                                                                                                                                      |

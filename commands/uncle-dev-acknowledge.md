@@ -5,24 +5,14 @@ description: Capture and manage design-decision notes — openspec/acknowledge/ 
 ## Step 0 — Read SDD mode (do this first)
 
 ```bash
-_cfg="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
-[[ ! -f "$_cfg" ]] && _cfg=$(find "${HOME}/.claude/plugins" -name "uncle-dev-config.sh" 2>/dev/null | head -1)
-SDD_MODE=$(bash "$_cfg" preferences.sdd_mode 2>/dev/null || echo "")
-# Auto-detect from filesystem when config doesn't set a mode.
-# Prefer lid-ears markers (docs/{hld,lld,ears}) over openspec/, because
-# setup-project.sh previously created openspec/ unconditionally — its presence
-# alone is not a reliable signal of openspec mode.
-if [[ -z "$SDD_MODE" ]]; then
-  if [[ -d "docs/ears" || -d "docs/hld" || -d "docs/lld" ]]; then
-    SDD_MODE="lid-ears"
-  elif [[ -d "openspec" ]]; then
-    SDD_MODE="openspec"
-  else
-    SDD_MODE="lid-ears"
-  fi
-fi
-echo "$SDD_MODE"
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-detect-mode.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+_mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
+# For mode semantics see scripts/uncle-dev-detect-mode.sh
 ```
+
+If you could not run Step 0, treat the mode as `lid-ears`.
 
 ---
 
@@ -32,17 +22,17 @@ echo "$SDD_MODE"
 
 Design decisions in lid-ears mode are captured as ADRs, not as gating acknowledge notes.
 
-- For a **decision worth a durable record**: invoke `/uncle-dev-documentation-and-adrs` to write `docs/decisions/ADR-NNN-<slug>.md`. The ADR captures context, decision, alternatives, and consequences — it is the equivalent of an acknowledge note but narrative and repo-wide.
+- For a **decision worth a durable record**: use the `uncle-dev-documentation-and-adrs` skill to write `docs/decisions/ADR-NNN-<slug>.md`. The ADR captures context, decision, alternatives, and consequences — it is the equivalent of an acknowledge note but narrative and repo-wide.
 - For a **quick inline decision** that doesn't warrant a full ADR: write a comment directly in the relevant `docs/lld/<slug>.md` under a "Key Decisions" section.
 - The `/uncle-dev-build` **gate does not apply** in lid-ears mode — there are no pending acknowledgements to block implementation.
 
-Exit after explaining the above. Do NOT invoke the agent-skills:uncle-dev-acknowledge skill or create `openspec/acknowledge/` files.
+Exit after explaining the above. Do NOT invoke the uncle-dev:uncle-dev-acknowledge skill or create `openspec/acknowledge/` files.
 
 ---
 
 ## Path B — `openspec` mode (default)
 
-**If sdd_mode is `openspec` or missing: follow this path.**
+**If sdd_mode is `openspec`: follow this path.**
 
 Resolve the active skill and honor any project overrides/companions:
 

@@ -15,7 +15,7 @@ Own requirements clarity, scope, acceptance criteria, backlog shape, and plannin
 - Every change must have testable acceptance criteria before implementation starts.
 - Write acceptance criteria in Given/When/Then format.
 - Define scope boundaries - what is in, what is out.
-- Never start implementation work - that belongs to the Dev Manager and developers.
+- Never start implementation work - that belongs to the implementation owner and developers.
 
 ## Responsibilities
 - Produce or refine the proposal artifact in the path required by `preferences.sdd_mode`
@@ -27,9 +27,8 @@ Own requirements clarity, scope, acceptance criteria, backlog shape, and plannin
 ## How to Work
 
 ### When given a new feature request
-1. Read `~/coding-projects/project-map.yaml` to locate the project
-2. Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` (single source of truth)
-3. Read `.ai/shared-memory/project-context.md` and `current-focus.md`
+1. Resolve `preferences.sdd_mode` via `scripts/uncle-dev-config.sh` (single source of truth)
+2. Read `.uncle-dev/` for project context and prior decisions
 3. Ask 3-5 clarifying questions before writing anything:
    - Who is the user and what is their problem?
    - What does success look like - measurable?
@@ -37,10 +36,10 @@ Own requirements clarity, scope, acceptance criteria, backlog shape, and plannin
    - Are there edge cases or error states to handle?
    - Is there a deadline or dependency constraint?
 4. Choose the proposal path by mode (from configured mode-specific artifacts):
-   - `openspec` -> change proposal artifact
-   - `lid-ears` -> EARS proposal artifact
+   - `openspec` -> change proposal artifact under `openspec/changes/<id>/proposal.md`
+   - `lid-ears` -> EARS proposal artifact under `docs/ears/<slug>.md`
 5. Write the proposal with: problem statement, user story, acceptance criteria, scope boundaries, and open questions
-6. Update `handoff.md` when handing off to Dev Manager or Tech Lead
+6. Create a handoff note in `.devlocal/handoffs/` when handing off to Tech Lead or implementation owner
 
 ### Proposal format (`proposal.md`)
 ```markdown
@@ -76,4 +75,4 @@ As a <user type>, I want to <action> so that <benefit>.
 - [ ] All acceptance criteria are testable (no "should feel fast", no "looks good")
 - [ ] Scope boundaries are explicit
 - [ ] Proposal is saved in the mode-specific path for `preferences.sdd_mode`
-- [ ] Handoff is updated pointing to Dev Manager
+- [ ] Handoff note written to `.devlocal/handoffs/` pointing to Tech Lead or implementation owner

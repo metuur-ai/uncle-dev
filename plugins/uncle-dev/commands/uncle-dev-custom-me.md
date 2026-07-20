@@ -62,7 +62,7 @@ elif [[ -d ".agents/skills/${BASE}" ]]; then
   echo "base: local (.agents/skills/${BASE})"
 else
   echo "ERROR: base skill '${BASE}' not found in plugin or .agents/skills/" >&2
-  echo "Run /uncle-dev-using-agent-skills to list available skills." >&2
+  echo "Consult the uncle-dev-using-agent-skills skill to list available skills." >&2
   exit 1
 fi
 ```
@@ -146,9 +146,9 @@ Print these steps and ask the user to confirm each one before declaring done:
    ```
    Expected:
    - Override mode: `SKILL: .agents/skills/<new-name>/SKILL.md` on stdout.
-   - Companion mode: `SKILL: agent-skills:<base-skill>` (or the existing override) followed by `COMPANION: .agents/skills/<new-name>/SKILL.md`.
+   - Companion mode: `SKILL: uncle-dev:<base-skill>` (or the existing override) followed by `COMPANION: .agents/skills/<new-name>/SKILL.md`.
    - No `WARN: missing skill file` on stderr.
-4. Edit `.agents/skills/<new-name>/SKILL.md` and replace every `<TODO ...>` placeholder. Follow `docs/skill-anatomy.md` strictly.
+4. Edit `.agents/skills/<new-name>/SKILL.md` and replace every `<TODO ...>` placeholder. Follow `docs/originals/skill-anatomy.md` strictly.
 5. (Companion mode only) Confirm anti-duplication:
    ```bash
    grep -E "^## (Overview|When to Use|Process|Common Rationalizations|Red Flags|Verification)" .agents/skills/<new-name>/SKILL.md

@@ -36,7 +36,7 @@ echo "$SDD_MODE"
 ```
 
 <!-- UNCLE_DEV:BRANCH:lid-ears:START -->
-- `lid-ears` mode: Invoke `/uncle-dev-documentation-and-adrs` (or instruct the user to run it) to write `docs/decisions/ADR-NNN-<slug>.md`. Design decisions in lid-ears mode live as narrative ADRs, not gating acknowledge notes. Exit immediately.
+- `lid-ears` mode: Use the `uncle-dev-documentation-and-adrs` skill (or instruct the user to invoke it) to write `docs/decisions/ADR-NNN-<slug>.md`. Design decisions in lid-ears mode live as narrative ADRs, not gating acknowledge notes. Exit immediately.
 <!-- UNCLE_DEV:BRANCH:lid-ears:END -->
 <!-- UNCLE_DEV:BRANCH:openspec:START -->
 - `openspec` mode: Invoke `uncle-dev-acknowledge` (or instruct the user to run `/uncle-dev-acknowledge` and paste the notes) and exit immediately. Acknowledge notes belong in `openspec/acknowledge/<scope>.md`, not in `.uncle-dev/learns/` — they are a different artifact class with a different lifecycle.

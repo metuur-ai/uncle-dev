@@ -3,12 +3,25 @@
 # After a test or build command succeeds, nudges once per cooldown window to
 # capture knowledge while context is fresh.
 # Uses a timestamp file to avoid repeating more than once per hour.
+# R-10.6: exit 0 silently if not an uncle-dev project (no .agents/uncle-dev-setup.yaml).
 
 set -euo pipefail
 
 command -v jq >/dev/null 2>&1 || exit 0
 
+# R-10.6: scope to uncle-dev projects only — transparent in unrelated repos.
+# shellcheck source=lib/hook-contract.sh
+source "${BASH_SOURCE%/*}/lib/hook-contract.sh"
+hook_require_project
+
 if [ -t 0 ]; then INPUT="{}"; else INPUT=$(cat); fi
+
+REPO_ROOT="$(pwd)"
+CFG_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
+[ -f "$CFG_SCRIPT" ] || CFG_SCRIPT="$REPO_ROOT/scripts/uncle-dev-config.sh"
+
+# Honor hooks.knowledge_capture_nudge toggle (R-2.9): exit 0 if disabled.
+[[ "$(bash "$CFG_SCRIPT" hooks.knowledge_capture_nudge true 2>/dev/null || echo true)" == "false" ]] && exit 0
 
 # Extract bash command output — try multiple paths (Claude Code PostToolUse structure)
 OUTPUT=$(printf '%s' "$INPUT" | jq -r '

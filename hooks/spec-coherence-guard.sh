@@ -11,10 +11,19 @@
 
 set -uo pipefail
 
+# shellcheck source=lib/hook-contract.sh
+source "${BASH_SOURCE%/*}/lib/hook-contract.sh"
+
+hook_read_input
+
 REPO_ROOT="$(pwd)"
 SPECS_DIR="$REPO_ROOT/docs/specs"
 CFG_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [ -f "$CFG_SCRIPT" ] || CFG_SCRIPT="$REPO_ROOT/scripts/uncle-dev-config.sh"
+
+# Honor hooks.spec_coherence toggle (R-2.6): exit 0 if disabled in project config.
+[[ "$(bash "$CFG_SCRIPT" hooks.spec_coherence true 2>/dev/null || echo true)" == "false" ]] && exit 0
+
 EXEC_PROFILE="$(bash "$CFG_SCRIPT" preferences.execution_profile balanced 2>/dev/null || echo "balanced")"
 
 # Graceful no-op: repos without a spec catalog aren't blocked.
@@ -28,10 +37,10 @@ EXEC_PROFILE="$(bash "$CFG_SCRIPT" preferences.execution_profile balanced 2>/dev
 spec_id_set() {
   if command -v rg >/dev/null 2>&1; then
     rg --no-line-number --no-filename -o '\*\*[A-Z][A-Z0-9-]*-[0-9]+\*\*' "$SPECS_DIR" 2>/dev/null \
-      | sed 's/^\*\*//; s/\*\*$//' | sort -u
+      | sed 's/^\*\*//; s/\*\*$//' | sort -u || true
   else
     grep -rhEo '\*\*[A-Z][A-Z0-9-]*-[0-9]+\*\*' "$SPECS_DIR" 2>/dev/null \
-      | sed 's/^\*\*//; s/\*\*$//' | sort -u
+      | sed 's/^\*\*//; s/\*\*$//' | sort -u || true
   fi
 }
 
@@ -42,23 +51,7 @@ extract_spec_ids() {
     | tr ',' ' ' \
     | tr -s '[:space:]' '\n' \
     | grep -E '^[A-Z][A-Z0-9-]*-[0-9]+$' \
-    | sort -u
-}
-
-block_with_message() {
-  # Per Claude Code hook contract: stderr + exit 2 blocks the tool call.
-  local msg="$1"
-  printf '%s\n' "$msg" >&2
-  exit 2
-}
-
-advisory_message() {
-  local msg="$1"
-  if command -v jq >/dev/null 2>&1; then
-    jq -n --arg msg "$msg" '{"priority":"INFO","message":$msg}'
-  else
-    printf '%s\n' "$msg" >&2
-  fi
+    | sort -u || true
 }
 
 # ---------------------------------------------------------------------------
@@ -66,17 +59,16 @@ advisory_message() {
 # ---------------------------------------------------------------------------
 
 handle_edit_or_write() {
-  local file_path="${CLAUDE_TOOL_INPUT_file_path:-}"
-  [ -z "$file_path" ] && exit 0
+  [ -z "$HOOK_FILE_PATH" ] && exit 0
 
   # Only check files that look like source code or tests.
-  case "$file_path" in
+  case "$HOOK_FILE_PATH" in
     *.ts|*.tsx|*.js|*.jsx|*.mjs|*.cjs|*.py|*.go|*.rs|*.java|*.kt|*.html|*.htm|*.vue|*.svelte) ;;
     *) exit 0 ;;
   esac
 
   # Determine the new content. Write provides full content; Edit provides new_string.
-  local new_content="${CLAUDE_TOOL_INPUT_content:-${CLAUDE_TOOL_INPUT_new_string:-}}"
+  local new_content="${HOOK_CONTENT:-${HOOK_NEW_STRING:-}}"
   [ -z "$new_content" ] && exit 0
 
   # Quick reject: no @spec, no work.
@@ -95,13 +87,13 @@ handle_edit_or_write() {
   local unknown=""
   while IFS= read -r id; do
     [ -z "$id" ] && continue
-    if ! printf '%s\n' "$known_ids" | grep -qx "$id"; then
+    if ! printf '%s\n' "$known_ids" | grep -qx "$id" >/dev/null 2>&1; then
       unknown="${unknown}${unknown:+, }${id}"
     fi
   done <<< "$cited_ids"
 
   if [ -n "$unknown" ]; then
-    local msg="spec-coherence-guard: BLOCKED edit to $file_path
+    local msg="spec-coherence-guard: BLOCKED edit to $HOOK_FILE_PATH
 
   Unknown spec IDs cited via @spec: $unknown
 
@@ -113,9 +105,9 @@ handle_edit_or_write() {
 
   Run /uncle-dev-spec-scan for the full coherence report."
     if [ "$EXEC_PROFILE" = "strict" ]; then
-      block_with_message "$msg"
+      hook_block "$msg"
     else
-      advisory_message "${msg/BLOCKED/WARN}"
+      hook_advise "${msg/BLOCKED/WARN}"
     fi
   fi
   exit 0
@@ -126,11 +118,10 @@ handle_edit_or_write() {
 # ---------------------------------------------------------------------------
 
 handle_bash() {
-  local cmd="${CLAUDE_TOOL_INPUT_command:-}"
-  [ -z "$cmd" ] && exit 0
+  [ -z "$HOOK_COMMAND" ] && exit 0
 
   # Only fire for commit-like commands.
-  case "$cmd" in
+  case "$HOOK_COMMAND" in
     *"git commit"*) ;;
     *) exit 0 ;;
   esac
@@ -139,7 +130,7 @@ handle_bash() {
   local scanner=""
   for candidate in \
     "${CLAUDE_PLUGIN_ROOT:-}/skills/uncle-dev-spec-annotations/scan-spec-coherence.py" \
-    "$HOME/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev-agent-skills/skills/uncle-dev-spec-annotations/scan-spec-coherence.py" \
+    "$HOME/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/skills/uncle-dev-spec-annotations/scan-spec-coherence.py" \
     "$REPO_ROOT/skills/uncle-dev-spec-annotations/scan-spec-coherence.py"
   do
     if [ -n "$candidate" ] && [ -f "$candidate" ]; then
@@ -150,32 +141,31 @@ handle_bash() {
   [ -z "$scanner" ] && exit 0
 
   local report
-  report="$(python3 "$scanner" --root "$REPO_ROOT" --no-tree-sitter --quiet --format text 2>&1)"
+  report="$(python3 "$scanner" --root "$REPO_ROOT" --no-tree-sitter --quiet --format text 2>&1)" || true
   local rc=$?
 
   if [ $rc -ne 0 ]; then
     local msg="spec-coherence-guard: BLOCKED git commit
 
-$(python3 "$scanner" --root "$REPO_ROOT" --no-tree-sitter --format text 2>&1)
+$(python3 "$scanner" --root "$REPO_ROOT" --no-tree-sitter --format text 2>&1 || true)
 
   Fix the orphan @spec citations above before committing.
   Run /uncle-dev-spec-scan locally to iterate."
     if [ "$EXEC_PROFILE" = "strict" ] || [ "$EXEC_PROFILE" = "balanced" ]; then
-      block_with_message "$msg"
+      hook_block "$msg"
     else
-      advisory_message "${msg/BLOCKED/WARN}"
+      hook_advise "${msg/BLOCKED/WARN}"
     fi
   fi
   exit 0
 }
 
 # ---------------------------------------------------------------------------
-# Dispatch
+# Dispatch on HOOK_TOOL_NAME (populated from stdin JSON by hook_read_input)
 # ---------------------------------------------------------------------------
 
-TOOL_NAME="${CLAUDE_TOOL_NAME:-}"
-case "$TOOL_NAME" in
+case "$HOOK_TOOL_NAME" in
   Edit|Write) handle_edit_or_write ;;
-  Bash) handle_bash ;;
-  *) exit 0 ;;
+  Bash)       handle_bash ;;
+  *)          exit 0 ;;
 esac

@@ -115,6 +115,33 @@ Archives are regenerated on every install run. The `dist/` directory is not comm
 
 ---
 
+## Canonical plugin-root / cache resolution
+
+Every command file and hook that needs to locate a script from the plugin must use this resolution order. **Never hardcode a version string. Never double the marketplace-id segment in the path** (e.g. `…/uncle-dev-agent-skills/uncle-dev/…` is correct; the wrong form doubles the first segment).
+
+```bash
+# 1. CLAUDE_PLUGIN_ROOT — set by Claude Code when running as an installed plugin.
+# 2. Newest versioned cache entry — sort -V | tail -1 picks the latest version
+#    deterministically (never find | head -1, which is nondeterministic).
+#
+# Real cache layout:
+#   ~/.claude/plugins/cache/<marketplace-id>/<plugin-name>/<version>/
+#   = ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/<version>/
+
+_scripts="${CLAUDE_PLUGIN_ROOT:-}/scripts"
+[[ ! -f "$_scripts/uncle-dev-load-skill.sh" ]] && \
+  _scripts="$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts"
+```
+
+For prose search lists (no bash block), list the three tiers in order:
+1. `${CLAUDE_PLUGIN_ROOT}/scripts/…`
+2. `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)scripts/…`
+3. The agent-skills repo if cloned locally
+
+The `scripts/check-manifest.sh` recurrence guard (R-8.7) enforces these rules on every run — add any new command files to that guard's scope by ensuring they live under `commands/` or `hooks/`.
+
+---
+
 ## Notes
 
 - All scripts refuse to install into this repository itself.

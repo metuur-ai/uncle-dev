@@ -1,6 +1,7 @@
 #!/bin/bash
 # wrap-nudge — Stop event
 # Nudges to run /uncle-dev-wrap when context/token usage crosses configured limits.
+# R-10.6: exit 0 silently if not an uncle-dev project (no .agents/uncle-dev-setup.yaml).
 
 set -euo pipefail
 
@@ -11,7 +12,11 @@ if [ -t 0 ]; then INPUT="{}"; else INPUT=$(cat); fi
 # Resolve project dir from hook payload, then Claude env, then cwd.
 HOOK_CWD=$(printf '%s' "$INPUT" | jq -r '.cwd // empty' 2>/dev/null || echo "")
 PROJECT_DIR="${HOOK_CWD:-${CLAUDE_PROJECT_DIR:-$PWD}}"
-CONFIG_FILE="${PROJECT_DIR}/.agents/uncle-dev-setup.yaml"
+
+# R-10.6: scope to uncle-dev projects only — transparent in unrelated repos.
+# shellcheck source=lib/hook-contract.sh
+source "${BASH_SOURCE%/*}/lib/hook-contract.sh"
+hook_require_project
 
 # Defaults requested by repo/user policy.
 HOOK_ENABLED="true"
@@ -23,10 +28,13 @@ CFG_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-config.sh"
 [[ -f "$CFG_SCRIPT" ]] || CFG_SCRIPT="$PROJECT_DIR/scripts/uncle-dev-config.sh"
 
 if [[ -f "$CFG_SCRIPT" ]]; then
-  HOOK_ENABLED="$(bash "$CFG_SCRIPT" hooks.wrap_nudge true 2>/dev/null || echo true)"
-  WRAP_ENABLED="$(bash "$CFG_SCRIPT" preferences.wrap_trigger.enabled true 2>/dev/null || echo true)"
-  THRESHOLD_PERCENT="$(bash "$CFG_SCRIPT" preferences.wrap_trigger.context_window_percent 70 2>/dev/null || echo 70)"
-  THRESHOLD_TOKENS="$(bash "$CFG_SCRIPT" preferences.wrap_trigger.total_tokens 130000 2>/dev/null || echo 130000)"
+  # cd to PROJECT_DIR so uncle-dev-config.sh resolves .agents/uncle-dev-setup.yaml
+  # relative to the project root regardless of where the shell's cwd happens to be
+  # (R-2.12: cwd-safe config reads).
+  HOOK_ENABLED="$(cd "$PROJECT_DIR" && bash "$CFG_SCRIPT" hooks.wrap_nudge true 2>/dev/null || echo true)"
+  WRAP_ENABLED="$(cd "$PROJECT_DIR" && bash "$CFG_SCRIPT" preferences.wrap_trigger.enabled true 2>/dev/null || echo true)"
+  THRESHOLD_PERCENT="$(cd "$PROJECT_DIR" && bash "$CFG_SCRIPT" preferences.wrap_trigger.context_window_percent 70 2>/dev/null || echo 70)"
+  THRESHOLD_TOKENS="$(cd "$PROJECT_DIR" && bash "$CFG_SCRIPT" preferences.wrap_trigger.total_tokens 130000 2>/dev/null || echo 130000)"
 fi
 
 [[ "$HOOK_ENABLED" == "true" ]] || exit 0
@@ -71,7 +79,8 @@ fi
 (( PCT_HIT == 1 || TOK_HIT == 1 )) || exit 0
 
 # Cooldown (30 min) to avoid repeating each stop event.
-STAMP_DIR="${PROJECT_DIR}/.claude"
+# Stamp lives in .devlocal/ (canonical scratch-stamp convention, R-10 Finding D).
+STAMP_DIR="${PROJECT_DIR}/.devlocal"
 STAMP_FILE="${STAMP_DIR}/.wrap-nudged"
 mkdir -p "$STAMP_DIR" 2>/dev/null || true
 if [[ -f "$STAMP_FILE" ]]; then

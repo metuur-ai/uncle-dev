@@ -341,3 +341,7 @@ Run `uncle-dev-grill` (PRD) or `uncle-dev-spec` (spec) on this stub when ready t
 - [ ] One stub file exists per big item under `.uncle-dev/initiative-maps/<slug>/`
 - [ ] Stubs contain the four lenses / touchpoints / deps / owner refs / ADR links only — no specs, tasks, or code
 - [ ] Greenfield maps are marked `greenfield (forward-looking)`
+
+## Usage Reference
+
+See `README.md` in this directory (`skills/uncle-dev-initiative-map/README.md`) for usage examples and the `/uncle-dev-big-idea` command walkthrough.

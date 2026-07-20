@@ -291,9 +291,9 @@ Every deployment needs a rollback plan before it happens:
 ## See Also
 
 - For user-facing release notes before tagging, see `uncle-dev-changelog`
-- For security pre-launch checks, see `references/security-checklist.md`
-- For performance pre-launch checklist, see `references/performance-checklist.md`
-- For accessibility verification before launch, see `references/accessibility-checklist.md`
+- For security pre-launch checks, see `skills/uncle-dev-security-and-hardening/security-checklist.md`
+- For performance pre-launch checklist, see `skills/uncle-dev-performance-optimization/performance-checklist.md`
+- For accessibility verification before launch, see `skills/uncle-dev-frontend-ui-engineering/accessibility-checklist.md`
 
 ## Common Rationalizations
 

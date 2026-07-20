@@ -159,6 +159,44 @@ plugin_commands() {
   done | sort
 }
 
+# Portable SHA-256 hash of a single file.  Returns the hex digest only.
+# Precedence: sha256sum (Linux / GNU coreutils) → shasum -a 256 (macOS).
+# Fails with a clear error if neither is present (R-3.3 portability binding).
+sha256_of() {
+  local path="$1"
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$path" | awk '{print $1}'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$path" | awk '{print $1}'
+  else
+    echo "ERROR: neither sha256sum nor shasum found; cannot verify content hashes" >&2
+    return 1
+  fi
+}
+
+# Content-hash drift check: compare SHA-256 of each commands/*.md against
+# its counterpart in plugins/uncle-dev/commands/*.md (R-3.3, R-3.5).
+# Reports every diverging file and suggests running scripts/sync-plugin.sh.
+check_command_content_hashes() {
+  local canon_file fork_file name canon_hash fork_hash
+  local drift_found=0
+  for canon_file in "${ASSET_COMMANDS_ROOT}"/*.md; do
+    [[ -e "$canon_file" ]] || continue
+    name="$(basename "$canon_file")"
+    fork_file="${PLUGIN_COMMANDS_DIR}/${name}"
+    if [[ ! -f "$fork_file" ]]; then
+      # Missing-file drift is already caught by compare_sets; skip here.
+      continue
+    fi
+    canon_hash="$(sha256_of "$canon_file")" || return 1
+    fork_hash="$(sha256_of "$fork_file")"   || return 1
+    if [[ "$canon_hash" != "$fork_hash" ]]; then
+      divergence "${name}: content hash mismatch — run scripts/sync-plugin.sh"
+      drift_found=$((drift_found + 1))
+    fi
+  done
+}
+
 # Compare two sorted name-streams; report missing/extra against canonical.
 # args: <label> <canonical-cmd> <copy-cmd>
 compare_sets() {
@@ -219,6 +257,12 @@ compare_sets "marketplace.json agents" canonical_agents marketplace_agents
 
 compare_sets "plugins/uncle-dev/commands" canonical_commands plugin_commands
 
+# --- R-3.3 / R-3.5: content-hash drift check --------------------------------
+# Detects stale bytes in the fork even when the filename set matches.
+# Fails naming the offending file and suggests running scripts/sync-plugin.sh.
+
+check_command_content_hashes
+
 # --- R-1.3: README counts --------------------------------------------------
 
 readme_skills="$(readme_count "skills")"
@@ -234,6 +278,179 @@ if [[ -z "$readme_commands" ]]; then
   divergence "README.md: no command count found (expected '${COMMAND_COUNT} commands')"
 elif [[ "$readme_commands" != "$COMMAND_COUNT" ]]; then
   divergence "README.md: command count is ${readme_commands}, canonical is ${COMMAND_COUNT}"
+fi
+
+# --- R-8.7: plugin-cache path recurrence guards (Unit 08) ------------------
+# Both must return empty; failure names the offending file.
+
+echo "── plugin-cache path recurrence guards (R-8.7) ───────────────────────"
+
+# Pattern built via concatenation so this file does not match its own guard.
+_mkt="uncle-dev-agent-skills"
+_doubled_pat="${_mkt}/${_mkt}"
+doubled_segment_hits="$(grep -rn "$_doubled_pat" commands/ hooks/ skills/ 2>/dev/null || true)"
+if [[ -n "$doubled_segment_hits" ]]; then
+  divergence "doubled cache segment '${_doubled_pat}' found — run Unit 08 remediation:
+${doubled_segment_hits}"
+else
+  echo "  [OK] no doubled cache segment"
+fi
+
+hardcoded_version_hits="$(grep -rn 'cache/.*/[0-9]\.[0-9]' commands/ hooks/ 2>/dev/null || true)"
+if [[ -n "$hardcoded_version_hits" ]]; then
+  divergence "hardcoded version string in cache path found — replace with sort -V | tail -1:
+${hardcoded_version_hits}"
+else
+  echo "  [OK] no hardcoded version strings in cache paths"
+fi
+
+# --- R-7.8: declared-vs-actual command count in marketplace.json ----------
+# The metadata.commands_count field in .claude-plugin/marketplace.json must
+# match the actual number of *.md files in commands/.  Degrades gracefully
+# when jq is absent (skips the check with a notice rather than failing).
+
+echo "── marketplace command count check (R-7.8) ───────────────────────────"
+
+if command -v jq >/dev/null 2>&1; then
+  declared_commands="$(jq -r '.metadata.commands_count // empty' "$MARKETPLACE" 2>/dev/null || true)"
+  if [[ -z "$declared_commands" ]]; then
+    echo "  NOTICE: metadata.commands_count not declared in marketplace.json — skipping count check."
+  elif [[ "$declared_commands" != "$COMMAND_COUNT" ]]; then
+    divergence "marketplace.json commands_count is ${declared_commands}, actual commands/ count is ${COMMAND_COUNT} — update metadata.commands_count"
+    echo "  Expected: ${COMMAND_COUNT}  Declared: ${declared_commands}"
+  else
+    echo "  [OK] marketplace commands_count matches actual (${COMMAND_COUNT})"
+  fi
+else
+  echo "  NOTICE: jq not available — skipping marketplace command count check."
+fi
+
+# --- R-7.4: plan-reviewer phantom check -----------------------------------
+# grep -rn 'plan-reviewer' agents/ skills/ commands/ must return empty after
+# remediation (or match only a real agent file).
+
+echo "── plan-reviewer phantom check (R-7.4) ──────────────────────────────"
+plan_reviewer_hits="$(grep -rn 'plan-reviewer' agents/ skills/ commands/ 2>/dev/null || true)"
+if [[ -n "$plan_reviewer_hits" ]]; then
+  divergence "phantom 'plan-reviewer' reference found — repoint to an existing agent:
+${plan_reviewer_hits}"
+else
+  echo "  [OK] no phantom plan-reviewer references"
+fi
+
+# --- R-10.1: generated-inventory staleness check --------------------------
+# Verifies that <!-- BEGIN/END GENERATED: ... --> blocks in CLAUDE.md are
+# current. Regenerates into a temp copy and diffs; fails if stale.
+# Skips if gen-inventory.sh is absent (non-fatal notice).
+
+echo "── generated-inventory staleness check (R-10.1) ─────────────────────"
+if [[ -f "${SCRIPT_DIR}/gen-inventory.sh" ]]; then
+  if bash "${SCRIPT_DIR}/gen-inventory.sh" --check 2>/dev/null; then
+    : # gen-inventory.sh --check prints its own [OK] line
+  else
+    divergence "CLAUDE.md generated blocks are stale — run: bash scripts/gen-inventory.sh"
+  fi
+else
+  echo "  NOTICE: scripts/gen-inventory.sh not found — skipping inventory staleness check."
+fi
+
+# --- R-10.3: dead-link checker for relative .md paths in skills/ and commands/ ---
+# Targets Finding B: dead references to `references/` subdirs and docs moved to
+# docs/originals/. Checks only paths that are clearly plugin-internal (start with
+# a known repo prefix: skills/, commands/, docs/, hooks/, scripts/, agents/, ./).
+# Skips template paths, runtime/user-project dirs, and example filenames.
+
+echo "── dead-link checker (R-10.3) ────────────────────────────────────────"
+dead_link_failures=0
+
+while IFS=: read -r src_file link_path; do
+  # Only check paths that are clearly plugin-internal references.
+  # Must start with a known repo prefix or ./ (explicit current-dir).
+  case "$link_path" in
+    skills/*|commands/*|hooks/*|scripts/*|agents/*|./*)
+      : ;;  # plugin-internal — proceed
+    docs/*)
+      # docs/ has both plugin-internal subdirs (originals, hld, lld, ears, audit,
+      # reference, tasks, drafts, v2, improved) AND project-level paths like
+      # docs/ubiquitous-language.md, docs/high-level-design.md, docs/stakeholders.md
+      # that users create in their own repos. Only flag docs/SUBDIR/... where SUBDIR
+      # is a plugin-internal subdirectory.
+      _docs_subdir="${link_path#docs/}"
+      _docs_subdir="${_docs_subdir%%/*}"
+      case "$_docs_subdir" in
+        originals|hld|lld|ears|audit|reference|tasks|drafts|v2|improved|README*)
+          : ;;  # plugin-internal docs dir — proceed
+        *)
+          continue  # project-level doc path — skip
+          ;;
+      esac
+      ;;
+    *)
+      continue  # skip: project-level, example, or bare filename
+      ;;
+  esac
+
+  # Skip template/placeholder paths (contain < > [ ] @ { } or *).
+  case "$link_path" in
+    *'<'*|*'>'*|*'*'*|*'['*|*']'*|*'@'*|*'{'*|*'}'*) continue ;;
+  esac
+
+  # Skip AGENTS.md example paths (used in agents-md-guide for illustration).
+  case "$link_path" in
+    *AGENTS.md) continue ;;
+  esac
+
+  # Resolve the link relative to the directory of the source file.
+  src_dir="$(dirname "$src_file")"
+  if [[ "$link_path" == ./* ]]; then
+    resolved="${src_dir}/${link_path#./}"
+  else
+    # Repo-root-relative (skills/foo/bar.md, docs/originals/x.md, etc.)
+    resolved="${REPO_ROOT}/${link_path}"
+  fi
+  if [[ ! -f "$resolved" ]]; then
+    divergence "dead link in ${src_file}: '${link_path}' → '${resolved}' not found"
+    dead_link_failures=$((dead_link_failures + 1))
+  fi
+done < <(
+  # Extract relative .md paths from backtick references in skills/ and commands/.
+  # Pattern: `path/to/something.md` (not http, not absolute).
+  grep -rn --include="*.md" -o '`[^`]*\.md`' skills/ commands/ 2>/dev/null \
+    | grep -v 'http' \
+    | sed "s/\`//g" \
+    | while IFS=: read -r file lineno content; do
+        echo "${file}:${content}"
+      done
+)
+if [[ "$dead_link_failures" -eq 0 ]]; then
+  echo "  [OK] all relative .md references in skills/ and commands/ resolve"
+fi
+
+# --- R-10.6 / R-1.12: bash-3.2 compliance sweep ---------------------------
+# hooks/ and scripts/ must contain no active bash 4+ features:
+#   declare -A, mapfile, readarray, ${var,,}
+# Lines that merely mention these in comments or documentation are excluded.
+
+echo "── bash-3.2 compliance sweep (R-10.6 / R-1.12) ─────────────────────"
+# Scan for actual bash 4+ feature *usage* (not mentions in comments or grep patterns).
+# Exclude: pure comment lines, grep -e pattern arguments, echo/printf strings,
+# and the sweep section itself (self-referential).
+bash4_hits="$(grep -rn \
+  -e 'declare -A' \
+  -e 'mapfile ' \
+  -e 'readarray ' \
+  -e '\${[a-zA-Z_][a-zA-Z_0-9]*,,}' \
+  hooks/ scripts/ 2>/dev/null \
+  | grep -v " *#" \
+  | grep -v "grep\b" \
+  | grep -v "echo \|printf " \
+  | grep -v "-e '" \
+  || true)"
+if [[ -n "$bash4_hits" ]]; then
+  divergence "bash 4+ feature found in hooks/ or scripts/ (R-1.12):
+${bash4_hits}"
+else
+  echo "  [OK] no bash 4+ features in hooks/ or scripts/"
 fi
 
 # --- verdict ---------------------------------------------------------------

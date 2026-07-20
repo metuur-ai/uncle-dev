@@ -277,7 +277,7 @@ function useToggleTask() {
 
 ## See Also
 
-For detailed accessibility requirements and testing tools, see `references/accessibility-checklist.md`.
+For detailed accessibility requirements and testing tools, see `./accessibility-checklist.md`.
 
 ## Common Rationalizations
 

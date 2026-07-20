@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\""
           }
         ]
       }
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/uncle-dev-mode.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/uncle-dev-mode.sh\""
           }
         ]
       }
@@ -26,15 +26,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/check-agents-md.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/check-agents-md.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/openspec-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/openspec-guard.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh\""
           }
         ]
       },
@@ -43,15 +43,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/pre-commit-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-commit-guard.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/destructive-command-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/destructive-command-guard.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh\""
           }
         ]
       }
@@ -62,7 +62,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/knowledge-capture-nudge.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/knowledge-capture-nudge.sh\""
           }
         ]
       }
@@ -73,7 +73,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/permission-notify.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/permission-notify.sh\""
           }
         ]
       }
@@ -83,11 +83,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/gate-notify.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/gate-notify.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/wrap-nudge.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/wrap-nudge.sh\""
           }
         ]
       }

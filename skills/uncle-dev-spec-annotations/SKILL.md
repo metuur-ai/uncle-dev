@@ -341,3 +341,15 @@ If you adopt only the minimum, follow these seven rules:
 5. Run the scanner to catch broken links
 6. When intent changes, walk down: HLD → LLD → EARS → Tests → Code
 7. When code changes, walk up: Code → EARS → LLD → HLD
+
+## Scanner Dependencies
+
+The spec coherence scanner (`scanner/scan-spec-coherence.py`) has optional AST-aware dependencies
+listed in `requirements.txt` in this skill directory. The scanner runs without them (use
+`--no-tree-sitter` or simply omit installing); without tree-sitter, `.py` files use stdlib `ast`
+and other languages use comment-aware regex. ORPHAN detection works fully in either mode.
+
+To install optional dependencies:
+```bash
+pip install -r skills/uncle-dev-spec-annotations/requirements.txt
+```

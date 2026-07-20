@@ -31,11 +31,13 @@ if [ -d "$PROJECT_DIR" ]; then
   fi
 fi
 
-# Pull the last assistant text from the JSONL transcript (last ~200 events is
-# plenty — Stop fires per-turn so the trailing assistant message is at the end).
+# Pull only the most recent assistant message from the JSONL transcript.
+# Stop fires per-turn so the last assistant entry in the file is the current turn.
+# We take only the LAST such entry (not all of them concatenated) to avoid false
+# gate matches from a gate phrase spoken in a previous turn that has since resolved.
 LAST_MSG=$(tail -n 200 "$TRANSCRIPT_PATH" \
-  | jq -r 'select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text' 2>/dev/null \
-  | tail -c 6000 || echo "")
+  | jq -rs '[.[] | select(.type == "assistant")] | last | .message.content[]? | select(.type == "text") | .text' \
+  2>/dev/null || echo "")
 [ -z "$LAST_MSG" ] && exit 0
 
 # Gate detection — each entry is "pattern|||short-tag".
