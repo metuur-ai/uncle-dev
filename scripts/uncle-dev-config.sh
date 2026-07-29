@@ -140,11 +140,16 @@ if [[ -z "${KEY_PATH}" ]]; then
 fi
 
 # Env-var override tier (scalar lookups only): resolve UNCLE_DEV_<KEY> ahead of
-# the YAML file, where <KEY> is the dotted path uppercased with dots->underscores
-# (e.g. preferences.sdd_mode -> UNCLE_DEV_PREFERENCES_SDD_MODE). A set, non-empty
+# the YAML file, where <KEY> is the dotted path uppercased with dots AND hyphens
+# mapped to underscores (e.g. preferences.sdd_mode -> UNCLE_DEV_PREFERENCES_SDD_MODE,
+# preferences.tdd-mode -> UNCLE_DEV_PREFERENCES_TDD_MODE). A set, non-empty
 # value wins without touching the YAML; an unset/empty var falls through to the
 # file. (--list mode handled above is intentionally not env-overridable.)
-ENV_KEY="UNCLE_DEV_$(printf '%s' "${KEY_PATH}" | tr '.a-z' '_A-Z')"
+#
+# Hyphens must map too: without it, preferences.tdd-mode derives the name
+# UNCLE_DEV_PREFERENCES_TDD-MODE, which is not a valid shell identifier, so that
+# key could never be overridden. The trailing '-' in SET1 is literal, not a range.
+ENV_KEY="UNCLE_DEV_$(printf '%s' "${KEY_PATH}" | tr '.a-z-' '_A-Z_')"
 if [[ -n "${!ENV_KEY:-}" ]]; then
   echo "${!ENV_KEY}"
   exit 0

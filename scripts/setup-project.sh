@@ -25,16 +25,60 @@ PROJECT_ROOT="$(pwd)"
 TODAY="$(date +%Y-%m-%d)"
 PROJECT_NAME="$(basename "${PROJECT_ROOT}")"
 
+# agent_skills_root records the GLOBAL uncle-dev installation — where the shared
+# scripts, skills, and commands live that every skill, command, and agent needs
+# to locate. It necessarily points outside the project.
+#
+# Resolution is ordered by authority, not convenience:
+#   1. A complete checkout containing the running script outranks everything. An
+#      explicit clone is a stronger statement of intent than an ambient variable,
+#      and it survives plugin upgrades.
+#   2. Otherwise CLAUDE_PLUGIN_ROOT, which the harness sets for plugin-provided
+#      commands and hooks. It is unset in a plain shell.
+#   3. Otherwise the parent of the running script, as before.
+#
+# Note this does NOT produce an unversioned path: a marketplace install lives
+# under a versioned cache directory by construction. The goal is to name the
+# installation actually in use, not to strip the version.
+#
+# REPO_ROOT stays separate and keeps locating the config template (see the
+# TEMPLATE assignment below). Deriving the template from this value would let a
+# newer script look for its template inside an older installation.
+if [[ -f "${REPO_ROOT}/scripts/install-claude.sh" ]] && [[ -d "${REPO_ROOT}/skills" ]]; then
+  AGENT_SKILLS_ROOT="${REPO_ROOT}"
+elif [[ -n "${CLAUDE_PLUGIN_ROOT:-}" ]]; then
+  AGENT_SKILLS_ROOT="${CLAUDE_PLUGIN_ROOT}"
+else
+  AGENT_SKILLS_ROOT="${REPO_ROOT}"
+fi
+
 # ── flags ─────────────────────────────────────────────────────────────────────
 
 UPDATE_MODE=0
+NONINTERACTIVE=0
 for arg in "$@"; do
   case "${arg}" in
     --update|-u) UPDATE_MODE=1 ;;
+    --non-interactive) NONINTERACTIVE=1 ;;
     --help|-h)
-      echo "Usage: bash setup-project.sh [--update]"
-      echo "  (no flag)  First-time setup. Skips preference questions if config exists."
-      echo "  --update   Re-ask all preference questions and overwrite existing config."
+      echo "Usage: bash setup-project.sh [--update] [--non-interactive]"
+      echo "  (no flag)          First-time setup. Skips preference questions if config exists."
+      echo "  --update           Re-ask all preference questions and overwrite existing config."
+      echo "  --non-interactive  Take preferences from the environment instead of prompting."
+      echo ""
+      echo "Non-interactive mode requires ALL five variables below. Any that are unset"
+      echo "or hold a disallowed value abort the run before anything is written — no"
+      echo "preference is ever silently defaulted in this mode."
+      echo ""
+      echo "  UNCLE_DEV_PREFERENCES_SDD_MODE           openspec | lid-ears"
+      echo "  UNCLE_DEV_PREFERENCES_SPEC_ANNOTATIONS   true | false"
+      echo "  UNCLE_DEV_PREFERENCES_TDD_MODE           strict | lite"
+      echo "  UNCLE_DEV_PREFERENCES_EXECUTION_PROFILE  fast | balanced | strict"
+      echo "  UNCLE_DEV_PREFERENCES_GRAPHIFY           true | false"
+      echo ""
+      echo "These are the same names uncle-dev-config.sh uses for its override tier."
+      echo "To change preferences in an already-configured project, combine the flags:"
+      echo "  bash setup-project.sh --update --non-interactive"
       exit 0 ;;
     *) echo "Unknown flag: ${arg}" >&2; exit 1 ;;
   esac
@@ -98,6 +142,78 @@ require_jq() {
   command -v jq >/dev/null 2>&1 || fail "jq is required. Install: brew install jq"
 }
 
+# ── non-interactive preference resolution ─────────────────────────────────────
+# Sources the five workflow preferences from the environment instead of stdin,
+# reusing the variable names uncle-dev-config.sh already resolves for its
+# override tier (see scripts/AGENTS.md) rather than inventing a second
+# convention.
+#
+# Fail-closed by design: every unset or disallowed value is collected and all of
+# them are reported together, before anything is written. No default is applied
+# in this mode — that is its entire safety property, and the reason the
+# interactive default (lid-ears) is deliberately not reused here.
+#
+# ni_take writes to NI_VALUE instead of echoing: a command substitution runs in
+# a subshell and would discard the appends to NI_MISSING / NI_INVALID. bash 3.2
+# is the floor, so namerefs are not available.
+
+NI_MISSING=()
+NI_INVALID=()
+NI_VALUE=""
+
+ni_take() {
+  # ni_take VAR_NAME "allowed values ..."
+  local var="$1" allowed="$2" value opt
+  NI_VALUE=""
+  # The ':-' is mandatory. Under 'set -u' a bare indirect expansion of an unset
+  # name aborts immediately, which would report only the first missing variable
+  # instead of all of them.
+  value="${!var:-}"
+  if [[ -z "${value}" ]]; then
+    NI_MISSING+=("${var}")
+    return 0
+  fi
+  for opt in ${allowed}; do
+    if [[ "${value}" == "${opt}" ]]; then
+      NI_VALUE="${value}"
+      return 0
+    fi
+  done
+  NI_INVALID+=("${var}='${value}' (allowed: ${allowed// /, })")
+}
+
+resolve_prefs_from_env() {
+  local v
+  NI_MISSING=()
+  NI_INVALID=()
+
+  ni_take UNCLE_DEV_PREFERENCES_SDD_MODE          "openspec lid-ears";    SDD_MODE="${NI_VALUE}"
+  ni_take UNCLE_DEV_PREFERENCES_SPEC_ANNOTATIONS  "true false";           SPEC_ANNOTATIONS="${NI_VALUE}"
+  ni_take UNCLE_DEV_PREFERENCES_TDD_MODE          "strict lite";          TDD_MODE="${NI_VALUE}"
+  ni_take UNCLE_DEV_PREFERENCES_EXECUTION_PROFILE "fast balanced strict"; EXECUTION_PROFILE="${NI_VALUE}"
+  ni_take UNCLE_DEV_PREFERENCES_GRAPHIFY          "true false";           GRAPHIFY="${NI_VALUE}"
+
+  if [[ ${#NI_MISSING[@]} -gt 0 ]] || [[ ${#NI_INVALID[@]} -gt 0 ]]; then
+    if [[ ${#NI_MISSING[@]} -gt 0 ]]; then
+      echo "" >&2
+      echo "  unset:" >&2
+      for v in "${NI_MISSING[@]}"; do echo "    ${v}" >&2; done
+    fi
+    if [[ ${#NI_INVALID[@]} -gt 0 ]]; then
+      echo "" >&2
+      echo "  invalid:" >&2
+      for v in "${NI_INVALID[@]}"; do echo "    ${v}" >&2; done
+    fi
+    echo "" >&2
+    fail "--non-interactive requires all five preferences. Nothing was written. See --help."
+  fi
+
+  echo ""
+  echo "Preferences (from environment):"
+  log "sdd_mode=${SDD_MODE}  spec_annotations=${SPEC_ANNOTATIONS}  tdd-mode=${TDD_MODE}"
+  log "execution_profile=${EXECUTION_PROFILE}  graphify=${GRAPHIFY}"
+}
+
 # ── step 1: detect tools ──────────────────────────────────────────────────────
 
 echo ""
@@ -138,6 +254,21 @@ if [[ "${UPDATE_MODE}" -eq 1 ]]; then
   echo "Update mode — re-asking all preference questions."
   SKIP_PREFS=0
 elif [[ -f "${CONFIG_FILE}" ]]; then
+  # A config exists, so preferences are preserved and the environment is not
+  # consulted. Accepting --non-interactive here would take five variables,
+  # discard every one of them, and still exit 0 — indistinguishable from success
+  # to any caller checking only the exit status. Refuse instead, and name the
+  # flag combination that does what the caller asked for.
+  if [[ "${NONINTERACTIVE}" -eq 1 ]]; then
+    echo "" >&2
+    echo "  A project config already exists, so preferences are preserved and the" >&2
+    echo "  UNCLE_DEV_PREFERENCES_* variables would be ignored." >&2
+    echo "" >&2
+    echo "    to change preferences:  bash setup-project.sh --update --non-interactive" >&2
+    echo "    to refresh tool fields: bash setup-project.sh" >&2
+    echo "" >&2
+    fail "--non-interactive requires --update when a config already exists. Nothing was written."
+  fi
   warn ".agents/uncle-dev-setup.yaml already exists — preserving preferences, updating tool fields only"
   warn "Run with --update to reconfigure preferences."
   SKIP_PREFS=1
@@ -145,7 +276,9 @@ else
   SKIP_PREFS=0
 fi
 
-if [[ "${SKIP_PREFS}" -eq 0 ]]; then
+if [[ "${SKIP_PREFS}" -eq 0 ]] && [[ "${NONINTERACTIVE}" -eq 1 ]]; then
+  resolve_prefs_from_env
+elif [[ "${SKIP_PREFS}" -eq 0 ]]; then
   echo ""
   echo "Preferences (press Enter to accept default):"
   echo ""
@@ -228,7 +361,7 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
     -e "s|__PROJECT_NAME__|${PROJECT_NAME}|g" \
     -e "s|__SETUP_DATE__|${TODAY}|g" \
     -e "s|active: \[\]|active: ${ACTIVE_TOOLS_YAML}|g" \
-    -e "s|agent_skills_root: \"\"|agent_skills_root: \"${REPO_ROOT}\"|g" \
+    -e "s|agent_skills_root: \"\"|agent_skills_root: \"${AGENT_SKILLS_ROOT}\"|g" \
     -e "s|sdd_mode: \"lid-ears\"|sdd_mode: \"${SDD_MODE}\"|g" \
     -e "s|execution_profile: \"balanced\"|execution_profile: \"${EXECUTION_PROFILE}\"|g" \
     -e "s|tdd-mode: lite|tdd-mode: ${TDD_MODE}|g" \
@@ -237,22 +370,81 @@ if [[ "${SKIP_PREFS}" -eq 0 ]]; then
     "${TEMPLATE}" > "${CONFIG_FILE}"
 
   ok ".agents/uncle-dev-setup.yaml written (sdd_mode=${SDD_MODE})"
-  # Post-write assertion: verify sdd_mode was written correctly (R-2.1).
-  # Run from PROJECT_ROOT so uncle-dev-config.sh resolves .agents/ correctly.
-  WRITTEN_MODE="$(cd "${PROJECT_ROOT}" && bash "${SCRIPT_DIR}/uncle-dev-config.sh" preferences.sdd_mode "" 2>/dev/null || true)"
-  WRITTEN_MODE="${WRITTEN_MODE:-}"
-  if [[ "${WRITTEN_MODE}" != "${SDD_MODE}" ]]; then
-    fail "Config write assertion failed: preferences.sdd_mode expected '${SDD_MODE}' but reads '${WRITTEN_MODE}'. Check the template for two-line scalar form."
+
+  # Post-write verification: read every preference back and compare it against
+  # what we meant to write, so a substitution that quietly stopped matching
+  # fails loudly instead of leaving a template default in place. Previously only
+  # sdd_mode was checked, which left the other four unguarded.
+  #
+  # Lookups run from PROJECT_ROOT so the helper resolves .agents/ correctly, and
+  # with the UNCLE_DEV_PREFERENCES_* names plus CLAUDE_PROJECT_DIR cleared. The
+  # helper resolves the environment ahead of the file, so leaving those set would
+  # echo back the value we just supplied and verify nothing — and, where the two
+  # differed, produced a spurious failure blaming the template. Clearing
+  # CLAUDE_PROJECT_DIR anchors the lookup to the project we actually wrote.
+  read_back() {
+    ( cd "${PROJECT_ROOT}" && env \
+        -u CLAUDE_PROJECT_DIR \
+        -u UNCLE_DEV_PREFERENCES_SDD_MODE \
+        -u UNCLE_DEV_PREFERENCES_SPEC_ANNOTATIONS \
+        -u UNCLE_DEV_PREFERENCES_TDD_MODE \
+        -u UNCLE_DEV_PREFERENCES_EXECUTION_PROFILE \
+        -u UNCLE_DEV_PREFERENCES_GRAPHIFY \
+        bash "${SCRIPT_DIR}/uncle-dev-config.sh" "$1" "" 2>/dev/null || true )
+  }
+
+  WRITE_MISMATCH=()
+  check_written() {
+    local got
+    got="$(read_back "$1")"
+    [[ "${got:-}" == "$2" ]] || WRITE_MISMATCH+=("$1 — expected '$2' but reads '${got:-}'")
+  }
+
+  check_written preferences.sdd_mode         "${SDD_MODE}"
+  check_written preferences.spec_annotations "${SPEC_ANNOTATIONS}"
+  check_written preferences.tdd-mode         "${TDD_MODE}"
+  check_written preferences.graphify         "${GRAPHIFY}"
+
+  # execution_profile carries a third tier: a /uncle-dev-mode session flag file
+  # outranks the stored value. Where one exists the read-back cannot observe what
+  # was written, so checking it would report a mismatch that is not a defect.
+  if [[ -f "${PROJECT_ROOT}/.uncle-dev/session-mode" ]]; then
+    warn "execution_profile not verified — a .uncle-dev/session-mode flag outranks the stored value"
+  else
+    check_written preferences.execution_profile "${EXECUTION_PROFILE}"
+  fi
+
+  if [[ ${#WRITE_MISMATCH[@]} -gt 0 ]]; then
+    echo "" >&2
+    for _m in "${WRITE_MISMATCH[@]}"; do echo "    ${_m}" >&2; done
+    echo "" >&2
+    fail "Config write assertion failed. Check the template for two-line scalar form."
   fi
 else
-  # Update only tool.active and agent_skills_root in existing config
+  # Refresh tool.active, and agent_skills_root only when it is not already set.
+  #
+  # A stored non-empty value is preserved: this branch runs on every plain
+  # re-run, and overwriting it there would silently repoint a project from a
+  # developer's checkout to whichever copy of the script happened to be invoked.
+  # Use --update to change it deliberately.
+  EXISTING_SKILLS_ROOT="$(cd "${PROJECT_ROOT}" && env -u UNCLE_DEV_TOOL_AGENT_SKILLS_ROOT \
+    bash "${SCRIPT_DIR}/uncle-dev-config.sh" tool.agent_skills_root "" 2>/dev/null || true)"
+
   TMPFILE="${CONFIG_FILE}.tmp"
-  sed \
-    -e "s|active: \[.*\]|active: ${ACTIVE_TOOLS_YAML}|g" \
-    -e "s|agent_skills_root: \".*\"|agent_skills_root: \"${REPO_ROOT}\"|g" \
-    "${CONFIG_FILE}" > "${TMPFILE}"
-  mv "${TMPFILE}" "${CONFIG_FILE}"
-  ok ".agents/uncle-dev-setup.yaml updated (tool fields only)"
+  if [[ -n "${EXISTING_SKILLS_ROOT:-}" ]] && [[ "${UPDATE_MODE}" -ne 1 ]]; then
+    sed \
+      -e "s|active: \[.*\]|active: ${ACTIVE_TOOLS_YAML}|g" \
+      "${CONFIG_FILE}" > "${TMPFILE}"
+    mv "${TMPFILE}" "${CONFIG_FILE}"
+    ok ".agents/uncle-dev-setup.yaml updated (tool.active; agent_skills_root preserved)"
+  else
+    sed \
+      -e "s|active: \[.*\]|active: ${ACTIVE_TOOLS_YAML}|g" \
+      -e "s|agent_skills_root: \".*\"|agent_skills_root: \"${AGENT_SKILLS_ROOT}\"|g" \
+      "${CONFIG_FILE}" > "${TMPFILE}"
+    mv "${TMPFILE}" "${CONFIG_FILE}"
+    ok ".agents/uncle-dev-setup.yaml updated (tool fields only)"
+  fi
 fi
 
 # ── step 4: clean and ensure .claude/settings.json (Claude Code only) ────────
@@ -292,7 +484,7 @@ fi
 # ── step 5: inject CLAUDE.md block (Claude Code only) ────────────────────────
 # The block is generated dynamically so the configured sdd_mode is explicit in
 # CLAUDE.md — agents read it without parsing the yaml config file.
-# In --update mode, an existing block is removed and rewritten with the new mode.
+# In --update mode, only the script-owned inner span is rewritten, in place.
 
 if [[ "${TOOL_CLAUDE}" -eq 1 ]]; then
   echo ""
@@ -301,25 +493,15 @@ if [[ "${TOOL_CLAUDE}" -eq 1 ]]; then
   CLAUDE_MD="${PROJECT_ROOT}/CLAUDE.md"
   [[ -f "${CLAUDE_MD}" ]] || touch "${CLAUDE_MD}"
 
-  # Remove existing block so we can rewrite it with the current sdd_mode.
-  # This runs on every setup (first-time and --update) to keep the block in sync.
-  if grep -q '<!-- uncle-dev -->' "${CLAUDE_MD}" 2>/dev/null; then
-    if [[ "${UPDATE_MODE}" -eq 1 ]]; then
-      # Remove old block (everything from <!-- uncle-dev --> to <!-- /uncle-dev -->)
-      python3 -c "
-import re, sys
-text = open('${CLAUDE_MD}').read()
-text = re.sub(r'\n?<!-- uncle-dev -->.*?<!-- /uncle-dev -->', '', text, flags=re.DOTALL)
-open('${CLAUDE_MD}', 'w').write(text)
-"
-      ok "CLAUDE.md — removed old uncle-dev block (rewriting with sdd_mode=${SDD_MODE})"
-    else
-      ok "CLAUDE.md already contains <!-- uncle-dev --> block — preserving (use --update to rewrite)"
-    fi
-  fi
-
-  # Write block (first-time, or after removal in --update mode)
-  if ! grep -q '<!-- uncle-dev -->' "${CLAUDE_MD}" 2>/dev/null; then
+  # The script owns only the span between the INNER markers. Everything else
+  # inside the outer <!-- uncle-dev --> region belongs to the project and is
+  # never touched.
+  #
+  # Previously --update deleted the whole outer region and re-appended a canned
+  # block at end of file. In any project that had added its own rules inside that
+  # region — this repository's own CLAUDE.md among them — that destroyed all of
+  # them, along with any nested generated markers, and moved the region to the
+  # bottom of the file on every run.
 
     # Build the sdd_mode-specific section
     if [[ "${SDD_MODE}" == "lid-ears" ]]; then
@@ -338,9 +520,8 @@ This project uses **OpenSpec** for spec-driven development.
 - Run \`/uncle-dev-plan\` after spec, before coding"
     fi
 
-    cat >> "${CLAUDE_MD}" <<BLOCK
-
-<!-- uncle-dev -->
+    CLAUDE_BODY="$(mktemp)"
+    cat > "${CLAUDE_BODY}" <<BLOCK
 ## uncle-dev
 
 This project uses uncle-dev engineering skills for structured AI-assisted development.
@@ -364,10 +545,72 @@ When a command prints \`SKILL: <ref>\` lines, read each \`<ref>\` as the active 
 ### Conventions
 - Personal scratchpad in \`.devlocal/<user>/\` (gitignored, not shared)
 - Team learnings captured in \`.uncle-dev/learns/\`
-<!-- /uncle-dev -->
 BLOCK
-    ok "CLAUDE.md — <!-- uncle-dev --> block written (sdd_mode=${SDD_MODE})"
-  fi
+
+  # The updater is written to a file and then run, rather than piped into
+  # 'python3 -' from a here-document nested inside a command substitution. That
+  # nesting parses, but the assignment does not bind, so the result is lost.
+  CLAUDE_PY="$(mktemp)"
+  cat > "${CLAUDE_PY}" <<'PY'
+import re, sys
+
+md_path, body_path = sys.argv[1], sys.argv[2]
+update_mode = sys.argv[3] == "1"
+
+text = open(md_path).read()
+body = open(body_path).read().strip("\n")
+
+O_OPEN, O_CLOSE = "<!-- uncle-dev -->", "<!-- /uncle-dev -->"
+I_OPEN, I_CLOSE = "<!-- uncle-dev:generated -->", "<!-- /uncle-dev:generated -->"
+inner = I_OPEN + "\n" + body + "\n" + I_CLOSE
+
+# No region yet: create the whole thing at end of file.
+if O_OPEN not in text:
+    prefix = text
+    if prefix and not prefix.endswith("\n"):
+        prefix += "\n"
+    if prefix and not prefix.endswith("\n\n"):
+        prefix += "\n"
+    open(md_path, "w").write(prefix + O_OPEN + "\n" + inner + "\n" + O_CLOSE + "\n")
+    print("created")
+    sys.exit(0)
+
+# A region exists. Without --update we leave it entirely alone.
+if not update_mode:
+    print("preserved")
+    sys.exit(0)
+
+# Replace ONLY our own inner span, in place. Anything else in the region —
+# project prose, nested BEGIN GENERATED blocks — is outside the match and
+# survives untouched, and the region keeps its position in the file.
+pat = re.compile(re.escape(I_OPEN) + r".*?" + re.escape(I_CLOSE), re.DOTALL)
+if pat.search(text):
+    open(md_path, "w").write(pat.sub(lambda m: inner, text, count=1))
+    print("replaced")
+else:
+    # Legacy region predating the inner markers. We cannot distinguish our own
+    # prose from the project's, so we remove nothing: insert the marked block at
+    # the top of the region and leave everything already there in place.
+    open(md_path, "w").write(text.replace(O_OPEN, O_OPEN + "\n" + inner, 1))
+    print("migrated")
+PY
+
+  CLAUDE_MD_ACTION="$(python3 "${CLAUDE_PY}" "${CLAUDE_MD}" "${CLAUDE_BODY}" "${UPDATE_MODE}")"
+  rm -f "${CLAUDE_BODY}" "${CLAUDE_PY}"
+
+  case "${CLAUDE_MD_ACTION}" in
+    created)
+      ok "CLAUDE.md — uncle-dev block written (sdd_mode=${SDD_MODE})" ;;
+    replaced)
+      ok "CLAUDE.md — generated block refreshed in place (sdd_mode=${SDD_MODE})" ;;
+    preserved)
+      ok "CLAUDE.md already contains the uncle-dev block — preserving (use --update to refresh)" ;;
+    migrated)
+      warn "CLAUDE.md — the existing uncle-dev region had no generated markers; they were inserted without removing anything"
+      warn "Review that region and delete any older duplicate of the generated block by hand." ;;
+    *)
+      warn "CLAUDE.md — unexpected result while updating the block: '${CLAUDE_MD_ACTION}'" ;;
+  esac
 fi
 
 # ── step 6: gitignore ─────────────────────────────────────────────────────────
