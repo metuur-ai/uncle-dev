@@ -2,7 +2,7 @@
 description: "Wire uncle-dev into this project — plugin check, scaffolding, config, hooks"
 ---
 
-Load and execute the `uncle-dev-setup` skill located at `skills/uncle-dev-setup/SKILL.md`.
+Load and execute the `uncle-dev-setup-local` skill located at `skills/uncle-dev-setup-local/SKILL.md`.
 
 ## Arguments
 

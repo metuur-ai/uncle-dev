@@ -354,7 +354,7 @@ mkdir -p \
 ok "${SPEC_DIRS_SUMMARY}  .uncle-dev/learns  .devlocal  .agents"
 
 if [[ "${SKIP_PREFS}" -eq 0 ]]; then
-  TEMPLATE="${REPO_ROOT}/skills/uncle-dev-setup/uncle-dev-setup.template.yaml"
+  TEMPLATE="${REPO_ROOT}/skills/uncle-dev-setup-local/uncle-dev-setup.template.yaml"
   [[ -f "${TEMPLATE}" ]] || fail "Template not found: ${TEMPLATE}"
 
   sed \

@@ -42,7 +42,7 @@ PLUGIN_ROOT = os.path.dirname(SCRIPT_DIR)
 HELPER = os.path.join(SCRIPT_DIR, "uncle-dev-config-write.sh")
 SCHEMA_FILE = os.path.join(SCRIPT_DIR, "uncle-dev-setup.schema.json")
 TEMPLATE_FILE = os.path.join(
-    PLUGIN_ROOT, "skills", "uncle-dev-setup", "uncle-dev-setup.template.yaml"
+    PLUGIN_ROOT, "skills", "uncle-dev-setup-local", "uncle-dev-setup.template.yaml"
 )
 
 

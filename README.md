@@ -246,7 +246,7 @@ The commands above are the entry points. Under the hood, they activate these 46 
 | [uncle-senior](skills/uncle-senior/SKILL.md) | Senior principal engineer in Challenge (verdict) or Duck (rubber-duck) mode | A design feels heavier than the problem, or you're stuck |
 | [pre-mortem](skills/uncle-dev-pre-mortem/SKILL.md) | Imagine the plan has failed, then work backward to surface hidden risks and preventions | Before launches, major decisions, or risky initiatives |
 | [graphify-aware-analysis](skills/uncle-dev-graphify-aware-analysis/SKILL.md) | Shared protocol for querying the graphify semantic graph (`explain`/`path`/`query`), confidence rules | Referenced automatically by research, spec, planning, debug, review when `graphify-out/graph.json` exists |
-| [setup](skills/uncle-dev-setup/SKILL.md) | Wire uncle-dev into a project across Claude Code, Codex, and OpenCode — hooks, dirs, config, rules | Setting up uncle-dev, or when hooks aren't firing |
+| [setup](skills/uncle-dev-setup-local/SKILL.md) | Wire uncle-dev into a project across Claude Code, Codex, and OpenCode — hooks, dirs, config, rules | Setting up uncle-dev, or when hooks aren't firing |
 | [using-agent-skills](skills/uncle-dev-using-agent-skills/SKILL.md) | Meta-skill: how to discover and apply the skills in this pack | Learning the system |
 
 ---

@@ -90,7 +90,7 @@ uncle-dev-planning-and-task-breakdown Plan
 uncle-dev-pre-mortem Support
 uncle-dev-research Define
 uncle-dev-security-and-hardening Review
-uncle-dev-setup Support
+uncle-dev-setup-local Support
 uncle-dev-shipping-and-launch Ship
 uncle-dev-source-driven-development Build
 uncle-dev-spec-annotations Build
