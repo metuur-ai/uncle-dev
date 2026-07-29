@@ -162,7 +162,25 @@ Tests reveal intent and coverage:
 - Are edge cases covered?
 - Do tests have descriptive names?
 - Would the tests catch a regression if the code changed?
+- Does every acquired resource (process, container, browser, temp dir) have teardown registered next to it?
 ```
+
+If the diff touches a test helper that acquires resources, run the leak check:
+
+```bash
+# Test helpers that spawn processes — each hit needs matching teardown
+grep -rn "spawn\|exec\|fork\|docker run\|launch(" --include='*test*' --include='*spec*' .
+
+# SIGKILL in test code — orphans grandchildren of wrapper processes (tsx, ts-node, npm run)
+grep -rn "SIGKILL\|kill -9" --include='*test*' --include='*spec*' .
+```
+
+Flag as **Must Fix** when a test helper:
+- spawns a process but never awaits its exit in teardown (kill-and-return is not teardown)
+- sends `SIGKILL` to a runner it did not directly exec — the wrapper dies, the grandchild keeps the port
+- has no global-teardown assertion that live resource handles reached zero
+
+A leak here is not a test-quality nit. One orphan per call site times N call sites times every run compounds until the machine is unusable, and a fresh random port per server removes `EADDRINUSE` — the only symptom anyone would have noticed.
 
 ### Step 3: Review the Implementation
 
@@ -429,6 +447,7 @@ Rule: Prefer standard library and existing utilities over new dependencies. Ever
 
 ### Verification
 - [ ] Tests pass
+- [ ] No test resources survived the run (spawned processes, containers, browsers, temp dirs)
 - [ ] Build succeeds
 - [ ] Manual verification done (if applicable)
 

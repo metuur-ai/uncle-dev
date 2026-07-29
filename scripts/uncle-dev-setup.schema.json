@@ -128,6 +128,16 @@
               "minimum": 1
             }
           }
+        },
+        "test_resource_guard": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "orphan_threshold": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
         }
       }
     },
@@ -150,7 +160,8 @@
         "openspec_guard": { "type": "boolean" },
         "destructive_command_guard": { "type": "boolean" },
         "knowledge_capture_nudge": { "type": "boolean" },
-        "wrap_nudge": { "type": "boolean" }
+        "wrap_nudge": { "type": "boolean" },
+        "test_resource_guard": { "type": "boolean" }
       }
     },
     "openspec": {

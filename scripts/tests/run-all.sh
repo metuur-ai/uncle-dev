@@ -19,6 +19,7 @@ TESTS=(
   "${SCRIPT_DIR}/plan-next-task-roundtrip.test.sh"
   "${SCRIPT_DIR}/installer-safety.test.sh"
   "${SCRIPT_DIR}/hook-contract.test.sh"
+  "${SCRIPT_DIR}/hook-block-drift.test.sh"
   "${SCRIPT_DIR}/skill-loader.test.sh"
   "${SCRIPT_DIR}/setup-noninteractive.test.sh"
 )

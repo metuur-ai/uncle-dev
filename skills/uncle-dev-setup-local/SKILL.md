@@ -233,9 +233,18 @@ If `.agents/uncle-dev-setup.yaml` already exists, read the current values via `b
 
 Skip this step if Claude Code was not detected in Step 1.
 
-Read `hooks.*` toggles via `bash scripts/uncle-dev-config.sh --list hooks` (or per-key scalar calls such as `bash scripts/uncle-dev-config.sh hooks.pre_commit`). Never open `.agents/uncle-dev-setup.yaml` directly. Read the existing `.claude/settings.json` (create `{}` if missing). Merge only hooks whose `command` string is not already present — never duplicate.
+Read the eight `hooks.*` toggles with per-key scalar calls. Do **not** use `--list hooks`: `--list` only iterates arrays and exits silently on a mapping, so it prints nothing and every hook would look disabled.
 
-Full hook set (include only those whose toggle is `true`):
+```bash
+for k in session_start pre_commit spec_coherence openspec_guard \
+         destructive_command_guard knowledge_capture_nudge wrap_nudge test_resource_guard; do
+  printf '%-26s %s\n' "$k" "$(bash scripts/uncle-dev-config.sh hooks.$k true)"
+done
+```
+
+A toggle absent from an older `.agents/uncle-dev-setup.yaml` resolves to the `true` default above — treat it as enabled and leave the file alone. Never open `.agents/uncle-dev-setup.yaml` directly. Read the existing `.claude/settings.json` (create `{}` if missing). Merge only hooks whose `command` string is not already present — never duplicate.
+
+Full hook set. This block must match `hooks/hooks.json` exactly — `scripts/tests/hook-block-drift.test.sh` fails if the two diverge. Copy the command strings verbatim, including the quotes around `"${CLAUDE_PLUGIN_ROOT}/..."`; unquoted paths break on directories containing spaces and defeat the duplicate check above.
 
 ```json
 {
@@ -245,7 +254,17 @@ Full hook set (include only those whose toggle is `true`):
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/uncle-dev-mode.sh\""
           }
         ]
       }
@@ -256,15 +275,15 @@ Full hook set (include only those whose toggle is `true`):
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/check-agents-md.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/check-agents-md.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/openspec-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/openspec-guard.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh\""
           }
         ]
       },
@@ -273,15 +292,15 @@ Full hook set (include only those whose toggle is `true`):
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/pre-commit-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-commit-guard.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/destructive-command-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/destructive-command-guard.sh\""
           },
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/spec-coherence-guard.sh\""
           }
         ]
       }
@@ -292,7 +311,36 @@ Full hook set (include only those whose toggle is `true`):
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/knowledge-capture-nudge.sh"
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/knowledge-capture-nudge.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/test-resource-guard.sh\""
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/permission-notify.sh\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/gate-notify.sh\""
+          },
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/wrap-nudge.sh\""
           }
         ]
       }
@@ -300,6 +348,22 @@ Full hook set (include only those whose toggle is `true`):
   }
 }
 ```
+
+Toggle gating — omit an entry only when its toggle reads `false`:
+
+| Hook script | Toggle |
+|-------------|--------|
+| `session-start.sh` | `hooks.session_start` |
+| `openspec-guard.sh` | `hooks.openspec_guard` |
+| `spec-coherence-guard.sh` (both matchers) | `hooks.spec_coherence` |
+| `pre-commit-guard.sh` | `hooks.pre_commit` |
+| `destructive-command-guard.sh` | `hooks.destructive_command_guard` |
+| `knowledge-capture-nudge.sh` | `hooks.knowledge_capture_nudge` |
+| `test-resource-guard.sh` | `hooks.test_resource_guard` |
+| `wrap-nudge.sh` | `hooks.wrap_nudge` |
+| `check-agents-md.sh`, `uncle-dev-mode.sh`, `permission-notify.sh`, `gate-notify.sh` | none — always install |
+
+If every hook inside a group is omitted, drop that whole group instead of leaving an empty `hooks` array.
 
 Hook-to-toggle mapping:
 | Hook command | Toggle |
@@ -311,6 +375,7 @@ Hook-to-toggle mapping:
 | `destructive-command-guard.sh` | `hooks.destructive_command_guard` |
 | `knowledge-capture-nudge.sh` | `hooks.knowledge_capture_nudge` |
 | `wrap-nudge.sh` | `hooks.wrap_nudge` |
+| `test-resource-guard.sh` | `hooks.test_resource_guard` |
 
 `wrap-nudge.sh` reads thresholds from `.agents/uncle-dev-setup.yaml`:
 
@@ -318,6 +383,12 @@ Hook-to-toggle mapping:
 - `preferences.wrap_trigger.total_tokens` (default `130000`)
 
 When either threshold is reached, it nudges the user to run `/uncle-dev-wrap` and create a resumable handoff.
+
+`test-resource-guard.sh` runs after `Bash` commands and reads its threshold from `.agents/uncle-dev-setup.yaml`:
+
+- `preferences.test_resource_guard.orphan_threshold` (default `40`)
+
+When a test-runner command leaves more orphaned runtime processes alive than the threshold, it reports a suspected resource leak and points at the missing teardown. It advises only — it never kills processes, since orphans may be legitimate MCP servers, dev servers, or dashboards.
 
 Codex and OpenCode do not have a hook system — the install scripts handle all configuration for those tools.
 

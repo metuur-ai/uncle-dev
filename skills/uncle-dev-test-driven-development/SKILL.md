@@ -175,6 +175,47 @@ Beyond the pyramid levels, classify tests by what resources they consume:
 
 Small tests should make up the vast majority of your suite. They're fast, reliable, and easy to debug when they fail.
 
+### Test Resource Teardown
+
+Medium and Large tests acquire resources that outlive the assertion: spawned servers, containers, browsers, temp dirs, DB connections. A test that leaks one resource per run is invisible on day one and fatal by day thirty — leaks compound silently across runs until the machine dies.
+
+**Register teardown in the same block that acquires, before the test body runs.**
+
+```ts
+// GOOD — acquisition and release are adjacent and unconditional
+const server = await startTestServer();
+afterEach(async () => { await server.stop(); });   // registered immediately
+```
+
+If teardown is written at the bottom of the file, or inside the test body, an early failure skips it.
+
+**Never `SIGKILL` a process you did not directly exec.** Most dev runners (`tsx`, `ts-node`, `nodemon`, `npm run`) are thin wrappers that fork a grandchild to do the real work. `SIGKILL` is uncatchable, so the wrapper dies instantly and never forwards the signal — the grandchild holding the port reparents to init and lives forever.
+
+```ts
+// BAD — kills the wrapper, orphans the grandchild that holds the socket
+child.kill('SIGKILL');
+
+// GOOD — own process group, graceful signal to the whole group, escalate only on timeout
+const child = spawn(cmd, args, { detached: true });   // child becomes group leader
+// ...
+process.kill(-child.pid, 'SIGTERM');                  // negative pid = the whole group
+await Promise.race([once(child, 'exit'), delay(5000)]);
+if (child.exitCode === null) process.kill(-child.pid, 'SIGKILL');
+```
+
+Order matters: signal the **group**, send **SIGTERM** first, **await actual exit**, and only then escalate.
+
+**Assert the absence of leaks — do not rely on noticing them.** A helper that allocates a fresh random free port per server will never raise `EADDRINUSE`, which removes the only symptom you would have noticed. Add a global teardown check:
+
+```ts
+// global teardown — fails the suite if anything survived
+if (activeServers.size > 0) {
+  throw new Error(`${activeServers.size} test servers leaked: ${[...activeServers]}`);
+}
+```
+
+The same rule applies to containers (`--rm` or an explicit `docker rm -f` in teardown), browsers (`await browser.close()` in `finally`), and temp dirs.
+
 ### Decision Guide
 
 ```
@@ -311,6 +352,9 @@ describe('TaskService', () => {
 | Snapshot abuse | Large snapshots nobody reviews, break on any change | Use snapshots sparingly and review every change |
 | No test isolation | Tests pass individually but fail together | Each test sets up and tears down its own state |
 | Mocking everything | Tests pass but production breaks | Prefer real implementations > fakes > stubs > mocks. Mock only at boundaries where real deps are slow or non-deterministic |
+| Leaked test resources | Spawned servers/containers survive the run, compounding until the machine dies | Register teardown at acquisition; signal the process group with SIGTERM and await exit; assert zero survivors in global teardown |
+| `SIGKILL` on a wrapper process | Uncatchable signal kills the wrapper, orphaning the grandchild that holds the port | Spawn `detached`, `process.kill(-pid, 'SIGTERM')`, escalate to SIGKILL only after a timeout |
+| Random free port per test server | Masks leaks by removing `EADDRINUSE`, the only symptom you'd notice | Keep random ports, but track live handles and fail the suite on survivors |
 
 ## Browser Testing with DevTools
 
@@ -359,6 +403,8 @@ then verifies the test passes.
 
 This separation ensures the test is written without knowledge of the fix, making it more robust.
 
+**Parallel subagents must not each run the full suite.** Give each subagent a scoped test command (specific file or pattern) and run the full suite once, from the main agent, after they finish. N agents running the whole suite multiplies every resource the suite acquires — and every resource it fails to release — by N.
+
 ## See Also
 
 For detailed testing patterns, examples, and anti-patterns across frameworks, see `./testing-patterns.md`.
@@ -373,6 +419,9 @@ For detailed testing patterns, examples, and anti-patterns across frameworks, se
 | "I tested it manually" | Manual testing doesn't persist. Tomorrow's change might break it with no way to know. |
 | "The code is self-explanatory" | Tests ARE the specification. They document what the code should do, not what it does. |
 | "It's just a prototype" | Prototypes become production code. Tests from day one prevent the "test debt" crisis. |
+| "The suite passes, so cleanup works" | Passing asserts nothing about teardown. Leaks are silent by construction — count survivors after the run instead. |
+| "`SIGKILL` is the reliable way to stop it" | It's the reliable way to orphan a grandchild. Uncatchable means the wrapper can't forward it. |
+| "Each test gets a fresh port, so there's no conflict" | No conflict means no error message. You removed the symptom, not the leak. |
 
 ## Red Flags
 
@@ -383,6 +432,10 @@ For detailed testing patterns, examples, and anti-patterns across frameworks, se
 - Tests that test framework behavior instead of application behavior
 - Test names that don't describe the expected behavior
 - Skipping tests to make the suite pass
+- A test helper that spawns a process, container, or browser with no teardown registered next to it
+- `SIGKILL` sent to anything you didn't directly `exec` (a runner like `tsx`/`ts-node`/`npm run` is a wrapper, not the workload)
+- Teardown that fires the kill and returns without awaiting the process's actual exit
+- No global-teardown assertion that live resource handles reached zero
 
 ## `@spec` Annotations on Tests
 

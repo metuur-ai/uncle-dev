@@ -62,6 +62,16 @@ For every function or component:
 | Boundary values | Min, max, zero, negative |
 | Error paths | Invalid input, network failure, timeout |
 | Concurrency | Rapid repeated calls, out-of-order responses |
+| Resource release | Every spawned process/container/browser is gone after teardown |
+
+### 6. Account for Every Resource You Acquire
+
+Any test that spawns a process, container, or browser must release it, and the release must be proven — not assumed. A passing suite says nothing about teardown.
+
+- Register teardown in the same block that acquires, before the test body runs
+- Signal the process **group** (`spawn(..., { detached: true })` + `process.kill(-pid, 'SIGTERM')`), then **await actual exit**, escalating to `SIGKILL` only on timeout
+- Never `SIGKILL` a process you didn't directly exec — dev runners (`tsx`, `ts-node`, `nodemon`, `npm run`) fork a grandchild that does the real work, and an uncatchable signal can't be forwarded to it
+- Assert zero survivors in global teardown; a fresh random port per server hides leaks by removing `EADDRINUSE`
 
 ## Output Format
 
@@ -94,3 +104,4 @@ When analyzing test coverage:
 5. Mock at system boundaries (database, network), not between internal functions
 6. Every test name should read like a specification
 7. A test that never fails is as useless as a test that always fails
+8. A test helper that acquires a resource without registering its teardown is a defect, not a style issue

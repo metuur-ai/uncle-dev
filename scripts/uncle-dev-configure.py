@@ -152,6 +152,7 @@ SECTIONS = [
         ("destructive_command_guard", ["hooks", "destructive_command_guard"], "bool"),
         ("knowledge_capture_nudge", ["hooks", "knowledge_capture_nudge"], "bool"),
         ("wrap_nudge", ["hooks", "wrap_nudge"], "bool"),
+        ("test_resource_guard", ["hooks", "test_resource_guard"], "bool"),
     ]),
     ("OpenSpec conventions", [
         ("change_id_format", ["openspec", "change_id_format"], "string"),
