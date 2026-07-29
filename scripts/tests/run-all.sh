@@ -20,6 +20,7 @@ TESTS=(
   "${SCRIPT_DIR}/installer-safety.test.sh"
   "${SCRIPT_DIR}/hook-contract.test.sh"
   "${SCRIPT_DIR}/skill-loader.test.sh"
+  "${SCRIPT_DIR}/setup-noninteractive.test.sh"
 )
 
 TOTAL_PASS=0
