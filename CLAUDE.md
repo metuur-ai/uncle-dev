@@ -29,7 +29,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 **Capture:** uncle-dev-knowledge-capture
 **Handoff:** uncle-dev-wrap
 **Maintain:** uncle-dev-custom-me, uncle-dev-knowledge-maintenance
-**Support:** uncle-dev-business-observability, uncle-dev-code-context, uncle-dev-graphify-aware-analysis, uncle-dev-initiative-map, uncle-dev-next-task, uncle-dev-over-engineering-audit, uncle-dev-pre-mortem, uncle-dev-setup, uncle-dev-using-agent-skills
+**Support:** uncle-dev-business-observability, uncle-dev-code-context, uncle-dev-graphify-aware-analysis, uncle-dev-initiative-map, uncle-dev-next-task, uncle-dev-over-engineering-audit, uncle-dev-pre-mortem, uncle-dev-setup-local, uncle-dev-using-agent-skills
 <!-- END GENERATED: skills-by-phase -->
 
 ## Conventions
@@ -159,7 +159,7 @@ When the user types any `/uncle-dev-*` command, invoke the corresponding skill i
 | /uncle-dev-proactive-memory | uncle-dev-using-agent-skills |
 | /uncle-dev-research | uncle-dev-research |
 | /uncle-dev-review | uncle-dev-code-review-and-quality |
-| /uncle-dev-setup | uncle-dev-setup |
+| /uncle-dev-setup | uncle-dev-setup-local |
 | /uncle-dev-ship | uncle-dev-shipping-and-launch |
 | /uncle-dev-spec | uncle-dev-spec-driven-development |
 | /uncle-dev-spec-annotations | uncle-dev-spec-annotations |

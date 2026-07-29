@@ -2,7 +2,7 @@
 description: "Wire uncle-dev into this project — plugin check, scaffolding, config, hooks"
 ---
 
-Load and execute the `uncle-dev-setup` skill located at `skills/uncle-dev-setup/SKILL.md`.
+Load and execute the `uncle-dev-setup-local` skill located at `skills/uncle-dev-setup-local/SKILL.md`.
 
 ## Arguments
 
@@ -23,11 +23,14 @@ SETUP_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/setup-project.sh"
 )"
 ```
 
-2. Run the script from the **current project root**:
-   - No argument or unrecognized argument → `bash "${SETUP_SCRIPT}"`
-   - `update` → `bash "${SETUP_SCRIPT}" --update`
+2. Run the script from the **current project root** (`PROJECT_ROOT` is `$(pwd)`, so a wrong working directory configures the wrong project):
+   - Config already exists, no update requested → `bash "${SETUP_SCRIPT}"` — prompts for nothing, safe to run directly
+   - First-time setup → ask the user all five preference questions, then
+     `UNCLE_DEV_PREFERENCES_*=… bash "${SETUP_SCRIPT}" --non-interactive`
+   - `update` → ask all five again, then
+     `UNCLE_DEV_PREFERENCES_*=… bash "${SETUP_SCRIPT}" --update --non-interactive`
 
-3. **Do not proceed without running the script.** The script interactively asks the user preference questions. The agent must not answer on the user's behalf or apply defaults silently.
+3. **Do not proceed without running the script.** It prompts only when `.agents/uncle-dev-setup.yaml` is absent and `--update` was not passed; otherwise it takes the `SKIP_PREFS=1` branch and never reads stdin, so the agent may run it directly. Where it would prompt, ask the user each question and pass the answers via `--non-interactive`, which is fail-closed and aborts before writing if any is unset or invalid. Never answer on the user's behalf, apply a default silently, or hand-write the config file.
 
 4. After the script completes, validate config and then check plugin installation:
 

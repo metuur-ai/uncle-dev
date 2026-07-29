@@ -70,6 +70,22 @@ OUT="$(run_cfg "UNCLE_DEV_PREFERENCES_EXECUTION_PROFILE=strict" preferences.exec
   && ok "derived key for preferences.execution_profile resolves" \
   || fail "derived key for execution_profile failed, got '${OUT}'"
 
+# Hyphenated keys must derive too (setup-noninteractive-and-skill-rename R-1.14).
+# preferences.tdd-mode -> UNCLE_DEV_PREFERENCES_TDD_MODE. Before hyphens were
+# mapped, the derived name kept the hyphen, which is not a valid shell
+# identifier, so this key could never be overridden at all.
+TDD_YAML_VALUE="$(run_cfg "" preferences.tdd-mode)"
+OUT="$(run_cfg "UNCLE_DEV_PREFERENCES_TDD_MODE=strict" preferences.tdd-mode)"
+[[ "${OUT}" == "strict" ]] \
+  && ok "hyphenated key preferences.tdd-mode resolves via UNCLE_DEV_PREFERENCES_TDD_MODE" \
+  || fail "hyphenated key override failed, got '${OUT}'"
+
+# Sanity: the override target differs from the on-disk value, so the assertion
+# above cannot pass trivially.
+[[ "${TDD_YAML_VALUE}" != "strict" ]] \
+  && ok "on-disk tdd-mode ('${TDD_YAML_VALUE}') differs from override target" \
+  || fail "test precondition broken: on-disk tdd-mode already 'strict'"
+
 # ── Acceptance 3: no env -> unchanged behavior ────────────────────────────────
 OUT="$(run_cfg "" preferences.sdd_mode)"
 [[ "${OUT}" == "${YAML_VALUE}" ]] \

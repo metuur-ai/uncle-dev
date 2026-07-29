@@ -1,5 +1,5 @@
 ---
-name: uncle-dev-setup
+name: uncle-dev-setup-local
 description: Wires uncle-dev fully into a target project for Claude Code, Codex, and/or OpenCode. Installs the plugin for each detected tool, scaffolds required directories, writes the project config file, injects hooks into .claude/settings.json (Claude Code only), and adds uncle-dev rules to CLAUDE.md or AGENTS.md. Use when setting up uncle-dev in a new or existing project, when hooks are not firing, or when the session does not load the Skill Discovery flowchart on start.
 ---
 
@@ -17,7 +17,7 @@ Supported tools: Claude Code, Codex, OpenCode. All three can be configured in a 
 
 ## Fast Path — setup-project.sh
 
-MANDATORY: Steps 1, 3, 4, 5, and 6 MUST be executed by running the setup script — never by the AI agent manually. The script interactively asks the user for preferences (including `sdd_mode`). If the AI skips the script and applies defaults silently, it is violating this process.
+MANDATORY: Steps 1, 3, 4, 5, and 6 MUST be carried out by running the setup script. "Manually" here means hand-writing `.agents/uncle-dev-setup.yaml` or choosing preference values on the user's behalf — never do either. It does **not** mean the agent may not execute the script. When the agent may run it, and how, is set out in the table below.
 
 The script ships inside the plugin cache after `install-claude.sh` runs. Locate it:
 
@@ -30,18 +30,32 @@ SETUP_SCRIPT="${CLAUDE_PLUGIN_ROOT:-}/scripts/setup-project.sh"
 )"
 ```
 
-Run from the target project root — the user's terminal, not a subshell:
+Run from the target project root. `PROJECT_ROOT` is `$(pwd)`, so an incorrect working directory silently configures the wrong project — always `cd` to the target first.
 
-| Situation                                                                                             | Command                           |
-| ----------------------------------------------------------------------------------------------------- | --------------------------------- |
-| First-time setup                                                                                      | `bash "${SETUP_SCRIPT}"`          |
-| Change config (level, sdd_mode, tdd-mode, execution_profile, annotations, graphify, mutation-testing) | `bash "${SETUP_SCRIPT}" --update` |
+Whether the agent may run the script turns on a single question: will it prompt? It prompts only when `.agents/uncle-dev-setup.yaml` is absent and `--update` was not passed. Otherwise it takes the `SKIP_PREFS=1` branch and never calls `read`.
+
+| Situation | Command | Agent may run it? |
+| --- | --- | --- |
+| Config exists, no `--update` | `bash "${SETUP_SCRIPT}"` | **Yes** — prompts for nothing; refreshes tool fields only |
+| First-time, answers in hand | `UNCLE_DEV_PREFERENCES_*=… bash "${SETUP_SCRIPT}" --non-interactive` | **Yes**, but only after asking the user all five questions |
+| First-time, user prefers a terminal | `bash "${SETUP_SCRIPT}"` | The user runs it |
+| Change existing preferences | `UNCLE_DEV_PREFERENCES_*=… bash "${SETUP_SCRIPT}" --update --non-interactive` | **Yes**, after re-asking all five |
+
+`--non-interactive` sources the five preferences from the environment and is fail-closed: any that are unset or hold a disallowed value abort the run before anything is written, so no preference can be silently defaulted. These are the same names `uncle-dev-config.sh` resolves for its override tier:
+
+| Variable | Allowed values |
+| --- | --- |
+| `UNCLE_DEV_PREFERENCES_SDD_MODE` | `openspec` \| `lid-ears` |
+| `UNCLE_DEV_PREFERENCES_SPEC_ANNOTATIONS` | `true` \| `false` |
+| `UNCLE_DEV_PREFERENCES_TDD_MODE` | `strict` \| `lite` |
+| `UNCLE_DEV_PREFERENCES_EXECUTION_PROFILE` | `fast` \| `balanced` \| `strict` |
+| `UNCLE_DEV_PREFERENCES_GRAPHIFY` | `true` \| `false` |
+
+Ask the user each question, then pass their answers. Never guess one, and never write the config file by hand.
+
+Passing `--non-interactive` on its own against an existing config is refused: preferences would be preserved and the variables ignored, so the run would report success having applied nothing. Pair it with `--update` instead. That pairing is also the idiom for repeated or unattended provisioning — a bare `--non-interactive` would succeed on a clean checkout and then fail on every run after the first.
 
 `--update` re-asks all preference questions and overwrites the existing `.agents/uncle-dev-setup.yaml` preferences. Tool detection is always re-run. Use it whenever the user says "change my SDD mode", "switch to lid-ears", or "update my uncle-dev config".
-
-Wait for the script to finish. The script prompts the user for workflow preferences (including `sdd_mode`, testing strictness, annotations, and graph usage).
-
-The agent must NOT answer these on the user's behalf. If the script cannot run interactively, ask the user each question explicitly before writing any config.
 
 After the script completes, only Step 2 (plugin installation) may need manual attention:
 
