@@ -47,15 +47,18 @@ Write `docs/tasks/<slug>.md` using this format:
   - why: <the intent this story serves — the reason it exists, not a restatement of the title>
   - acceptance: R-1.1 — WHEN … THE SYSTEM SHALL …
   - verify: <how to confirm>
+  - landed: <left blank at plan time; filled in when the story ships>
 
 - [ ] 1.2 <story title> (deps: 1.1, est: ~Xm)
   - why: …
   - acceptance: R-1.2 — …
   - verify: …
+  - landed:
 ```
 
 Rules:
 - Every story states its `why:` — the intent behind it (which goal/requirement/user need it serves). If you cannot name a why, the story is busywork; cut it or merge it.
+- Every story carries an empty `landed:` line at plan time. Whoever checks the box fills it in with the commit SHA + the source files the story produced (e.g. `landed: b961d77 — live-monitor/projects.ts, live-monitor/projects.test.ts`). A checked box with an empty `landed:` is an incomplete story.
 - One story per EARS requirement (or one per closely related group if trivially small)
 - `deps:` must reference story IDs in this same file — no cross-file deps
 - `(mutex: tag)` when two stories cannot run concurrently (e.g., both modify the same file)

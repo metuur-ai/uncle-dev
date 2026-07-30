@@ -75,7 +75,7 @@ For the chosen story:
    - Update `docs/lld/<slug>.md` if implementation changes shared technical constraints
    - No `execution.md` — cross-story coordination notes go in `.devlocal/`
 10. Commit with a descriptive message
-11. Mark the story complete in `docs/tasks/<slug>.md` (change `- [ ]` to `- [x]`) and move to the next
+11. Mark the story complete in `docs/tasks/<slug>.md` (change `- [ ]` to `- [x]`) **and fill in its `landed:` line** with the commit SHA from step 10 plus the source files the story produced (e.g. `landed: b961d77 — live-monitor/projects.ts, live-monitor/projects.test.ts`). Never check a box without writing `landed:`. Then move to the next
 
 If any step fails, resolve and follow the debug-error skill:
 
