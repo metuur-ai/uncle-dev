@@ -1,6 +1,7 @@
 ---
 name: repo-research-analyst
 description: Specialist subagent that analyzes repository structure, architecture patterns, conventions, and documentation to produce a structured handoff document. Spawned by orchestrators when researching an unfamiliar codebase. Not for direct user invocation.
+model: sonnet
 ---
 
 # Repo Research Analyst

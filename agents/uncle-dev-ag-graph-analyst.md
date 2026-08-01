@@ -1,6 +1,7 @@
 ---
 name: graph-analyst
 description: Specialist subagent that performs multi-query semantic graph traversal using graphify. Spawned by orchestrators when graphify-out/graph.json is present and multi-hop analysis is needed. Returns a structured handoff with annotated findings and confidence levels. Not for direct user invocation.
+model: sonnet
 ---
 
 # Graph Analyst
