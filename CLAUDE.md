@@ -29,7 +29,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 **Capture:** uncle-dev-knowledge-capture
 **Handoff:** uncle-dev-wrap
 **Maintain:** uncle-dev-custom-me, uncle-dev-knowledge-maintenance
-**Support:** uncle-dev-business-observability, uncle-dev-code-context, uncle-dev-graphify-aware-analysis, uncle-dev-initiative-map, uncle-dev-next-task, uncle-dev-over-engineering-audit, uncle-dev-pre-mortem, uncle-dev-setup-local, uncle-dev-subagent-model-routing, uncle-dev-using-agent-skills
+**Support:** uncle-dev-business-observability, uncle-dev-code-context, uncle-dev-graphify-aware-analysis, uncle-dev-initiative-map, uncle-dev-next-task, uncle-dev-over-engineering-audit, uncle-dev-pre-mortem, uncle-dev-setup-local, uncle-dev-using-agent-skills, uncle-dev-subagent-model-routing
 <!-- END GENERATED: skills-by-phase -->
 
 ## Conventions

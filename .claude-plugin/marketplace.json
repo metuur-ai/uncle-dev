@@ -54,6 +54,7 @@
         "./skills/uncle-dev-spec-annotations",
         "./skills/uncle-dev-spec-driven-development",
         "./skills/uncle-dev-speech",
+        "./skills/uncle-dev-subagent-model-routing",
         "./skills/uncle-dev-test-driven-development",
         "./skills/uncle-dev-ubiquitous-language",
         "./skills/uncle-dev-using-agent-skills",

@@ -13,7 +13,7 @@ Uncle Dev is a Claude Code plugin (also installable for Codex, OpenCode, Gemini,
    /uncle-dev-spec           /uncle-dev-plan          /uncle-dev-build        /uncle-dev-test         /uncle-dev-review       /uncle-dev-ship
 ```
 
-The plugin ships **46 skills**, **31 commands**, and **9 specialist agent personas**, all under the `uncle-dev-` namespace.
+The plugin ships **47 skills**, **31 commands**, and **9 specialist agent personas**, all under the `uncle-dev-` namespace.
 
 ---
 
@@ -158,7 +158,7 @@ Skills are plain Markdown — they work with any agent that accepts system promp
 
 ## All 44 Skills
 
-The commands above are the entry points. Under the hood, they activate these 46 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
+The commands above are the entry points. Under the hood, they activate these 47 skills — each one a structured workflow with steps, verification gates, and anti-rationalization tables. You can also reference any skill directly.
 
 ### Define — Clarify what to build
 
@@ -318,7 +318,7 @@ Every skill follows a consistent anatomy:
 
 ```
 agent-skills/
-├── skills/                 # 46 skills (SKILL.md per directory, colocated references)
+├── skills/                 # 47 skills (SKILL.md per directory, colocated references)
 ├── agents/                 # 9 specialist personas (uncle-dev-ag-*, uncle-lead, uncle-po, uncle-senior)
 ├── commands/               # 31 slash commands
 ├── hooks/                  # Session lifecycle hooks (session-start, spec-coherence-guard,

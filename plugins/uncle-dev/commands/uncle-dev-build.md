@@ -62,6 +62,9 @@ For the chosen story:
 1. Read the story's acceptance criteria from `docs/tasks/<slug>.md`
 2. Look up the full EARS statement in `docs/ears/<slug>.md` using the referenced requirement ID (e.g. R-1.1)
 3. Load relevant context (existing code, patterns, types) and consult `docs/lld/<slug>.md` for design constraints
+
+   If steps 1–3 require locating code you cannot point at directly (call sites, existing patterns, prior implementations of the same shape), spawn a scoped read-only retrieval scout on a cheaper tier rather than searching inline. One question per scout, fixed output schema, spot-check the cited paths before using them. See `uncle-dev-subagent-model-routing`. If you already know where the code is, skip the scout and read it.
+
 4. Break the implementation into private technical steps in `.devlocal/<user>/<story-id>/scratchpad.md`
 5. Write a failing test that directly asserts the EARS requirement (RED)
 6. Implement the minimum code to pass the test (GREEN)
@@ -108,6 +111,9 @@ For the chosen story:
 0. Use the code-context skill — identify all directories to be edited, read their `AGENTS.md` files, validate architecture boundary compliance before writing any code
 1. Read the story's acceptance criteria and dependencies
 2. Load relevant context (existing code, patterns, types)
+
+   If steps 1–2 require locating code you cannot point at directly (call sites, existing patterns, prior implementations of the same shape), spawn a scoped read-only retrieval scout on a cheaper tier rather than searching inline. One question per scout, fixed output schema, spot-check the cited paths before using them. See `uncle-dev-subagent-model-routing`. If you already know where the code is, skip the scout and read it.
+
 3. If useful, break the implementation into private technical steps in `.devlocal/<user>/<story-id>/scratchpad.md`
 4. Write a failing test for the expected behavior (RED)
 5. Implement the minimum code to pass the test (GREEN)
