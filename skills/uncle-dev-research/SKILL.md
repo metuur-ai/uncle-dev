@@ -87,26 +87,9 @@ Do not write detailed prompts about how to search — the agents know their tool
 
 #### Model routing
 
-The analysis in this skill lives in Steps 2, 4, and 5 — decompose, synthesize, write — which run in the orchestrator's context. Subagents are evidence gatherers. Route them by the judgment the task actually requires, not by the importance of the research:
+The analysis in this skill lives in Steps 2, 4, and 5 — decompose, synthesize, write — which run in the orchestrator's context. Subagents are evidence gatherers, so route them by the tier table in `uncle-dev-subagent-model-routing`, and apply its four accuracy controls to every spawn. Control 3 (ban inference) is already folded into the key instruction above; control 4 (verify cited paths) runs before Step 4 synthesis.
 
-| Spawn | Model | Why |
-|---|---|---|
-| Inline scout with a bounded target ("find every call site of X", "list the routes in `src/api/`") | `haiku` | Mechanical retrieval — the output is a list of locations |
-| `.uncle-dev/learns/` history search | `haiku` | Keyword sweep over a small directory |
-| `uncle-dev-ag-repo-research-analyst` | `sonnet` (pinned in agent frontmatter) | Templated handoff — the template is the reasoning scaffold |
-| `uncle-dev-ag-graph-analyst` | `sonnet` (pinned in agent frontmatter) | Confidence interpretation is real judgment, but rule-driven and narrow |
-| Open-ended scout ("why is it structured this way", "what are the tradeoffs here") | inherit | Not retrieval — leave on the session model |
-
-Pass the tier via the `model` parameter when spawning inline scouts. The two named agents pin their own model and need no override.
-
-Cheap tiers fail here as imprecise or fabricated citations, not as shallow reasoning. Four controls remove that failure mode:
-
-1. **One question per scout.** Split compound asks ("map auth and session handling") into separate spawns — smaller models degrade on compound prompts much faster.
-2. **Hard output contract.** Require `path:line — one-line description` rows and nothing else. A rigid schema leaves no ambiguity to fill with prose.
-3. **Ban inference explicitly** — already folded into the key instruction above. This converts hallucination into an honest gap you can re-scout.
-4. **Verify, don't trust.** Before Step 4 synthesis, spot-check cited paths (`grep -c`, or Read the claimed line). Cheap to run, catches a bad scout before its claims enter the research document.
-
-If the graphify availability check returned OFF, keep inline scouts on `sonnet` rather than `haiku` — without Step 1.5 narrowing the scope, scout prompts are broader and the retrieval is less bounded.
+Exception: if the graphify availability check returned OFF, keep inline scouts on `sonnet` rather than `haiku` — without Step 1.5 narrowing the scope, scout prompts are broader and the retrieval is less bounded.
 
 ### Step 4: Synthesize findings
 

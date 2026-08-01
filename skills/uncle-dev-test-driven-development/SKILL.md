@@ -389,7 +389,7 @@ For detailed DevTools setup instructions and workflows, see `browser-testing-wit
 
 ## When to Use Subagents for Testing
 
-For complex bug fixes, spawn a subagent to write the reproduction test:
+For complex bug fixes, spawn a subagent to write the reproduction test, with `model: sonnet` — the bug description bounds the work, and the main agent verifies the result by running it. This is the write-safety exception in `uncle-dev-subagent-model-routing`: if you cannot watch the test fail in the same turn, do not tier it down.
 
 ```
 Main agent: "Spawn a subagent to write a test that reproduces this bug:
