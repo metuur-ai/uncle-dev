@@ -44,6 +44,20 @@ spec_id_set() {
   fi
 }
 
+# Extract BMAD story/epic references misused as @spec IDs.
+# Two shapes leak through otherwise:
+#   - lowercase kebab (story-3.2-login-form) — invisible to extract_spec_ids,
+#     so the code looks annotated but the scanner never sees it.
+#   - uppercase (STORY-3, EPIC-2) — caught as "unknown", but the suggested fix
+#     ("add it to docs/specs/") would pollute the registry with transient IDs.
+extract_storyish_ids() {
+  # Requires a digit after the separator so legit segments (STORY-API-001)
+  # are not mistaken for story refs (story-3.2-login-form, epic-2).
+  grep -oiE '@spec[[:space:]]+(story|epic)[-.][0-9][A-Za-z0-9.-]*' \
+    | sed 's/^[^[:space:]]*[[:space:]]*//' \
+    | sort -u || true
+}
+
 # Extract @spec IDs from arbitrary text passed on stdin.
 extract_spec_ids() {
   grep -oE '@spec[[:space:]]+[A-Z][A-Z0-9,[:space:]-]+' \
@@ -76,6 +90,28 @@ handle_edit_or_write() {
     *@spec*) ;;
     *) exit 0 ;;
   esac
+
+  # BMAD interop: story/epic refs are transient and are never valid spec IDs.
+  local storyish
+  storyish="$(printf '%s' "$new_content" | extract_storyish_ids | tr '\n' ' ')"
+  if [ -n "${storyish// /}" ]; then
+    local smsg="spec-coherence-guard: BLOCKED edit to $HOOK_FILE_PATH
+
+  BMAD story/epic refs used as @spec IDs: ${storyish% }
+
+  Stories are transient; spec IDs are durable. Code must never annotate a story.
+  Fix:
+    - Annotate the EARS spec ID the story implements (e.g. @spec AUTH-UI-001)
+    - Look it up in the story's spec_ids: field in stories.yaml
+    - Do NOT add the story ID to docs/specs/ — that pollutes the registry
+
+  See uncle-dev-spec-annotations > BMAD Artifact Interop."
+    if [ "$EXEC_PROFILE" = "strict" ]; then
+      hook_block "$smsg"
+    else
+      hook_advise "${smsg/BLOCKED/WARN}"
+    fi
+  fi
 
   local cited_ids
   cited_ids="$(printf '%s' "$new_content" | extract_spec_ids)"
