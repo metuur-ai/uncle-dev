@@ -26,5 +26,10 @@ ASSET_CODEX_AGENT_MANIFESTS="plugins/uncle-dev/agent-manifests"
 # .claude-plugin/plugin.json — Claude Code plugin manifest
 ASSET_PLUGIN_META=".claude-plugin/plugin.json"
 
+# goose/ — Goose-specific packaging (plugin.json manifest + README).
+# Goose plugins carry skills and hooks only; install-goose.sh stages this
+# manifest alongside skills/ into ~/.agents/plugins/uncle-dev/.
+ASSET_GOOSE="goose"
+
 # Rules files — coding principles and agent behavior guidance
 ASSET_RULES=("AGENTS.md" "AGENT_RULES.md" "CLAUDE.md")
