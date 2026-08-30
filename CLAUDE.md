@@ -50,6 +50,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 - `npm test` — Not applicable (this is a documentation project)
 - Validate: Check that all SKILL.md files have valid YAML frontmatter with name and description
 - `bash scripts/lint-skills.sh [path]` — lint SKILL.md files with nori-lint (report-only; `--enforce` to gate, `--deep` + `ANTHROPIC_API_KEY` for LLM rules; rule config in `scripts/nori-lint.config.json`; setup guide: `docs/originals/lint-skills-setup.md`)
+- `bash scripts/bump-version.sh <major|minor|patch|X.Y.Z>` — set the release version across every manifest that carries one. `--check` verifies they agree (enforced by `check-manifest.sh`), `--sync` re-propagates without bumping, `--dry-run` previews, `--tag` commits the bump and creates `vX.Y.Z`. Pushing and `gh release create` stay manual.
 
 ## Boundaries
 

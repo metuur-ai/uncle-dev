@@ -23,6 +23,7 @@ TESTS=(
   "${SCRIPT_DIR}/hook-block-drift.test.sh"
   "${SCRIPT_DIR}/skill-loader.test.sh"
   "${SCRIPT_DIR}/setup-noninteractive.test.sh"
+  "${SCRIPT_DIR}/bump-version.test.sh"
 )
 
 TOTAL_PASS=0

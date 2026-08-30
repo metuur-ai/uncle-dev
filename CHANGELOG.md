@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-08-30
+
 _Work since `045f983` (2026-06-02): new Define/Brownfield/Review/Ship skills, a phased "ponytail patterns" adoption (drift guard, config tiers, debt markers, session modes, instruction adapters, benchmark harness), plus documentation skills and fixes._
 
 ### Added
