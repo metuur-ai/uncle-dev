@@ -42,15 +42,17 @@ find "$TARGET_PATH" -maxdepth 4 \
   -not -path "*/node_modules/*" 2>/dev/null | head -20
 
 echo ""
-echo "## Suggested Intent Node Locations"
-echo "1. Root: $TARGET_PATH/AGENTS.md (required)"
+echo "## Node Candidates (NOT recommendations — measure before creating)"
+echo "Root context file: $TARGET_PATH/ (CLAUDE.md or AGENTS.md, one of them)"
 
 # Find src-like directories
 for dir in src lib app packages services api; do
   if [ -d "$TARGET_PATH/$dir" ]; then
-    echo "2. Source: $TARGET_PATH/$dir/AGENTS.md"
+    echo "Candidate: $TARGET_PATH/$dir"
   fi
 done
 
 echo ""
-echo "Run estimate_tokens.sh on specific directories to determine if they need their own node."
+echo "A candidate earns an AGENTS.md only if it meets a trigger in SKILL.md Mode A Step 3:"
+echo "  >=20k tokens, package/module root, responsibility shift, or hidden invariants."
+echo "Run estimate_tokens.sh on each candidate above. Below threshold with no boundary: no node."

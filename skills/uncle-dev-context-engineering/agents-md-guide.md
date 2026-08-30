@@ -1,6 +1,6 @@
 # AGENTS.md Authoring Guide
 
-Reference for creating and maintaining Intent Layer nodes.
+Reference for creating and maintaining Intent Layer nodes. Read this after deciding *where* a node belongs — that placement rule lives in `SKILL.md`, Mode A Step 3, and is not repeated here.
 
 ---
 
@@ -17,8 +17,8 @@ Reference for creating and maintaining Intent Layer nodes.
 - `cli.ts` — CLI commands
 
 ## Contracts & Invariants
-- All DB calls go through `./db/client.ts`
-- Never import from `./internal/` outside this directory
+- All DB calls go through `./db/client.ts` — no direct driver access
+- This area is imported by `../api/` only; it imports nothing from `../api/`
 
 ## Patterns
 To add a new [typical task]:
@@ -66,17 +66,11 @@ bash skills/uncle-dev-context-engineering/scripts/analyze_structure.sh [path]
 
 # Estimate token count for a specific directory
 bash skills/uncle-dev-context-engineering/scripts/estimate_tokens.sh <dir>
+
+# Raw source bytes for a subtree — the threshold measurement itself.
+# Also sourceable, which is how the code-context hook consumes it.
+bash skills/uncle-dev-context-engineering/scripts/subtree_source_bytes.sh <dir>
 ```
-
----
-
-## Token Thresholds
-
-| Directory token count | Action |
-|---|---|
-| < 20k | No node needed |
-| 20–64k | Create 2–3k token node |
-| > 64k | Split into multiple child nodes |
 
 ---
 
@@ -84,9 +78,11 @@ bash skills/uncle-dev-context-engineering/scripts/estimate_tokens.sh <dir>
 
 Before finalizing any node:
 
-- [ ] < 4k tokens
+- [ ] ≤ 60 lines — hard cap for child nodes. Over it, reword until it fits; never raise the limit. The root file is exempt
+- [ ] The directory actually earns a node (SKILL.md, Mode A Step 3)
 - [ ] Purpose statement in first 2 lines
 - [ ] Contracts are explicit, not vague ("always use X", not "handle carefully")
+- [ ] No file inventories — every line survives a rename
 - [ ] Anti-patterns come from real experience, not hypothetical scenarios
 - [ ] Related Context uses relative paths
 - [ ] No content duplicated from an ancestor node
@@ -124,9 +120,9 @@ Use these when extracting knowledge from an engineer into a new node.
 
 ## Compression Example
 
-Verbose nodes lose their value — agents spend tokens processing prose instead of understanding intent.
+Verbose nodes lose their value — agents spend attention processing prose instead of understanding intent. This is the move to reach for when a draft exceeds the 60-line cap.
 
-**Before (~800 tokens):**
+**Before — prose and a tech-stack inventory, on track for 60+ lines:**
 ```markdown
 # User Service
 
@@ -143,7 +139,7 @@ it uses PostgreSQL as its database through Prisma ORM.
 ...
 ```
 
-**After (~250 tokens):**
+**After — 16 lines, and it says more:**
 ```markdown
 # User Service
 

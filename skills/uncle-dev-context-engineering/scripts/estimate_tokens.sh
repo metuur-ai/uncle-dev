@@ -8,7 +8,7 @@
 #
 # Guidelines:
 #     <20k tokens: Usually no dedicated node needed
-#     20-64k tokens: Good candidate for 2-3k token node
+#     20-64k tokens: Good candidate for a node (max 60 lines, target 20-40)
 #     >64k tokens: Consider splitting into child nodes
 
 set -e
@@ -72,7 +72,7 @@ if [ "$TOKENS" -lt 20000 ]; then
     echo "Recommendation: No dedicated Intent Node needed"
 elif [ "$TOKENS" -lt 64000 ]; then
     echo "Threshold: 20-64k"
-    echo "Recommendation: Good candidate for 2-3k token Intent Node"
+    echo "Recommendation: Good candidate for an Intent Node (max 60 lines, target 20-40)"
 else
     echo "Threshold: >64k"
     echo "Recommendation: Consider splitting into child Intent Nodes"

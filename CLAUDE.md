@@ -101,7 +101,10 @@ When a command prints `SKILL: <ref>` lines, read each `<ref>` as the active skil
 
 ### Code Context (always enforced)
 - Before editing any file, check if its directory has an `AGENTS.md` — if so, read it first
-- If no `AGENTS.md` exists in a source directory, create one before editing (template: `skills/uncle-dev-context-engineering/agents-md-guide.md`)
+- Nodes belong at **boundaries, not in every directory**. Create an `AGENTS.md` only where `skills/uncle-dev-context-engineering/SKILL.md` says one is needed: a subtree at/above ~20k tokens, a package root, or a point where responsibility shifts or hidden invariants exist. Below ~20k tokens with no boundary, no node
+- Measure before creating: `skills/uncle-dev-context-engineering/scripts/estimate_tokens.sh <dir>` for the threshold, `analyze_structure.sh` for boundary candidates (template: `skills/uncle-dev-context-engineering/agents-md-guide.md`)
+- Write durable invariants, boundaries, and anti-patterns — **not** file listings. File lists go stale on the next rename; invariants do not
+- **Hard cap: 60 lines for child nodes.** No subdirectory `AGENTS.md` may exceed it. A draft that runs over is reworded until it fits — cut file listings first, then anti-patterns with no real incident behind them, then split into child nodes. Never raise the cap. Healthy range is 20–40 lines. The **root** context file is exempt: it carries project-wide stack, commands, conventions, and the child-node index
 - After adding, moving, or deleting source directories, update the affected `AGENTS.md` files in the same turn
 - Respect architecture boundaries defined in `AGENTS.md` — never import across them without explicit justification
 - `CLAUDE.md` is the single root instruction file for this project; `AGENTS.md` at project root is a stub pointer only (required for OpenCode/installer compatibility)

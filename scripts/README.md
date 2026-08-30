@@ -8,6 +8,43 @@ Each script installs the bundle in-place into the target tool's config directory
 
 ## Tool-specific install scripts
 
+### `cc-others` — Claude Code profile launcher
+
+Runs `claude` with environment variables loaded from `~/.claude_profiles.json`.
+Profile values that are strings, numbers, or booleans are exported; `null`
+values unset the matching variable.
+
+**Usage:**
+```bash
+./scripts/cc-others anthropic
+./scripts/cc-others glm --dangerously-skip-permissions
+./scripts/cc-others claude --resume f4422bb0-473d-40d7-84bc-8b329915876f --qwen
+./scripts/cc-others claude --resume f4422bb0-473d-40d7-84bc-8b329915876f --ds
+```
+
+**Example `~/.claude_profiles.json`:**
+```json
+{
+  "anthropic": {
+    "ANTHROPIC_API_KEY": "sk-ant-...",
+    "ANTHROPIC_BASE_URL": null
+  },
+  "ds": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "<your DeepSeek API Key>",
+    "ANTHROPIC_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-v4-flash",
+    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": 786432
+  }
+}
+```
+
+**Requirements:** `jq`, `claude`
+
 ### `install-claude.sh` — Claude Code
 
 Installs the full plugin bundle into Claude Code's plugin cache and registers it so commands are available immediately.
