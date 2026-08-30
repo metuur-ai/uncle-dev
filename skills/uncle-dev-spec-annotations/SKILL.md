@@ -226,6 +226,41 @@ AUTH-* specs      ──×──▶  BILLING-* specs
         boundary crossing — pause
 ```
 
+## BMAD Artifact Interop
+
+When a repo also uses BMAD artifacts (`specs/spec-{slug}/SPEC.md`, `stories.yaml`, epic files), `docs/specs/` stays the **only** registry `@spec` resolves against. BMAD artifacts reference it; they never replace it.
+
+```
+SPEC.md ──cites──▶ docs/specs/  ◀──cites── stories.yaml
+                        │
+                        └──▶ @spec in code/tests   ← the only enforced edge
+```
+
+Rules:
+
+- **`SPEC.md` carries a `## Spec IDs` section** listing the `SEG-AREA-NNN` IDs that slug distils into. This is a cross-link for humans, not a scanner input.
+- **`stories.yaml` entries carry `spec_ids:`** — the IDs the story implements. Use `[]` for stories that add no durable behavior (pure refactors).
+- **Story IDs are never valid in `@spec`.** A story is transient; a spec is durable. Annotating code with a story ID is rejected by `spec-coherence-guard`.
+
+```yaml
+# stories.yaml — planning traceability
+- id: story-3.2-login-form
+  spec_ids: [AUTH-UI-001, AUTH-UI-002]
+```
+
+```ts
+// code — durable traceability. Spec ID only.
+// @spec AUTH-UI-001
+function authenticate() { ... }
+```
+
+```ts
+// WRONG — story IDs are not spec IDs
+// @spec story-3.2-login-form
+```
+
+Direction matters: every BMAD→uncle-dev edge points **down** into `docs/specs/`. Nothing in `docs/specs/` or in code points up into BMAD's Tier B, so deleting a shipped slug's `SPEC.md` and `stories.yaml` leaves the annotated chain intact.
+
 ## Coherence Check Workflow
 
 Run `/uncle-dev-spec-scan` to validate the graph end-to-end. The scanner:

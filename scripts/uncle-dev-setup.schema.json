@@ -33,7 +33,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "enum": ["claude-code", "codex", "opencode"]
+            "enum": ["claude-code", "codex", "opencode", "goose"]
           },
           "uniqueItems": true
         },

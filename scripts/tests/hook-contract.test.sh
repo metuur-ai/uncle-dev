@@ -34,6 +34,8 @@ _HC_STDERR_FILE="/tmp/hook-test-stderr.$$"
 # TMP_DIR and TMP_OS are set later; declare them empty so the trap always sees them.
 TMP_DIR=""
 TMP_OS=""
+TMP_CC=""
+TMP_CC2=""
 # Clean up on exit via python3 shutil (avoids dangerous shell patterns in this script).
 _cleanup() {
   python3 -c "
@@ -41,7 +43,8 @@ import os, sys, shutil
 for p in sys.argv[1:]:
     if p and os.path.exists(p):
         (shutil.rmtree if os.path.isdir(p) else os.remove)(p)
-" "${_HC_STDIN_FILE}" "${_HC_STDERR_FILE}" "${TMP_DIR:-}" "${TMP_OS:-}" 2>/dev/null || true
+" "${_HC_STDIN_FILE}" "${_HC_STDERR_FILE}" "${TMP_DIR:-}" "${TMP_OS:-}" \
+    "${TMP_CC:-}" "${TMP_CC2:-}" 2>/dev/null || true
 }
 trap '_cleanup' EXIT
 
@@ -237,6 +240,185 @@ assert_advise_shape "check-agents-md"
 run_hook "check-agents-md.sh" \
   '{"tool_name":"Edit","tool_input":{"file_path":"/tmp/no-agents-md/file.ts"}}'
 assert_allows "check-agents-md: no-op (no AGENTS.md)"
+
+# ---------------------------------------------------------------------------
+# check-agents-md — coverage ratchet and staleness detection
+#
+# Regression guard for the failure that motivated these branches: a one-off
+# generator produced AGENTS.md files, nothing ever prompted new ones, and
+# nothing noticed when the ones that existed named files that had moved.
+# ---------------------------------------------------------------------------
+echo ""
+echo "  [code-context] uncovered-directory and staleness branches"
+
+TMP_CC="$(mktemp -d)"
+mkdir -p "${TMP_CC}/.agents" "${TMP_CC}/src/stores" "${TMP_CC}/src/utils" \
+         "${TMP_CC}/node_modules/pkg"
+touch "${TMP_CC}/.agents/uncle-dev-setup.yaml"
+for i in 1 2 3; do
+  touch "${TMP_CC}/src/stores/store${i}.ts" \
+        "${TMP_CC}/src/utils/util${i}.ts" \
+        "${TMP_CC}/node_modules/pkg/mod${i}.js"
+done
+
+# A node that names two live files, one dead file, and one boundary rule.
+cat > "${TMP_CC}/src/stores/AGENTS.md" <<'CCEOF'
+# Stores
+- `store1.ts` — alive
+- `familyStore.ts` — migrated to core, no longer here
+- Never import from `../internal/`
+CCEOF
+
+export PROJECT_DIR="${TMP_CC}"
+
+# Stale paths are reported, boundary rules are not mistaken for file claims.
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/src/stores/store1.ts\"}}"
+if printf '%s' "$HC_OUT" | grep -q 'STALE' \
+   && printf '%s' "$HC_OUT" | grep -q 'familyStore.ts'; then
+  ok "check-agents-md: reports stale paths named by an AGENTS.md"
+else
+  fail "check-agents-md: stale path familyStore.ts not reported"
+fi
+if printf '%s' "$HC_OUT" | grep -q 'internal'; then
+  fail "check-agents-md: boundary rule '../internal/' wrongly reported as stale"
+else
+  ok "check-agents-md: directory boundary rules not reported as stale"
+fi
+
+# ---------------------------------------------------------------------------
+# 60-line cap on a node. A node is read before every edit in its directory, so
+# an oversized one gets skimmed instead of read. The hook must say so, and must
+# stay quiet at exactly the cap (the off-by-one is the case that matters).
+# ---------------------------------------------------------------------------
+mkdir -p "${TMP_CC}/src/big" "${TMP_CC}/src/atcap"
+touch "${TMP_CC}/src/big/a.ts" "${TMP_CC}/src/atcap/a.ts"
+
+# 61 lines — one over.
+{ echo "# Big"; i=1; while [ $i -le 60 ]; do echo "- rule ${i}"; i=$((i + 1)); done; } \
+  > "${TMP_CC}/src/big/AGENTS.md"
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/src/big/a.ts\"}}"
+assert_allows "check-agents-md: oversized-node advisory allows (exit 0)"
+if printf '%s' "$HC_OUT" | grep -q 'OVERSIZED' \
+   && printf '%s' "$HC_OUT" | grep -q '61 lines'; then
+  ok "check-agents-md: reports a node over the 60-line cap"
+else
+  fail "check-agents-md: 61-line node not reported as oversized"
+fi
+# The read-it reminder must survive alongside the defect report: hook_advise
+# exits, so a second advisory would never be emitted.
+if printf '%s' "$HC_OUT" | grep -q 'Read it before making changes'; then
+  ok "check-agents-md: oversize advisory retains the read-it reminder"
+else
+  fail "check-agents-md: read-it reminder lost when node is oversized"
+fi
+
+# Exactly 60 lines — at the cap, not over it. Must not fire.
+{ echo "# At cap"; i=1; while [ $i -le 59 ]; do echo "- rule ${i}"; i=$((i + 1)); done; } \
+  > "${TMP_CC}/src/atcap/AGENTS.md"
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/src/atcap/a.ts\"}}"
+if printf '%s' "$HC_OUT" | grep -q 'OVERSIZED'; then
+  fail "check-agents-md: 60-line node wrongly flagged (cap is exceed, not reach)"
+else
+  ok "check-agents-md: silent for a node exactly at the 60-line cap"
+fi
+
+# The ROOT context file is exempt from the cap. It carries project-wide stack,
+# commands, conventions, and the child-node index — in an OpenCode or Codex
+# project it is the only rules file there is. Capping it would push that
+# content somewhere worse, not shrink it.
+{ echo "# Root"; i=1; while [ $i -le 120 ]; do echo "- project rule ${i}"; i=$((i + 1)); done; } \
+  > "${TMP_CC}/AGENTS.md"
+touch "${TMP_CC}/root_file.ts"
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/root_file.ts\"}}"
+if printf '%s' "$HC_OUT" | grep -q 'OVERSIZED'; then
+  fail "check-agents-md: root AGENTS.md wrongly capped at 60 lines"
+else
+  ok "check-agents-md: root AGENTS.md exempt from the 60-line cap"
+fi
+# ...and the exemption must survive a relative path, since the tool input may
+# be relative while PROJECT_DIR is absolute. A string compare misses that.
+HC_OUT="$( cd "${TMP_CC}" && printf '%s' \
+  '{"tool_name":"Edit","tool_input":{"file_path":"root_file.ts"}}' \
+  | PROJECT_DIR="${TMP_CC}" bash "${HOOKS_DIR}/check-agents-md.sh" 2>&1 )"
+if printf '%s' "$HC_OUT" | grep -q 'OVERSIZED'; then
+  fail "check-agents-md: root exemption lost when file_path is relative"
+else
+  ok "check-agents-md: root exemption holds for a relative file_path"
+fi
+rm -f "${TMP_CC}/AGENTS.md" "${TMP_CC}/root_file.ts"
+
+# A small uncovered directory that is not a boundary gets NO advisory. The
+# skill's rule is <20k tokens → no node; a node per directory is the failure
+# this hook must not cause.
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/src/utils/util1.ts\"}}"
+if [ "$HC_RC" -eq 0 ] && [ -z "$HC_OUT" ]; then
+  ok "check-agents-md: silent for a small non-boundary directory (<20k tokens)"
+else
+  fail "check-agents-md: advised for a sub-threshold directory (rc=$HC_RC)"
+fi
+
+# A package root IS a boundary — responsibility shifts there regardless of size.
+# This is the case that leaves a newly created package at zero coverage.
+echo '{}' > "${TMP_CC}/src/package.json"
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/src/utils/util1.ts\"}}"
+assert_allows "check-agents-md: boundary advisory allows (exit 0)"
+if printf '%s' "$HC_OUT" | grep -q "own the node is ${TMP_CC}/src\b"; then
+  ok "check-agents-md: names the package root as the boundary, not the leaf dir"
+else
+  fail "check-agents-md: boundary not resolved to the package root"
+fi
+
+# A root context file must NOT suppress an advisory for an uncovered package
+# beneath it — that precedence bug is how packages stay at zero coverage.
+printf '# Root\n' > "${TMP_CC}/CLAUDE.md"
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/src/utils/util1.ts\"}}"
+if printf '%s' "$HC_OUT" | grep -q 'no AGENTS.md covers'; then
+  ok "check-agents-md: root CLAUDE.md does not suppress an uncovered package"
+else
+  fail "check-agents-md: root node wrongly suppressed a package-level advisory"
+fi
+
+# node_modules never gets an advisory.
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/node_modules/pkg/mod1.js\"}}"
+if [ "$HC_RC" -eq 0 ] && [ -z "$HC_OUT" ]; then
+  ok "check-agents-md: silent inside node_modules"
+else
+  fail "check-agents-md: emitted output for node_modules (rc=$HC_RC)"
+fi
+
+# Once the boundary carries a node, directories beneath it go quiet — one node
+# per boundary, not one per directory.
+printf '# Src\n- Boundary rules live here\n' > "${TMP_CC}/src/AGENTS.md"
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC}/src/utils/util1.ts\"}}"
+if [ "$HC_RC" -eq 0 ] && [ -z "$HC_OUT" ]; then
+  ok "check-agents-md: a node at the boundary suppresses advisories beneath it"
+else
+  fail "check-agents-md: advised despite boundary coverage (rc=$HC_RC)"
+fi
+
+# Outside an uncle-dev project the hook stays fully silent.
+TMP_CC2="$(mktemp -d)"
+mkdir -p "${TMP_CC2}/src"
+for i in 1 2 3; do touch "${TMP_CC2}/src/a${i}.ts"; done
+PROJECT_DIR="${TMP_CC2}"
+run_hook "check-agents-md.sh" \
+  "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"${TMP_CC2}/src/a1.ts\"}}"
+if [ "$HC_RC" -eq 0 ] && [ -z "$HC_OUT" ] && [ -z "$HC_ERR" ]; then
+  ok "check-agents-md: silent outside an uncle-dev project"
+else
+  fail "check-agents-md: emitted output in a non-uncle-dev repo (rc=$HC_RC)"
+fi
+
+unset PROJECT_DIR
 
 # ---------------------------------------------------------------------------
 # openspec-guard — advisory shape for invalid change ID (d)

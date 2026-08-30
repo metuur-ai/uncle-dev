@@ -8,6 +8,43 @@ Each script installs the bundle in-place into the target tool's config directory
 
 ## Tool-specific install scripts
 
+### `cc-others` — Claude Code profile launcher
+
+Runs `claude` with environment variables loaded from `~/.claude_profiles.json`.
+Profile values that are strings, numbers, or booleans are exported; `null`
+values unset the matching variable.
+
+**Usage:**
+```bash
+./scripts/cc-others anthropic
+./scripts/cc-others glm --dangerously-skip-permissions
+./scripts/cc-others claude --resume f4422bb0-473d-40d7-84bc-8b329915876f --qwen
+./scripts/cc-others claude --resume f4422bb0-473d-40d7-84bc-8b329915876f --ds
+```
+
+**Example `~/.claude_profiles.json`:**
+```json
+{
+  "anthropic": {
+    "ANTHROPIC_API_KEY": "sk-ant-...",
+    "ANTHROPIC_BASE_URL": null
+  },
+  "ds": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "<your DeepSeek API Key>",
+    "ANTHROPIC_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-v4-flash",
+    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": 786432
+  }
+}
+```
+
+**Requirements:** `jq`, `claude`
+
 ### `install-claude.sh` — Claude Code
 
 Installs the full plugin bundle into Claude Code's plugin cache and registers it so commands are available immediately.
@@ -82,6 +119,64 @@ Installs AGENTS.md, skills, and agent personas for OpenCode.
 - `--scope local` → `<workspace>/.opencode/` (AGENTS.md at workspace root)
 
 **Output:** `dist/uncle-dev-opencode.tar.gz`
+
+---
+
+### `install-goose.sh` — Goose
+
+Installs uncle-dev as a Goose plugin. Goose plugins carry **skills and hooks only** — no slash commands, no subagents.
+
+**Bundle contents:**
+- `plugin.json` — Goose manifest, version synced from `.claude-plugin/plugin.json`
+- `skills/` — all skill directories with SKILL.md and colocated reference files
+- `scripts/` — skill loader and config helper, needed by the command recipes
+- 9 agent personas + 31 slash commands as Goose recipes, generated at install time
+
+Hooks are not installed: uncle-dev advisories write JSON to stdout, which Goose reads as its allow/block decision channel. See `goose/README.md`.
+
+**Usage:**
+```bash
+./scripts/install-goose.sh                                # user scope
+./scripts/install-goose.sh --scope project ~/code/my-app  # project scope
+./scripts/install-goose.sh --no-recipes                   # skills only
+./scripts/install-goose.sh --rules ~/code/my-app          # also copy rules files
+./scripts/install-goose.sh --from-git --auto-update       # delegate to goose CLI
+./scripts/install-goose.sh --dry-run                      # preview
+./scripts/install-goose.sh --force                        # replace existing install
+```
+
+**Scope destinations:**
+
+| Scope | Plugin | Recipes |
+|---|---|---|
+| `user` | `~/.agents/plugins/uncle-dev/` | `~/.config/goose/recipes/` |
+| `project` | `<workspace>/.agents/plugins/uncle-dev/` | `<workspace>/.goose/recipes/` |
+
+Recipes install outside the plugin directory because Goose does not discover recipes inside plugins.
+
+`goose plugin install` accepts git URLs only, so the default mode copies into the directory the CLI would have used. Verify with `goose skills list | grep uncle-dev` and `goose recipe list`.
+
+---
+
+### `gen-goose-recipes.sh` — agents + commands → Goose recipes
+
+Goose has no plugin-level format for subagents or slash commands; both are recipes. This converts each `agents/*.md` persona and each `commands/*.md` slash command into a Goose recipe YAML. `agents/` and `commands/` remain the single source of truth.
+
+Recipe YAML is a runtime artefact and is never checked in — `--out` is required and refuses any path inside this repo. `install-goose.sh` calls this script with a temp directory on every run, so installed recipes cannot be stale.
+
+```bash
+./scripts/gen-goose-recipes.sh \
+  --out ~/.config/goose/recipes \
+  --plugin-root ~/.agents/plugins/uncle-dev
+
+./scripts/gen-goose-recipes.sh --out /tmp/r --agents-only     # one kind only
+```
+
+**Naming:** commands keep their stem (`uncle-dev-spec.yaml`, mirroring `/uncle-dev-spec`); agents are namespaced `uncle-dev-agent-<name>.yaml`, because `uncle-senior` exists in both `agents/` and `commands/`.
+
+**Command body transforms** (applied to generated YAML only): literal `{{`/`{%` escaped so Goose's Jinja renderer emits them as text; `$ARGUMENTS` → `{{ arguments }}`; `${CLAUDE_PLUGIN_ROOT}` given the installed plugin root as its default, since Goose never sets it. That last one is why `install-goose.sh` stages `scripts/` into the plugin directory.
+
+Agent frontmatter `model:` and `tools:` have no portable Goose equivalent and are emitted as comments rather than dropped.
 
 ---
 

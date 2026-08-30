@@ -6,6 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 TESTS=(
   "${SCRIPT_DIR}/install-claude.test.sh"
+  "${SCRIPT_DIR}/cc-others.test.sh"
   "${SCRIPT_DIR}/install-codex.test.sh"
   "${SCRIPT_DIR}/install-opencode.test.sh"
   "${SCRIPT_DIR}/config-env-override.test.sh"
@@ -22,6 +23,7 @@ TESTS=(
   "${SCRIPT_DIR}/hook-block-drift.test.sh"
   "${SCRIPT_DIR}/skill-loader.test.sh"
   "${SCRIPT_DIR}/setup-noninteractive.test.sh"
+  "${SCRIPT_DIR}/bump-version.test.sh"
 )
 
 TOTAL_PASS=0

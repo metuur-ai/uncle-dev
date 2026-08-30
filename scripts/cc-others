@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# Run Claude Code with environment variables loaded from  .
+set -euo pipefail
+
+CONFIG_FILE="${CLAUDE_PROFILES_FILE:-${HOME}/.claude_profiles.json}"
+
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  cc-others <profile_name> [claude args...]
+  cc-others claude [claude args...] --<profile_name>
+
+Profile file: ~/.claude_profiles.json
+
+Example:
+{
+  "anthropic": {
+    "ANTHROPIC_API_KEY": "sk-ant-...",
+    "ANTHROPIC_BASE_URL": null
+  },
+  "glm": {
+    "ANTHROPIC_AUTH_TOKEN": "YOUR_API_KEY",
+    "ANTHROPIC_BASE_URL": "https://example.invalid",
+    "ANTHROPIC_MODEL": "glm.8-max"
+  },
+  "ds": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "<your DeepSeek API Key>",
+    "ANTHROPIC_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-pro[1m]",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-v4-flash",
+    "CLAUDE_CODE_EFFORT_LEVEL": "max",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": 786432
+  }
+}
+
+String, number, and boolean values are exported as environment variables.
+null values unset the matching environment variable.
+EOF
+}
+
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+fail() {
+  echo "cc-others: $*" >&2
+  exit 1
+}
+
+command_exists jq || fail "'jq' is required. Install it and try again."
+command_exists claude || fail "'claude' command not found in PATH."
+
+[[ -f "${CONFIG_FILE}" ]] || {
+  echo "cc-others: configuration file not found: ${CONFIG_FILE}" >&2
+  usage
+  exit 1
+}
+
+if [[ "$#" -lt 1 ]]; then
+  usage
+  exit 1
+fi
+
+PROFILE_NAME=""
+CLAUDE_ARGS=()
+literal_claude=0
+
+if [[ "${1:-}" == "claude" ]]; then
+  literal_claude=1
+  shift
+fi
+
+for arg in "$@"; do
+  if [[ -z "${PROFILE_NAME}" && "${arg}" == --* && "${arg}" != "--" ]]; then
+    candidate="${arg#--}"
+    if jq -e --arg profile "${candidate}" 'has($profile)' "${CONFIG_FILE}" >/dev/null 2>&1; then
+      PROFILE_NAME="${candidate}"
+      continue
+    fi
+  fi
+
+  if [[ "${literal_claude}" -eq 0 && -z "${PROFILE_NAME}" && "${arg}" != --* ]]; then
+    PROFILE_NAME="${arg}"
+    continue
+  fi
+
+  CLAUDE_ARGS+=("${arg}")
+done
+
+if [[ -z "${PROFILE_NAME}" ]]; then
+  usage
+  exit 1
+fi
+
+if ! jq -e --arg profile "${PROFILE_NAME}" 'has($profile) and (.[$profile] | type == "object")' "${CONFIG_FILE}" >/dev/null; then
+  echo "cc-others: profile '${PROFILE_NAME}' not found or is not an object in ${CONFIG_FILE}" >&2
+  echo "Available profiles:" >&2
+  jq -r 'keys[]' "${CONFIG_FILE}" 2>/dev/null | sed 's/^/  - /' >&2
+  exit 1
+fi
+
+profile_entries="$(
+  jq -r --arg profile "${PROFILE_NAME}" '
+    .[$profile]
+    | to_entries[]
+    | if (.value == null) then
+        [.key, "__CC_OTHERS_UNSET__"] | @tsv
+      elif (.value | type) as $type | ["string", "number", "boolean"] | index($type) then
+        [.key, (.value | tostring)] | @tsv
+      else
+        error("profile values must be strings, numbers, booleans, or null")
+      end
+  ' "${CONFIG_FILE}"
+)"
+
+while IFS= read -r entry; do
+  [[ -n "${entry}" ]] || continue
+
+  key="${entry%%$'\t'*}"
+  value="${entry#*$'\t'}"
+
+  [[ "${key}" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]] || fail "invalid environment variable name in profile '${PROFILE_NAME}': ${key}"
+
+  if [[ "${value}" == "__CC_OTHERS_UNSET__" ]]; then
+    unset "${key}"
+  else
+    export "${key}=${value}"
+  fi
+done <<< "${profile_entries}"
+
+if [[ "${#CLAUDE_ARGS[@]}" -eq 0 ]]; then
+  exec claude
+else
+  exec claude "${CLAUDE_ARGS[@]}"
+fi

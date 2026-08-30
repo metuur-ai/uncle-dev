@@ -27,7 +27,7 @@ project:
 tool:
   # Tools detected and configured during setup.
   # Valid values: claude-code | codex | opencode
-  active: [claude-code, codex, opencode]
+  active: [claude-code, codex, opencode, goose]
 
   # Absolute path to the cloned uncle-dev agent-skills repository.
   # Used to re-run install scripts and to locate hooks.

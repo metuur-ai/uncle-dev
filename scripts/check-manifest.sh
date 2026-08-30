@@ -304,6 +304,19 @@ else
   echo "  [OK] no hardcoded version strings in cache paths"
 fi
 
+# --- release version consistency across manifests --------------------------
+# Every manifest that carries a version must agree with the canonical
+# .claude-plugin/plugin.json. bump-version.sh --check owns the target list.
+
+echo "── release version consistency ───────────────────────────────────────"
+
+if version_check_out="$(bash "${SCRIPT_DIR}/bump-version.sh" --check 2>&1)"; then
+  echo "  [OK] all manifests agree on $(bash "${SCRIPT_DIR}/bump-version.sh" --current)"
+else
+  divergence "version drift across manifests — run: bash scripts/bump-version.sh --sync
+${version_check_out}"
+fi
+
 # --- R-7.8: declared-vs-actual command count in marketplace.json ----------
 # The metadata.commands_count field in .claude-plugin/marketplace.json must
 # match the actual number of *.md files in commands/.  Degrades gracefully

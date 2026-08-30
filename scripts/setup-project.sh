@@ -545,6 +545,15 @@ When a command prints \`SKILL: <ref>\` lines, read each \`<ref>\` as the active 
 ### Conventions
 - Personal scratchpad in \`.devlocal/<user>/\` (gitignored, not shared)
 - Team learnings captured in \`.uncle-dev/learns/\`
+
+### Code Context (always enforced)
+- Before editing any file, check if its directory has an \`AGENTS.md\` — if so, read it first
+- Nodes belong at **boundaries, not in every directory**. Create an \`AGENTS.md\` only where the \`uncle-dev-context-engineering\` rule says one is needed: a directory subtree at/above ~20k tokens, a package root, or a point where responsibility shifts or hidden invariants exist. Below ~20k tokens with no boundary, no node
+- Measure before creating: \`estimate_tokens.sh <dir>\` for the threshold, \`analyze_structure.sh\` for boundary candidates
+- Write durable invariants, boundaries, and anti-patterns — **not** file listings. File lists go stale on the next rename; invariants do not
+- **Hard cap: 60 lines for child nodes.** No subdirectory \`AGENTS.md\` may exceed it. A draft that runs over is reworded until it fits — cut file listings first, then anti-patterns with no real incident behind them, then split into child nodes. Never raise the cap. Healthy range is 20–40 lines. The **root** context file is exempt: it carries project-wide stack, commands, conventions, and the child-node index
+- After adding, moving, or deleting source directories, update the affected \`AGENTS.md\` files in the same turn
+- Respect architecture boundaries defined in \`AGENTS.md\` — never import across them without explicit justification
 BLOCK
 
   # The updater is written to a file and then run, rather than piped into
