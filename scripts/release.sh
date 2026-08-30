@@ -141,6 +141,13 @@ CURRENT="$(bash "${BUMP}" --current)"
 NEW="$(bash "${BUMP}" --next "${TARGET}")"
 TAG="v${NEW}"
 
+# The manifests may already sit at the target — someone ran bump-version.sh
+# separately, reviewed the diff, and committed it. That is a normal split of the
+# flow, so release from it instead of refusing: there is nothing to bump and
+# nothing to commit, only a tag to place on the existing HEAD.
+ALREADY_AT_TARGET=0
+[[ "${CURRENT}" == "${NEW}" ]] && ALREADY_AT_TARGET=1
+
 git rev-parse -q --verify "refs/tags/${TAG}" >/dev/null 2>&1 \
   && fail "Tag ${TAG} already exists locally"
 [[ -z "$(git ls-remote --tags "${REMOTE}" "refs/tags/${TAG}" 2>/dev/null)" ]] \
@@ -156,7 +163,11 @@ log "  [OK] authenticated, on ${BRANCH}, ${TAG} is free"
 
 log ""
 log "── plan ──────────────────────────────────────────────────"
-log "  version : ${CURRENT} → ${NEW}"
+if [[ "${ALREADY_AT_TARGET}" -eq 1 ]]; then
+  log "  version : already at ${NEW} — no bump, tagging the current commit"
+else
+  log "  version : ${CURRENT} → ${NEW}"
+fi
 log "  branch  : ${BRANCH} → ${REMOTE}"
 log "  tag     : ${TAG}"
 [[ "${DRAFT}" -eq 1 ]]      && log "  release : DRAFT"
@@ -164,9 +175,16 @@ log "  tag     : ${TAG}"
 
 if [[ "${DRY_RUN}" -eq 1 ]]; then
   log ""
-  bash "${BUMP}" "${TARGET}" --dry-run
-  log ""
-  log "  Would then run:"
+  if [[ "${ALREADY_AT_TARGET}" -eq 1 ]]; then
+    log "  No manifest changes needed — every file is already at ${NEW}."
+    log ""
+    log "  Would then run:"
+    log "    git tag -a ${TAG} -m ${TAG}"
+  else
+    bash "${BUMP}" "${TARGET}" --dry-run
+    log ""
+    log "  Would then run:"
+  fi
   log "    git push ${REMOTE} ${BRANCH}"
   log "    git push ${REMOTE} ${TAG}"
   log "    gh release create ${TAG} ..."
@@ -178,8 +196,17 @@ fi
 # ── local: bump, commit, tag ─────────────────────────────────────────────────
 
 log ""
-log "── bump, commit, tag ─────────────────────────────────────"
-bash "${BUMP}" "${TARGET}" --tag
+if [[ "${ALREADY_AT_TARGET}" -eq 1 ]]; then
+  log "── tag ───────────────────────────────────────────────────"
+  # Preflight already proved the tree is clean and the mirrors agree, so HEAD
+  # is the commit carrying ${NEW}. Nothing to write, nothing to commit.
+  log "  manifests already at ${NEW} — tagging HEAD"
+  git tag -a "${TAG}" -m "${TAG}"
+  log "  Created annotated tag ${TAG}."
+else
+  log "── bump, commit, tag ─────────────────────────────────────"
+  bash "${BUMP}" "${TARGET}" --tag
+fi
 
 # ── release notes from the CHANGELOG section just promoted ───────────────────
 # Falls back to a bare title if the section is missing or empty, so a thin
@@ -215,7 +242,8 @@ if [[ "${ASSUME_YES}" -eq 0 ]]; then
   log ""
   log "  Nothing has left this machine yet. To abandon instead:"
   log "    git tag -d ${TAG}"
-  log "    git reset --hard HEAD~1"
+  # Only offer the reset when this run actually created the bump commit.
+  [[ "${ALREADY_AT_TARGET}" -eq 0 ]] && log "    git reset --hard HEAD~1"
   log ""
   printf '  Publish %s? [y/N] ' "${TAG}" >&2
   REPLY=""
@@ -224,8 +252,12 @@ if [[ "${ASSUME_YES}" -eq 0 ]]; then
     y|Y|yes|YES) ;;
     *)
       log ""
-      log "  Aborted. The bump commit and tag ${TAG} are still here, unpushed."
-      log "  Re-run with --yes to publish them, or undo with the two commands above."
+      if [[ "${ALREADY_AT_TARGET}" -eq 1 ]]; then
+        log "  Aborted. Tag ${TAG} is still here, unpushed."
+      else
+        log "  Aborted. The bump commit and tag ${TAG} are still here, unpushed."
+      fi
+      log "  Re-run with --yes to publish, or undo with the command(s) above."
       exit 1
       ;;
   esac

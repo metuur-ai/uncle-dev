@@ -168,6 +168,55 @@ fi
   && ok "gh release create received --notes-file" \
   || bad "gh release create had no --notes-file"
 
+# ── 4b. manifests already at the target ──────────────────────────────────────
+# Workflow: bump-version.sh run separately, diff reviewed, bump committed — then
+# release.sh asked for that exact version. There is nothing to bump and nothing
+# to commit, so it must tag HEAD rather than refusing.
+SB="$(new_sandbox already)"
+(cd "${SB}" && bash scripts/bump-version.sh patch >/dev/null 2>&1 \
+   && git add -A && git commit -qm "chore(release): v1.6.1") >/dev/null 2>&1
+BEFORE_HEAD="$(cd "${SB}" && git rev-parse HEAD)"
+OUT="$(run_release "${SB}" 1.6.1 --yes)"; RC=$?
+AFTER_HEAD="$(cd "${SB}" && git rev-parse HEAD)"
+TAGS="$(cd "${SB}" && git tag)"
+REMOTE_TAG="$(cd "${SB}" && git ls-remote --tags origin 'refs/tags/v1.6.1')"
+if [[ "${RC}" -eq 0 && "${TAGS}" == "v1.6.1" && -n "${REMOTE_TAG}" \
+      && "${BEFORE_HEAD}" == "${AFTER_HEAD}" ]]; then
+  ok "already-at-target: tags HEAD, publishes, creates no extra commit"
+else
+  bad "already-at-target: rc=${RC} tags='${TAGS}' remote='${REMOTE_TAG}'"
+fi
+echo "${OUT}" | grep -q 'already at 1.6.1' \
+  && ok "already-at-target: plan says no bump is needed" \
+  || bad "already-at-target: plan did not explain the no-bump case"
+ghlog "${SB}" | grep -q 'release create v1.6.1' \
+  && ok "already-at-target: gh release create still invoked" \
+  || bad "already-at-target: no gh release create"
+
+# --dry-run on that same state must also succeed rather than error out.
+SB="$(new_sandbox alreadydry)"
+(cd "${SB}" && bash scripts/bump-version.sh patch >/dev/null 2>&1 \
+   && git add -A && git commit -qm bump) >/dev/null 2>&1
+OUT="$(run_release "${SB}" 1.6.1 --dry-run)"; RC=$?
+if [[ "${RC}" -eq 0 ]] && echo "${OUT}" | grep -q 'already at 1.6.1'; then
+  ok "already-at-target: --dry-run previews without error"
+else
+  bad "already-at-target --dry-run: rc=${RC}, out='${OUT}'"
+fi
+
+# Declining must not offer `git reset --hard HEAD~1` — there is no bump commit.
+SB="$(new_sandbox alreadydecline)"
+(cd "${SB}" && bash scripts/bump-version.sh patch >/dev/null 2>&1 \
+   && git add -A && git commit -qm bump) >/dev/null 2>&1
+OUT="$(cd "${SB}" && PATH="$(dirname "${SB}")/bin:${PATH}" \
+        bash scripts/release.sh 1.6.1 <<< "n" 2>&1)"
+if echo "${OUT}" | grep -q 'git tag -d v1.6.1' \
+   && ! echo "${OUT}" | grep -q 'reset --hard'; then
+  ok "already-at-target: decline omits the reset instruction"
+else
+  bad "already-at-target decline offered a wrong undo"
+fi
+
 # ── 5. declining the prompt ──────────────────────────────────────────────────
 SB="$(new_sandbox decline)"
 OUT="$(cd "${SB}" && PATH="$(dirname "${SB}")/bin:${PATH}" \
