@@ -24,6 +24,7 @@ TESTS=(
   "${SCRIPT_DIR}/skill-loader.test.sh"
   "${SCRIPT_DIR}/setup-noninteractive.test.sh"
   "${SCRIPT_DIR}/bump-version.test.sh"
+  "${SCRIPT_DIR}/release.test.sh"
 )
 
 TOTAL_PASS=0

@@ -89,6 +89,23 @@ OUT="$(cd "${SB}" && bash "${BUMP}" --current 2>/dev/null)"
   && ok "--current prints canonical version" \
   || bad "--current expected 1.5.0, got '${OUT}'"
 
+# --next resolves a target without writing anything (release.sh depends on this).
+SB="$(new_sandbox next 1.5.0 1.5.0)"
+NEXT_OK=1
+for pair in "patch 1.5.1" "minor 1.6.0" "major 2.0.0" "9.9.9 9.9.9"; do
+  arg="${pair%% *}"; want="${pair##* }"
+  got="$(cd "${SB}" && bash "${BUMP}" --next "${arg}" 2>/dev/null)"
+  [[ "${got}" == "${want}" ]] || { NEXT_OK=0; bad "--next ${arg}: expected ${want}, got '${got}'"; }
+done
+[[ "${NEXT_OK}" -eq 1 ]] && ok "--next resolves patch/minor/major/explicit targets"
+[[ "$(cd "${SB}" && jq -r .version .claude-plugin/plugin.json)" == "1.5.0" ]] \
+  && ok "--next writes nothing" \
+  || bad "--next mutated the manifest"
+(cd "${SB}" && bash "${BUMP}" --next 2>/dev/null); RC=$?
+[[ "${RC}" -ne 0 ]] \
+  && ok "--next without an argument is rejected" \
+  || bad "--next with no argument should fail"
+
 # ── 2. --check detects drift ─────────────────────────────────────────────────
 SB="$(new_sandbox drift 1.5.0 1.4.1)"
 OUT="$(cd "${SB}" && bash "${BUMP}" --check 2>&1)"; RC=$?

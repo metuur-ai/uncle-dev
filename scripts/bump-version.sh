@@ -3,6 +3,7 @@
 #
 # Usage:
 #   bash scripts/bump-version.sh --current            # print the canonical version
+#   bash scripts/bump-version.sh --next <part|X.Y.Z>  # print the resulting version, write nothing
 #   bash scripts/bump-version.sh --check              # verify all mirrors match canonical
 #   bash scripts/bump-version.sh --sync               # re-propagate canonical to mirrors
 #   bash scripts/bump-version.sh <major|minor|patch>  # bump and propagate
@@ -232,6 +233,18 @@ DO_SYNC=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --current) read_canonical; exit 0 ;;
+    --next)
+      # Resolve a bump part (or explicit version) to the resulting version and
+      # print it. Writes nothing — lets release.sh know the target up front
+      # without duplicating the semver arithmetic.
+      [[ $# -ge 2 ]] || fail "--next requires an argument (major|minor|patch|X.Y.Z)"
+      _cur="$(read_canonical)"
+      case "$2" in
+        major|minor|patch) next_version "${_cur}" "$2" ;;
+        *) valid_semver "$2" || fail "Not a valid version: $2 (expected X.Y.Z)"; echo "$2" ;;
+      esac
+      exit 0
+      ;;
     --check)   do_check; exit $? ;;
     --sync)    DO_SYNC=1; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
