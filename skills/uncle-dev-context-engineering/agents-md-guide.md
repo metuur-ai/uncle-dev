@@ -61,10 +61,16 @@ Add to the root CLAUDE.md or AGENTS.md when child nodes exist:
 # Check current Intent Layer state (none / partial / complete)
 bash skills/uncle-dev-context-engineering/scripts/detect_state.sh [path]
 
-# Find boundary candidates (dirs >20 files, package files, existing nodes)
+# Triggers 1-2: boundary candidates (dirs >9 non-test files, package files, existing nodes)
 bash skills/uncle-dev-context-engineering/scripts/analyze_structure.sh [path]
 
-# Estimate token count for a specific directory
+# Triggers 3-4: small load-bearing dirs (fan-in density, singletons, invariants,
+# sole registration points). Run this as a PEER of the size scan, not after it —
+# a size scan cannot see these, and they cluster in the smallest directories.
+bash skills/uncle-dev-context-engineering/scripts/analyze_structure.sh --criticality [path]
+
+# Trigger 1 only: token count for a specific directory.
+# A "NOT MET" here is not a verdict that the directory needs no node.
 bash skills/uncle-dev-context-engineering/scripts/estimate_tokens.sh <dir>
 
 # Raw source bytes for a subtree — the threshold measurement itself.

@@ -6,10 +6,14 @@
 #
 # Token estimation: ~4 chars per token (rough approximation)
 #
-# Guidelines:
-#     <20k tokens: Usually no dedicated node needed
-#     20-64k tokens: Good candidate for a node (max 60 lines, target 20-40)
-#     >64k tokens: Consider splitting into child nodes
+# Evaluates SKILL.md Mode A Step 3 TRIGGER 1 ONLY (subtree size):
+#     <20k tokens: trigger 1 not met — says nothing about triggers 2-4
+#     20-64k tokens: trigger 1 met; node warranted (max 60 lines, target 20-40)
+#     >64k tokens: too large for one node; split at the next boundary down
+#
+# Size is one of four independent triggers. Small directories can hold hidden
+# invariants that constrain the whole codebase — pair this with
+# `analyze_structure.sh --criticality` before concluding a directory needs no node.
 
 set -e
 
@@ -66,14 +70,18 @@ echo "Total tokens: ~$FORMATTED ($TOKENS)"
 echo "File count: $FILE_COUNT"
 echo ""
 
-# Recommendation
+# Trigger 1 verdict ONLY. This script measures size. It does not evaluate
+# package boundaries, responsibility shifts, or hidden invariants.
 if [ "$TOKENS" -lt 20000 ]; then
-    echo "Threshold: <20k"
-    echo "Recommendation: No dedicated Intent Node needed"
+    echo "Trigger 1 (subtree >=20k tokens): NOT MET"
+    echo ""
+    echo "This is NOT a verdict on whether the directory earns a node."
+    echo "Triggers 2-4 were not evaluated. Any single trigger is sufficient."
+    echo "Next: analyze_structure.sh --criticality \"$TARGET_PATH\""
 elif [ "$TOKENS" -lt 64000 ]; then
-    echo "Threshold: 20-64k"
-    echo "Recommendation: Good candidate for an Intent Node (max 60 lines, target 20-40)"
+    echo "Trigger 1 (subtree >=20k tokens): MET (20-64k)"
+    echo "Node warranted. Max 60 lines, target 20-40."
 else
-    echo "Threshold: >64k"
-    echo "Recommendation: Consider splitting into child Intent Nodes"
+    echo "Trigger 1 (subtree >=20k tokens): MET (>64k)"
+    echo "Too large for one node. Split into child nodes at the next boundary down."
 fi

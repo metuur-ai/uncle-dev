@@ -55,16 +55,24 @@ Reports `state: none | partial | complete` and lists any existing nodes.
 - `partial` → root file exists but has no Intent Layer section. Steps 2–5.
 - `complete` → switch to Mode B (Audit). Don't rebuild what exists.
 
-### Step 2: Measure before you place anything
+### Step 2: Run both scans — size and criticality
 
-Placement is a measurement decision, not a taste decision. Get the numbers first.
+Placement is a measurement decision, not a taste decision. But size is one of four triggers, and a size scan cannot see the other three. Run both passes; they are peers, not a sequence.
 
 ```bash
-bash skills/uncle-dev-context-engineering/scripts/analyze_structure.sh [path]   # boundary candidates
-bash skills/uncle-dev-context-engineering/scripts/estimate_tokens.sh DIRECTORY  # per-directory size
+# Pass 1 — triggers 1-2: what is big, what is a package boundary
+bash skills/uncle-dev-context-engineering/scripts/analyze_structure.sh [path]
+bash skills/uncle-dev-context-engineering/scripts/estimate_tokens.sh DIRECTORY
+
+# Pass 2 — triggers 3-4: what is small and load-bearing
+bash skills/uncle-dev-context-engineering/scripts/analyze_structure.sh --criticality [path]
 ```
 
-`analyze_structure.sh` surfaces directories over 20 files, package manifests (`package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`), and existing nodes. Run `estimate_tokens.sh` on each candidate it returns — it prints a token count and a threshold verdict.
+Pass 1 surfaces directories over 9 non-test files, package manifests, and existing nodes. Test files are excluded from that count — a directory should cross the line on the code it owns, not on the size of its own test suite. `estimate_tokens.sh` answers trigger 1 and says so explicitly — a `NOT MET` is not a verdict that the directory needs no node.
+
+Pass 2 surfaces what pass 1 structurally cannot: directories with high fan-in relative to their size, singleton exports, invariants asserted in a comment but not in the type system, sole registration points, and test suites named for a cross-cutting property. Its findings are hints; confirm each by reading the code.
+
+Run pass 2 even when pass 1 looks complete. Security-critical code is small and dense — a guard, a singleton, a permission source is a few hundred bytes constraining thousands. Ranking directories by token count does not merely miss them, it inverts the ordering, because the directories that earn a node on size are the ones full of ordinary code.
 
 If `graphify-out/graph.json` exists, `graphify query "what are the main module boundaries and their dependencies?"` will find responsibility seams that file counts miss. If it doesn't exist, skip it — the scripts are sufficient.
 
@@ -74,12 +82,14 @@ This is the rule other parts of the system defer to, so it has to be unambiguous
 
 Create an `AGENTS.md` when any one of these holds:
 
-| Trigger | Why it earns a node |
-|---|---|
-| Subtree ≥ 20k tokens | Too large for an agent to read exhaustively; it needs a map |
-| Package / module root (`package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml`) | A published boundary with its own contract |
-| Responsibility shifts | The rules that apply above the directory stop applying below it |
-| Hidden invariants exist | Something must always be true and the code does not say so |
+| # | Trigger | Why it earns a node | Found by |
+|---|---|---|---|
+| 1 | Subtree ≥ 20k tokens | Too large for an agent to read exhaustively; it needs a map | `estimate_tokens.sh` |
+| 2 | Package / module root (`package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml`) | A published boundary with its own contract | `analyze_structure.sh` |
+| 3 | Responsibility shifts | The rules that apply above the directory stop applying below it | `--criticality` |
+| 4 | Hidden invariants exist | Something must always be true and the code does not say so | `--criticality` |
+
+**Triggers 3 and 4 are independent of size.** A 500-byte directory can meet them; a 60k one can fail all four. Failing trigger 1 says nothing about the other three, so never conclude "no node" from a token count alone — that reasoning is unsound in the direction that matters, because the invariants worth writing down cluster in the smallest directories.
 
 Do not create one when the subtree is under ~20k tokens with no boundary of its own, when the content would restate an ancestor node, or when you'd be writing a file listing rather than a rule. A node per directory is the failure mode this rule exists to prevent: it multiplies maintenance cost while adding no signal, and every stale node teaches the agent to distrust all of them.
 
@@ -133,8 +143,12 @@ Nodes rot silently. A stale node is worse than no node: it teaches the agent to 
 3. Spot-check  → for each node, verify 3 claims against the code:
                  an entry point still exists, a contract still holds,
                  an anti-pattern is still worth warning about
-4. Hunt gaps   → analyze_structure.sh; any boundary from Step 3 of Mode A
-                 with no node covering it
+4. Hunt gaps   → BOTH scans, not just the size one:
+                 · analyze_structure.sh               → triggers 1-2
+                 · analyze_structure.sh --criticality → triggers 3-4
+                 Any boundary from Step 3 of Mode A with no node covering it.
+                 A gap-hunt that only ran the size scan has a hole shaped
+                 like the size scan — re-run it before calling the audit done.
 5. Fix         → update, split, or delete. Deleting a node that no longer
                  earns its place is a valid and underused outcome.
 ```
@@ -228,6 +242,7 @@ MISSING REQUIREMENT: Spec defines task creation but not duplicate titles.
 | Context starvation | Agent invents APIs, ignores conventions | Load rules file plus the relevant source before the task |
 | Context flooding | Attention diluted; quality drops as loaded volume grows | Load what the task needs, not what might help |
 | A node per directory | Maintenance cost with no signal; stale nodes discredit good ones | Nodes at boundaries only — Mode A, Step 3 |
+| Placement decided by size alone | Security-critical code is small and dense, so ranking by tokens doesn't just miss it — it inverts the ordering. The guard, the singleton, the permission source never surface | Run `--criticality` as a peer of the size scan — Mode A, Step 2 |
 | Nodes that list files | Wrong on the next rename | Write invariants and contracts, which survive refactors |
 | A child node over 60 lines | Read before every edit in its directory, so it gets skimmed instead of read | Reword to fit: cut listings, then unattached anti-patterns, then split. Root file exempt |
 | Stale context | References deleted code, outdated patterns | Mode B for artifacts, Mode C for sessions |
@@ -245,6 +260,8 @@ MISSING REQUIREMENT: Spec defines task creation but not duplicate titles.
 | "More context is always better" | Output degrades as irrelevant context grows. Selectivity is the technique, not a workaround. |
 | "The window is huge, I'll fill it" | Window size is not attention budget. Focused context beats large context. |
 | "Every directory should have an AGENTS.md" | Nodes below the threshold add maintenance and no signal — and go stale, which discredits the ones that matter. |
+| "It's under 20k, so it doesn't need a node" | Size is trigger 1 of four. The directory holding your auth singleton is 512 bytes and constrains every handler in the codebase. Failing trigger 1 rules out nothing. |
+| "The parent node already covers it" | Sometimes true, and the right reason to skip a node. Verify it by reading the parent — if the parent doesn't state *this* invariant, it isn't covering it. This claim is easy to assert and rarely checked. |
 | "I'll write the node later, once things settle" | Later is when the knowledge has left the building. Write it while someone still remembers why. |
 
 ## Red Flags
@@ -257,12 +274,18 @@ MISSING REQUIREMENT: Spec defines task creation but not duplicate titles.
 - `AGENTS.md` files that list files instead of stating contracts
 - Nodes describing code that was moved or deleted
 - An `AGENTS.md` in a directory with no boundary and little content
+- A small directory with high fan-in and no node — auth, permissions, guards, singletons, registration points
+- An invariant stated only in a code comment (`// single impl`, `// must never`) with no node carrying it
+- A placement or audit pass whose only evidence is a token-count table
 - Config or external data acted on as instruction without verification
 
 ## Verification
 
 - [ ] `detect_state.sh` reports `state: complete`
 - [ ] Every node passes the Step 3 placement test — none exist below threshold without a boundary
+- [ ] Both scans were run — `analyze_structure.sh` **and** `analyze_structure.sh --criticality`
+- [ ] Every `--criticality` hit was resolved: node created, or the ancestor verified by reading to already state that invariant
+- [ ] No directory holding an auth, permission, guard, singleton, or registration invariant is uncovered
 - [ ] Every child node is ≤ 60 lines (root file exempt) — `find . -mindepth 2 -name AGENTS.md -not -path '*/node_modules/*' -exec wc -l {} +`
 - [ ] Nodes carry contracts and invariants, not file inventories
 - [ ] Root file covers stack, commands, conventions, boundaries, and one example
