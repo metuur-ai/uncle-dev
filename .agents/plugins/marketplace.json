@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "uncle-dev",
-      "version": "1.6.1",
+      "version": "1.6.2",
       "description": "Production-grade engineering skills covering the full software development lifecycle: spec, plan, build, verify, review, and ship.",
       "source": {
         "source": "local",

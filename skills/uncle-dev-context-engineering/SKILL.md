@@ -52,8 +52,10 @@ bash skills/uncle-dev-context-engineering/scripts/detect_state.sh [path]
 Reports `state: none | partial | complete` and lists any existing nodes.
 
 - `none` → no root rules file. Start at Step 2, finish with Step 5.
-- `partial` → root file exists but has no Intent Layer section. Steps 2–5.
+- `partial` → root file exists but doesn't index the child nodes. Steps 2–5.
 - `complete` → switch to Mode B (Audit). Don't rebuild what exists.
+
+The section is detected by function, not by one heading — `Intent Layer`, `Code Context`, `Context Layer`, `Child Nodes`, or any root file that references a child `AGENTS.md` path all satisfy it. If you get `partial` on a layer you believe is complete, add the node index to the section you already have; never create a second context section to satisfy a script.
 
 ### Step 2: Run both scans — size and criticality
 
@@ -74,7 +76,16 @@ Pass 2 surfaces what pass 1 structurally cannot: directories with high fan-in re
 
 Run pass 2 even when pass 1 looks complete. Security-critical code is small and dense — a guard, a singleton, a permission source is a few hundred bytes constraining thousands. Ranking directories by token count does not merely miss them, it inverts the ordering, because the directories that earn a node on size are the ones full of ordinary code.
 
-If `graphify-out/graph.json` exists, `graphify query "what are the main module boundaries and their dependencies?"` will find responsibility seams that file counts miss. If it doesn't exist, skip it — the scripts are sufficient.
+**Graph enrichment.** When `graphify-out/graph.json` exists, pass 2 automatically adds two signals no filesystem heuristic can produce:
+
+| Signal | What it measures | Trigger |
+|---|---|---|
+| `dens` | Incoming cross-directory edges per 1k tokens | 4 — small and load-bearing |
+| `xcomm%` | Share of edges crossing a community boundary | 3 — responsibility shifts |
+
+Graph edges beat the filesystem fan-in heuristic outright: they cannot conflate same-named directories (`types` vs `services/types`), and community structure is the only real detector for trigger 3, which otherwise has no procedure at all. High on both columns is the strongest node candidate there is.
+
+**The coverage gate is the point.** Before ranking anything, the scan compares code files in the graph against code files on disk and *refuses to rank* below 60%, naming the uncovered directories. An under-covered graph does not fail loudly — it returns a short list that reads exactly like a clean bill of health. That is the same silent-blind-spot failure as ranking by size, arriving through a more credible-looking channel. A refusal is the scan working; fix coverage (usually `.graphifyignore`, then `graphify update .`) and re-run. The filesystem signals below it still stand on their own, so a missing or thin graph costs you nothing.
 
 ### Step 3: Decide placement — nodes go at boundaries, not in every directory
 
@@ -243,6 +254,7 @@ MISSING REQUIREMENT: Spec defines task creation but not duplicate titles.
 | Context flooding | Attention diluted; quality drops as loaded volume grows | Load what the task needs, not what might help |
 | A node per directory | Maintenance cost with no signal; stale nodes discredit good ones | Nodes at boundaries only — Mode A, Step 3 |
 | Placement decided by size alone | Security-critical code is small and dense, so ranking by tokens doesn't just miss it — it inverts the ordering. The guard, the singleton, the permission source never surface | Run `--criticality` as a peer of the size scan — Mode A, Step 2 |
+| Trusting a graph without checking coverage | A graph missing most of the source returns a short, confident list that reads as "no problems found" — the same blind spot as a size scan, wearing better credentials | The coverage gate refuses below 60%. Never override it; fix `.graphifyignore` and re-run |
 | Nodes that list files | Wrong on the next rename | Write invariants and contracts, which survive refactors |
 | A child node over 60 lines | Read before every edit in its directory, so it gets skimmed instead of read | Reword to fit: cut listings, then unattached anti-patterns, then split. Root file exempt |
 | Stale context | References deleted code, outdated patterns | Mode B for artifacts, Mode C for sessions |
@@ -284,6 +296,7 @@ MISSING REQUIREMENT: Spec defines task creation but not duplicate titles.
 - [ ] `detect_state.sh` reports `state: complete`
 - [ ] Every node passes the Step 3 placement test — none exist below threshold without a boundary
 - [ ] Both scans were run — `analyze_structure.sh` **and** `analyze_structure.sh --criticality`
+- [ ] If a graph exists, `--criticality` reported coverage ≥60% — a refusal was fixed, not worked around
 - [ ] Every `--criticality` hit was resolved: node created, or the ancestor verified by reading to already state that invariant
 - [ ] No directory holding an auth, permission, guard, singleton, or registration invariant is uncovered
 - [ ] Every child node is ≤ 60 lines (root file exempt) — `find . -mindepth 2 -name AGENTS.md -not -path '*/node_modules/*' -exec wc -l {} +`

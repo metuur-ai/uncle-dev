@@ -67,7 +67,14 @@ bash skills/uncle-dev-context-engineering/scripts/analyze_structure.sh [path]
 # Triggers 3-4: small load-bearing dirs (fan-in density, singletons, invariants,
 # sole registration points). Run this as a PEER of the size scan, not after it —
 # a size scan cannot see these, and they cluster in the smallest directories.
+# Auto-enriches with graphify centrality when graphify-out/graph.json is present.
 bash skills/uncle-dev-context-engineering/scripts/analyze_structure.sh --criticality [path]
+
+# Graph centrality alone (called automatically by --criticality; run directly to
+# target a subtree or debug coverage). REFUSES to rank below 60% graph coverage —
+# an under-covered graph returns an empty list that looks like "no problems found".
+python3 skills/uncle-dev-context-engineering/scripts/graph_criticality.py \
+    graphify-out/graph.json --root . --target packages/api/src
 
 # Trigger 1 only: token count for a specific directory.
 # A "NOT MET" here is not a verdict that the directory needs no node.

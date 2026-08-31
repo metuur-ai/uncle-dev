@@ -30,6 +30,36 @@ if [ "$CRITICALITY_MODE" = "1" ]; then
     echo "Each one still has to be confirmed by reading the code."
     echo ""
 
+    # --- Graph-backed signals (optional enrichment) ------------------------
+    # When a graphify graph is present AND covers the target, edge centrality
+    # beats every filesystem heuristic below: it cannot conflate same-named
+    # directories, and community structure is the only real detector for
+    # trigger 3. When absent or under-covered, the filesystem scan still runs.
+    GRAPH=""
+    for cand in "$TARGET_PATH/graphify-out/graph.json" "graphify-out/graph.json" \
+                "$(git rev-parse --show-toplevel 2>/dev/null)/graphify-out/graph.json"; do
+        [ -f "$cand" ] && { GRAPH="$cand"; break; }
+    done
+
+    if [ -n "$GRAPH" ] && command -v python3 >/dev/null 2>&1; then
+        GRAPH_ROOT=$(dirname "$(dirname "$GRAPH")")
+        REL="${TARGET_PATH#"$GRAPH_ROOT"/}"
+        [ "$REL" = "$TARGET_PATH" ] && REL="${TARGET_PATH#./}"
+        [ "$REL" = "." ] && REL=""
+        echo "## Graph signals  ($GRAPH)"
+        python3 "$(dirname "$0")/graph_criticality.py" "$GRAPH" \
+            --root "$GRAPH_ROOT" --target "$REL" --top 20 || \
+            echo "(graph unusable — filesystem signals below stand alone)"
+        echo ""
+    else
+        if [ -z "$GRAPH" ]; then
+            echo "## Graph signals: no graphify-out/graph.json — filesystem signals only"
+        else
+            echo "## Graph signals: python3 not found — filesystem signals only"
+        fi
+        echo ""
+    fi
+
     echo "## Constraint density: high fan-in, low token count"
     echo "(importers per ~1k tokens — a directory many modules depend on but that"
     echo " is itself tiny is holding a constraint, not doing work)"
