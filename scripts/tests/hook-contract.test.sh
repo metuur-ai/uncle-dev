@@ -6,7 +6,10 @@
 #   (b) Allow cases exit 0.
 #   (c) No hook script reads CLAUDE_TOOL_* environment variables.
 #   (d) Advisory output from PreToolUse/PostToolUse hooks uses the
-#       {"hookSpecificOutput":{"additionalContext":"..."}} shape.
+#       {"hookSpecificOutput":{"hookEventName":"...","additionalContext":"..."}}
+#       shape. hookEventName is required: without it the host rejects the
+#       payload as malformed and the advisory never reaches the model, which
+#       looks exactly like a hook with nothing to say.
 #   (e) Stop-event hooks (wrap-nudge, gate-notify) use {"priority","message"}.
 #   (f) gate-notify exits 0 without stdout JSON when no gate phrase matched.
 #   (g) Chained commands are blocked when a destructive segment is present.
@@ -92,14 +95,32 @@ assert_allows() {
   fi
 }
 
-# assert_advise_shape: verifies PreToolUse advisory JSON shape on stdout
+# assert_advise_shape: verifies PreToolUse advisory JSON shape on stdout.
+# Checks BOTH required fields. A payload carrying only additionalContext is
+# rejected by the host, so asserting on hookSpecificOutput alone passes while
+# the advisory is silently dropped.
 assert_advise_shape() {
   local label="$1"
-  if printf '%s' "$HC_OUT" | grep -q 'hookSpecificOutput' 2>/dev/null; then
-    ok "$label: advisory uses hookSpecificOutput shape"
-  else
+  if ! printf '%s' "$HC_OUT" | grep -q 'hookSpecificOutput' 2>/dev/null; then
     fail "$label: advisory output missing hookSpecificOutput (got '${HC_OUT}')"
+    return
   fi
+  ok "$label: advisory uses hookSpecificOutput shape"
+
+  local event=""
+  if command -v jq >/dev/null 2>&1; then
+    event=$(printf '%s' "$HC_OUT" | jq -r '.hookSpecificOutput.hookEventName // empty' 2>/dev/null)
+  else
+    event=$(printf '%s' "$HC_OUT" | tr -d ' \n' | sed -n 's/.*"hookEventName":"\([^"]*\)".*/\1/p')
+  fi
+  case "$event" in
+    PreToolUse|PostToolUse)
+      ok "$label: advisory carries hookEventName ($event)" ;;
+    "")
+      fail "$label: advisory missing required hookEventName — host rejects payload, advisory never reaches the model (got '${HC_OUT}')" ;;
+    *)
+      fail "$label: advisory hookEventName is '${event}', expected PreToolUse or PostToolUse" ;;
+  esac
 }
 
 # assert_stop_shape: verifies Stop advisory JSON shape on stdout

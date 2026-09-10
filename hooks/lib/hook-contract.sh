@@ -10,7 +10,11 @@
 #           (Stop/SubagentStop carry { "transcript_path": "...", "cwd": "..." } instead)
 #   Block:  exit 2  + human-readable reason on stderr
 #   PreToolUse/PostToolUse advisory:
-#           exit 0  + {"hookSpecificOutput":{"additionalContext":"..."}} on stdout
+#           exit 0  + {"hookSpecificOutput":{"hookEventName":"<event>",
+#                                            "additionalContext":"..."}} on stdout
+#           hookEventName is REQUIRED. Without it the payload fails validation
+#           and the advisory is dropped — the hook appears to run and says
+#           nothing, which is indistinguishable from having nothing to say.
 #   Stop/SubagentStop advisory:
 #           exit 0  + {"priority":"...","message":"..."} on stdout
 #   Non-blocking error: exit 1  (stdout NOT shown to model — do not use for advisories)
@@ -23,8 +27,8 @@
 # hook_read_input
 #
 # Reads the JSON hook payload from stdin exactly once into HOOK_INPUT,
-# then exports HOOK_TOOL_NAME, HOOK_FILE_PATH, HOOK_COMMAND, HOOK_CONTENT,
-# HOOK_NEW_STRING from the relevant JSON paths.
+# then exports HOOK_EVENT_NAME, HOOK_TOOL_NAME, HOOK_FILE_PATH, HOOK_COMMAND,
+# HOOK_CONTENT, HOOK_NEW_STRING from the relevant JSON paths.
 #
 # Guard: if jq is not present, exits 0 silently (R-1.6).
 # ---------------------------------------------------------------------------
@@ -37,6 +41,8 @@ hook_read_input() {
     HOOK_INPUT=$(cat)
   fi
 
+  HOOK_EVENT_NAME=$(printf '%s' "$HOOK_INPUT" \
+    | jq -r '.hook_event_name // empty' 2>/dev/null) || HOOK_EVENT_NAME=""
   HOOK_TOOL_NAME=$(printf '%s' "$HOOK_INPUT" \
     | jq -r '.tool_name // empty' 2>/dev/null) || HOOK_TOOL_NAME=""
   HOOK_FILE_PATH=$(printf '%s' "$HOOK_INPUT" \
@@ -48,7 +54,7 @@ hook_read_input() {
   HOOK_NEW_STRING=$(printf '%s' "$HOOK_INPUT" \
     | jq -r '.tool_input.new_string // empty' 2>/dev/null) || HOOK_NEW_STRING=""
 
-  export HOOK_INPUT HOOK_TOOL_NAME HOOK_FILE_PATH HOOK_COMMAND HOOK_CONTENT HOOK_NEW_STRING
+  export HOOK_INPUT HOOK_EVENT_NAME HOOK_TOOL_NAME HOOK_FILE_PATH HOOK_COMMAND HOOK_CONTENT HOOK_NEW_STRING
 }
 
 # ---------------------------------------------------------------------------
@@ -73,19 +79,24 @@ hook_allow() {
 }
 
 # ---------------------------------------------------------------------------
-# hook_advise "message"
+# hook_advise "message" ["event"]
 #
 # For PreToolUse and PostToolUse hooks only.
-# Emits {"hookSpecificOutput":{"additionalContext":"<message>"}} on stdout
-# and exits 0 so the advisory reaches the model.
+# Emits {"hookSpecificOutput":{"hookEventName":"<event>","additionalContext":"<message>"}}
+# on stdout and exits 0 so the advisory reaches the model.
+#
+# The event defaults to the hook_event_name on the payload, then to PreToolUse.
+# hookEventName is not optional: a payload without it is rejected by the host as
+# malformed and the advisory never reaches the model.
 #
 # Do NOT call this from Stop/SubagentStop hooks — use hook_advise_stop instead.
 # ---------------------------------------------------------------------------
 hook_advise() {
   local msg="${1:-}"
+  local event="${2:-${HOOK_EVENT_NAME:-PreToolUse}}"
   if command -v jq >/dev/null 2>&1; then
-    jq -n --arg m "$msg" \
-      '{"hookSpecificOutput":{"additionalContext":$m}}'
+    jq -n --arg e "$event" --arg m "$msg" \
+      '{"hookSpecificOutput":{"hookEventName":$e,"additionalContext":$m}}'
   else
     # jq absent: print plain text to stderr so the message is not silently lost.
     printf 'ADVISORY: %s\n' "$msg" >&2
