@@ -30,6 +30,29 @@ if [ "$CRITICALITY_MODE" = "1" ]; then
     echo "Each one still has to be confirmed by reading the code."
     echo ""
 
+    TMP=$(mktemp -d)
+    trap 'rm -rf "$TMP"' EXIT
+    : > "$TMP/graph.txt"; : > "$TMP/fanin.txt"; : > "$TMP/singletons.txt"
+    : > "$TMP/invariants.txt"; : > "$TMP/registration.txt"; : > "$TMP/xcutting.txt"
+
+    # Existing nodes, for the coverage join at the end: everything under the
+    # target, plus every ancestor above it. A hit inside a directory an ancestor
+    # node already covers is not a gap -- but only reading that ancestor can
+    # decide, which is why the join marks UNVERIFIED and never COVERED.
+    {
+        # shellcheck disable=SC2086
+        find "$TARGET_PATH" $PRUNE -type f \( -name "AGENTS.md" -o -name "CLAUDE.md" \) 2>/dev/null
+        up="$TARGET_PATH"
+        while :; do
+            parent=$(dirname "$up")
+            if [ "$parent" = "$up" ]; then break; fi
+            up="$parent"
+            if [ -f "$up/AGENTS.md" ]; then echo "$up/AGENTS.md"; fi
+            if [ -f "$up/CLAUDE.md" ]; then echo "$up/CLAUDE.md"; fi
+            case "$up" in .|/) break ;; esac
+        done
+    } | sed 's|^\./||' | sort -u > "$TMP/nodes.txt"
+
     # --- Graph-backed signals (optional enrichment) ------------------------
     # When a graphify graph is present AND covers the target, edge centrality
     # beats every filesystem heuristic below: it cannot conflate same-named
@@ -48,8 +71,9 @@ if [ "$CRITICALITY_MODE" = "1" ]; then
         [ "$REL" = "." ] && REL=""
         echo "## Graph signals  ($GRAPH)"
         python3 "$(dirname "$0")/graph_criticality.py" "$GRAPH" \
-            --root "$GRAPH_ROOT" --target "$REL" --top 20 || \
-            echo "(graph unusable — filesystem signals below stand alone)"
+            --root "$GRAPH_ROOT" --target "$REL" --top 20 > "$TMP/graph.txt" 2>&1 || \
+            echo "(graph unusable — filesystem signals below stand alone)" > "$TMP/graph.txt"
+        cat "$TMP/graph.txt"
         echo ""
     else
         if [ -z "$GRAPH" ]; then
@@ -101,14 +125,14 @@ if [ "$CRITICALITY_MODE" = "1" ]; then
         # importers per 1k tokens, scaled x10 for integer sort
         ratio=$(( imports * 10000 / (tokens + 1) ))
         printf "%-52s %8s %6s %7s\n" "$dir" "$tokens" "$imports" "$ratio"
-    done | sort -k4 -rn | head -20
+    done | sort -k4 -rn | head -20 | tee "$TMP/fanin.txt"
 
     echo ""
     echo "## Singleton exports (a second instance would diverge silently)"
     grep -rn --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=dist \
         --include=*.ts --include=*.tsx --include=*.js --include=*.go \
         --include=*.py --include=*.rb \
-        -E "^export const [a-zA-Z_]+ = new " "$TARGET_PATH" 2>/dev/null | head -20
+        -E "^export const [a-zA-Z_]+ = new " "$TARGET_PATH" 2>/dev/null | head -20 | tee "$TMP/singletons.txt"
 
     echo ""
     echo "## Invariants asserted in comments but not in types"
@@ -116,7 +140,7 @@ if [ "$CRITICALITY_MODE" = "1" ]; then
         --include=*.ts --include=*.tsx --include=*.js --include=*.go \
         --include=*.py --include=*.rb --include=*.java \
         -iE "^[[:space:]]*(//|#|\*)[[:space:]]*.*(single( [a-z-]+)? (source|impl|implementation|instance|point|place)|must (always|never)|do not (add|create|instantiate|import)|only (place|impl|instance)|never (add|create|bypass)|invariant)" \
-        "$TARGET_PATH" 2>/dev/null | head -20
+        "$TARGET_PATH" 2>/dev/null | head -20 | tee "$TMP/invariants.txt"
 
     echo ""
     echo "## Sole registration / composition points"
@@ -131,7 +155,7 @@ if [ "$CRITICALITY_MODE" = "1" ]; then
                 \( -name "*.ts" -o -name "*.js" -o -name "*.go" -o -name "*.py" \) \
                 -not -name "*.test.*" -not -name "*.spec.*" -not -name "*_test.*" 2>/dev/null
         fi
-    done | head -20
+    done | head -20 | tee "$TMP/registration.txt"
 
     echo ""
     echo "## Test suites named for a cross-cutting property"
@@ -139,7 +163,106 @@ if [ "$CRITICALITY_MODE" = "1" ]; then
     find "$TARGET_PATH" -type f $PRUNE \
         \( -name "*test*" -o -name "*spec*" \) 2>/dev/null \
         | grep -iE "(tenant|isolation|permission|authz|access-control|rbac|leak|boundary)" \
-        | head -15
+        | head -15 | tee "$TMP/xcutting.txt"
+
+    echo ""
+    echo "## Coverage join — which hits already have a node"
+    echo "(the scan cannot read intent, so an ancestor node is never scored as"
+    echo " coverage. UNVERIFIED means: open that node and check. Do not skip it —"
+    echo " asserting the parent covers it is the failure on the other side.)"
+    echo ""
+
+    {
+        # graph rows: constraint-dense (trigger 4) or boundary-crossing (trigger 3)
+        awk 'NF>=6 && $2 ~ /^[0-9]+$/ && ($5+0 >= 10 || $6+0 >= 40) { print $1 }' \
+            "$TMP/graph.txt" 2>/dev/null || true
+        # filesystem fan-in rows above the density knee
+        awk 'NF==4 && $4 ~ /^[0-9]+$/ && $4+0 >= 50 { print $1 }' \
+            "$TMP/fanin.txt" 2>/dev/null || true
+        # directories holding a singleton, a comment invariant, a sole
+        # registration point, or a suite named for a cross-cutting property
+        cut -d: -f1 "$TMP/singletons.txt" "$TMP/invariants.txt" 2>/dev/null \
+            | xargs -n1 dirname 2>/dev/null || true
+        xargs -n1 dirname < "$TMP/registration.txt" 2>/dev/null || true
+        xargs -n1 dirname < "$TMP/xcutting.txt" 2>/dev/null || true
+    } | sed 's|^\./||' | sort -u > "$TMP/candidates.raw"
+
+    # Normalize before joining. Build output is never a candidate, and an
+    # invariant belongs to the code it constrains, not to the suite that guards
+    # it — so a hit inside a test tree is attributed to its nearest non-test
+    # ancestor rather than proposing a node on the suite.
+    while read -r raw; do
+        if [ -z "$raw" ]; then continue; fi
+        case "$raw" in
+            */node_modules|*/node_modules/*|*/.git|*/.git/*|*/dist|*/dist/*) continue ;;
+            */build|*/build/*|*/.next|*/.next/*|*/coverage|*/coverage/*) continue ;;
+        esac
+        dir="$raw"
+        while :; do
+            skip=0
+            for seg in $(printf '%s' "$dir" | tr '/' ' '); do
+                case "$seg" in
+                    test|tests|__tests__|spec|specs|fixtures|mocks|step-definitions) skip=1 ;;
+                esac
+            done
+            if [ "$skip" = "0" ]; then break; fi
+            parent=$(dirname "$dir")
+            if [ "$parent" = "$dir" ]; then break; fi
+            dir="$parent"
+        done
+        if [ -d "$dir" ]; then echo "$dir"; fi
+    done < "$TMP/candidates.raw" | sort -u > "$TMP/candidates.txt"
+
+    : > "$TMP/gaps.txt"
+    printf "%-46s %-34s %s\n" "DIRECTORY" "NEAREST NODE" "COVERED?"
+    while read -r dir; do
+        if [ -z "$dir" ] || [ ! -d "$dir" ]; then continue; fi
+
+        bestnode=""; bestlen=0
+        while read -r node; do
+            if [ -z "$node" ]; then continue; fi
+            nd=$(dirname "$node")
+            match=0
+            if [ "$nd" = "." ] || [ "$nd" = "/" ]; then
+                match=1
+            else
+                case "$dir/" in "$nd"/*) match=1 ;; esac
+            fi
+            if [ "$match" = "1" ] && [ "${#nd}" -ge "$bestlen" ]; then
+                bestnode="$node"; bestlen=${#nd}
+            fi
+        done < "$TMP/nodes.txt"
+
+        if [ -f "$dir/AGENTS.md" ] || [ -f "$dir/CLAUDE.md" ]; then
+            printf "%-46s %-34s %s\n" "$dir" "(own node)" "YES"
+        elif [ -n "$bestnode" ]; then
+            printf "%-46s %-34s %s\n" "$dir" "$bestnode" "UNVERIFIED"
+            echo "$dir|$bestnode" >> "$TMP/gaps.txt"
+        else
+            printf "%-46s %-34s %s\n" "$dir" "(none)" "NO"
+            echo "$dir|" >> "$TMP/gaps.txt"
+        fi
+    done < "$TMP/candidates.txt"
+
+    echo ""
+    if [ -s "$TMP/gaps.txt" ]; then
+        echo "## GAPS — resolve each before calling the layer complete"
+        while IFS='|' read -r dir node; do
+            echo "  $dir"
+            if [ -n "$node" ]; then
+                echo "    -> read $node and confirm it states THIS directory's invariant."
+                echo "       If it does not, this is a gap, not coverage."
+            else
+                echo "    -> no ancestor node at all. Create one here or at the package root."
+            fi
+        done < "$TMP/gaps.txt"
+    elif [ -s "$TMP/candidates.txt" ]; then
+        echo "## GAPS: none — every hit above sits in a directory with its own node"
+    else
+        echo "## GAPS: none — no criticality hits in this target."
+        echo "   That is a finding about the scan, not a clean bill of health:"
+        echo "   confirm the target actually holds source before trusting it."
+    fi
 
     echo ""
     echo "A hit here earns a node ONLY if the invariant is not already stated by an"

@@ -76,6 +76,10 @@ Pass 2 surfaces what pass 1 structurally cannot: directories with high fan-in re
 
 Run pass 2 even when pass 1 looks complete. Security-critical code is small and dense — a guard, a singleton, a permission source is a few hundred bytes constraining thousands. Ranking directories by token count does not merely miss them, it inverts the ordering, because the directories that earn a node on size are the ones full of ordinary code.
 
+Pass 2 ends in a **coverage join**: every hit is matched against the existing nodes and printed with a `COVERED?` column, followed by an explicit `GAPS` block. A directory with its own node reads `YES`; anything else reads `UNVERIFIED` or `NO` and lands in `GAPS` alongside the ancestor to go read. Nothing is ever scored as covered *by an ancestor*, because the scan can match paths but cannot read intent — only opening that node settles it. Hits inside a test tree are attributed to the nearest non-test ancestor: the invariant belongs to the code it constrains, not to the suite that guards it.
+
+Work the `GAPS` block to empty. A hit dismissed without opening the node it names is not resolved — that is the failure in the "parent already covers it" row of the rationalizations table, arriving one step later.
+
 **Graph enrichment.** When `graphify-out/graph.json` exists, pass 2 automatically adds two signals no filesystem heuristic can produce:
 
 | Signal | What it measures | Trigger |
@@ -157,7 +161,9 @@ Nodes rot silently. A stale node is worse than no node: it teaches the agent to 
 4. Hunt gaps   → BOTH scans, not just the size one:
                  · analyze_structure.sh               → triggers 1-2
                  · analyze_structure.sh --criticality → triggers 3-4
-                 Any boundary from Step 3 of Mode A with no node covering it.
+                 Work the GAPS block at the end of --criticality to empty.
+                 Each entry names the ancestor node to open; dismissing
+                 one without opening it is not a resolution.
                  A gap-hunt that only ran the size scan has a hole shaped
                  like the size scan — re-run it before calling the audit done.
 5. Fix         → update, split, or delete. Deleting a node that no longer
@@ -273,7 +279,7 @@ MISSING REQUIREMENT: Spec defines task creation but not duplicate titles.
 | "The window is huge, I'll fill it" | Window size is not attention budget. Focused context beats large context. |
 | "Every directory should have an AGENTS.md" | Nodes below the threshold add maintenance and no signal — and go stale, which discredits the ones that matter. |
 | "It's under 20k, so it doesn't need a node" | Size is trigger 1 of four. The directory holding your auth singleton is 512 bytes and constrains every handler in the codebase. Failing trigger 1 rules out nothing. |
-| "The parent node already covers it" | Sometimes true, and the right reason to skip a node. Verify it by reading the parent — if the parent doesn't state *this* invariant, it isn't covering it. This claim is easy to assert and rarely checked. |
+| "The parent node already covers it" | Sometimes true, and the right reason to skip a node. The scan will not decide it for you — it marks the hit `UNVERIFIED` and names the ancestor. Open that file. If it doesn't state *this* invariant, it isn't covering it. This claim is easy to assert and rarely checked. |
 | "I'll write the node later, once things settle" | Later is when the knowledge has left the building. Write it while someone still remembers why. |
 
 ## Red Flags
@@ -297,7 +303,7 @@ MISSING REQUIREMENT: Spec defines task creation but not duplicate titles.
 - [ ] Every node passes the Step 3 placement test — none exist below threshold without a boundary
 - [ ] Both scans were run — `analyze_structure.sh` **and** `analyze_structure.sh --criticality`
 - [ ] If a graph exists, `--criticality` reported coverage ≥60% — a refusal was fixed, not worked around
-- [ ] Every `--criticality` hit was resolved: node created, or the ancestor verified by reading to already state that invariant
+- [ ] The `GAPS` block from `--criticality` is empty: every entry ended in a node created, or in the named ancestor opened and confirmed to state that invariant
 - [ ] No directory holding an auth, permission, guard, singleton, or registration invariant is uncovered
 - [ ] Every child node is ≤ 60 lines (root file exempt) — `find . -mindepth 2 -name AGENTS.md -not -path '*/node_modules/*' -exec wc -l {} +`
 - [ ] Nodes carry contracts and invariants, not file inventories
