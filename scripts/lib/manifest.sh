@@ -23,6 +23,9 @@ ASSET_SCRIPTS="scripts"
 # polluting the shared skills/ directory with Codex-specific metadata.
 ASSET_CODEX_AGENT_MANIFESTS="plugins/uncle-dev/agent-manifests"
 
+# Installed at the same relative path so bundled setup skills can link to it.
+ASSET_CODEX_INSTALL_GUIDE="docs/improved/guides/tool-setup/codex.md"
+
 # .claude-plugin/plugin.json — Claude Code plugin manifest
 ASSET_PLUGIN_META=".claude-plugin/plugin.json"
 

@@ -23,9 +23,13 @@ Usage:
 
 Installs Uncle Dev as a native Codex plugin. Assembles the bundle from shared
 repo sources at install time: all skills (including OpenSpec), all agents,
-all commands (including opsx/), and rules files.
+all commands (including nested commands), and rules files. Commands get explicit
+Codex skill entry points that execute the complete original command template.
+Native agent TOML files are installed into .codex/agents/ in the selected scope.
 
-Note: Codex does not support session hooks; hooks/ is not installed.
+Note: Claude-specific hooks are not activated. Bundled rule files are reference
+material; use the setup command to wire project instructions. Installing files
+does not refresh Codex's active plugin cache; see the printed activation steps.
 
 Options:
   --scope   user (default) or local (installs into workspace)
@@ -111,16 +115,19 @@ assemble_plugin() {
 
   mkdir -p "$plugin_root"
 
+  [[ ! -d "${plugin_root}/commands" ]] || fail "Legacy Codex bundle found; rerun with --force to replace automatic command migration."
+
   # Plugin manifest (.codex-plugin/plugin.json — Codex-native format)
   copy_file \
     "${REPO_ROOT}/plugins/${PLUGIN_NAME}/.codex-plugin/plugin.json" \
     "${plugin_root}/.codex-plugin/plugin.json" \
     "${FORCE}"
 
-  # commands/ — all commands from canonical source (commands/)
+  # Keep complete templates outside commands/: Codex's automatic migration
+  # silently drops large templates. Generated entry points load these in full.
   copy_dir_contents \
     "${REPO_ROOT}/${ASSET_COMMANDS_ROOT}" \
-    "${plugin_root}/commands" \
+    "${plugin_root}/command-templates" \
     "${FORCE}"
 
   # skills/ — full skill library
@@ -155,6 +162,8 @@ assemble_plugin() {
   for rule in "${ASSET_RULES[@]}"; do
     copy_file "${REPO_ROOT}/${rule}" "${plugin_root}/${rule}" "${FORCE}"
   done
+  copy_file "${REPO_ROOT}/${ASSET_CODEX_INSTALL_GUIDE}" \
+    "${plugin_root}/${ASSET_CODEX_INSTALL_GUIDE}" "${FORCE}"
 
   # Optional plugin assets (branding etc.)
   if [[ -d "${REPO_ROOT}/plugins/${PLUGIN_NAME}/assets" ]]; then
@@ -163,6 +172,9 @@ assemble_plugin() {
       "${plugin_root}/assets" \
       "${FORCE}"
   fi
+
+  python3 "${SCRIPT_DIR}/build-codex-surfaces.py" \
+    "$plugin_root" "${bundle_root}/.codex/agents"
 }
 
 # ── argument parsing ──────────────────────────────────────────────────────────
@@ -193,6 +205,7 @@ done
 
 require_file "${REPO_ROOT}/plugins/${PLUGIN_NAME}/.codex-plugin/plugin.json"
 require_file "${MARKETPLACE_TEMPLATE}"
+require_file "${REPO_ROOT}/${ASSET_CODEX_INSTALL_GUIDE}"
 validate_sources "${REPO_ROOT}"
 
 # ── resolve install root ──────────────────────────────────────────────────────
@@ -219,32 +232,71 @@ MARKETPLACE_DEST="${BUNDLE_ROOT}/.agents/plugins/marketplace.json"
 
 log "Installing Codex plugin into ${PLUGIN_DEST}"
 
-# ── install ───────────────────────────────────────────────────────────────────
-
-assemble_plugin "${BUNDLE_ROOT}"
-merge_marketplace "${MARKETPLACE_TEMPLATE}" "${MARKETPLACE_DEST}"
-
-# ── generate distributable archive ───────────────────────────────────────────
+# Assemble once in isolation, including host adapters, before comparing with
+# installed files. This makes repeated installs without --force idempotent.
 
 mkdir -p "${DIST_DIR}"
 ARCHIVE="${DIST_DIR}/uncle-dev-codex.tar.gz"
-BUNDLE_TMP="${DIST_DIR}/.codex-bundle-tmp"
+BUNDLE_TMP="$(mktemp -d "${DIST_DIR}/.codex-bundle.XXXXXX")"
+trap 'rm -rf "${BUNDLE_TMP}"' EXIT
 
 log "Generating archive at ${ARCHIVE}"
 
-rm -rf "${BUNDLE_TMP}"
-mkdir -p "${BUNDLE_TMP}"
 assemble_plugin "${BUNDLE_TMP}"
 merge_marketplace "${MARKETPLACE_TEMPLATE}" "${BUNDLE_TMP}/.agents/plugins/marketplace.json"
-tar -czf "${ARCHIVE}" -C "${DIST_DIR}" ".codex-bundle-tmp"
-rm -rf "${BUNDLE_TMP}"
+
+python3 - "$BUNDLE_TMP" "$BUNDLE_ROOT" "$FORCE" <<'PY'
+import shutil, sys
+from pathlib import Path
+stage, dest = map(Path, sys.argv[1:3])
+force = sys.argv[3] == '1'
+roots = (Path('plugins/uncle-dev'), Path('.codex/agents'))
+files = [(p, dest / p.relative_to(stage)) for root in roots
+         for p in (stage / root).rglob('*') if p.is_file()]
+# Check every conflict before replacing any installed component.
+for source, target in files:
+    for ancestor in (target, *target.parents):
+        if ancestor == dest:
+            break
+        if ancestor.is_symlink():
+            raise SystemExit(f'Refusing symlink destination: {ancestor}')
+        if ancestor != target and ancestor.exists() and not ancestor.is_dir():
+            raise SystemExit(f'Destination parent is not a directory: {ancestor}')
+    if target.exists() and (not target.is_file() or
+            (not force and target.read_bytes() != source.read_bytes())):
+        raise SystemExit(f'Refusing to overwrite: {target} (use --force)')
+plugin = dest / roots[0]
+if (plugin / 'commands').exists() and not force:
+    raise SystemExit('Legacy Codex bundle found; rerun with --force.')
+if force and plugin.exists():
+    shutil.rmtree(plugin)
+for source, target in files:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, target)
+PY
+merge_marketplace "${MARKETPLACE_TEMPLATE}" "${MARKETPLACE_DEST}"
+tar -czf "${ARCHIVE}" -C "${BUNDLE_TMP}" .
 
 # ── summary ───────────────────────────────────────────────────────────────────
 
 summarize_install "${PLUGIN_DEST}" "Codex"
+log "Complete command entry points: ${PLUGIN_DEST}/COMMANDS.md"
+log "Native agents: ${BUNDLE_ROOT}/.codex/agents"
 log "Archive: ${ARCHIVE}"
+MARKETPLACE_NAME="$(python3 - "$MARKETPLACE_DEST" <<'PY'
+import json, re, sys
+name = json.load(open(sys.argv[1]))['name']
+if not re.fullmatch(r'[A-Za-z0-9_-]+', name):
+    raise SystemExit('Invalid marketplace name')
+print(name)
+PY
+)"
 if [[ "$SCOPE" == "user" ]]; then
-  log "Codex discovers the plugin from ~/.agents/plugins/marketplace.json"
+  log "Personal marketplace is discovered from ~/.agents/plugins/marketplace.json"
 else
-  log "Codex discovers the plugin from ${BUNDLE_ROOT}/.agents/plugins/marketplace.json"
+  log "Register this explicit local marketplace if not already registered:"
+  log "  codex plugin marketplace add \"${BUNDLE_ROOT}\""
 fi
+log "Activate/reinstall the plugin: codex plugin add uncle-dev@${MARKETPLACE_NAME}"
+log "The assembled plugin version includes a content-based Codex cachebuster."
+log "Then open a new Codex task. Invoke the full spec command with \$command-uncle-dev-spec."

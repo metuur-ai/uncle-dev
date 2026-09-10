@@ -35,19 +35,70 @@ claude --plugin-dir /path/to/agent-skills
 
 ## Install for Codex
 
+See [Codex installation and hook compatibility](../guides/tool-setup/codex.md)
+for the full component contract, activation checks, and the hook review.
+
 Codex installs Uncle Dev as a native local plugin assembled from the shared source directories in this repository.
 
 **User Installation:**
 ```bash
 ./scripts/install-codex.sh
+codex plugin add uncle-dev@uncle-dev
 ```
 
 **Local Project Installation:**
 ```bash
-./scripts/install-codex.sh --scope local .
+./scripts/install-codex.sh --scope local /path/to/your/project
+codex plugin marketplace add /path/to/your/project
+codex plugin add uncle-dev@uncle-dev
 ```
 
-This assembles `plugins/uncle-dev/` from the repo's shared `skills/` and `agents/` directories and registers it via `.agents/plugins/marketplace.json` in the selected install root.
+Run the installer from this repository. Local scope targets another project,
+not the installer source repository. Use the marketplace name printed by the
+installer if your existing marketplace has a different name. A personal
+marketplace is discovered automatically; an explicit project marketplace must
+be registered. Open a new Codex task after activating or reinstalling the plugin.
+
+The installer assembles these distinct components:
+
+| Component | Installed location | Use in Codex |
+|---|---|---|
+| Shared skills | `plugins/uncle-dev/skills/<skill>/` | Invoke the skill by its own name |
+| Complete command templates | `plugins/uncle-dev/command-templates/` | Loaded by the corresponding command entry |
+| Command entries | `plugins/uncle-dev/skills/command-<command>/` | Select `/uncle-dev-spec (command)` or type `$command-uncle-dev-spec` |
+| Agent source profiles | `plugins/uncle-dev/agents/` | Original independent personas |
+| Native agents | `.codex/agents/*.toml` in the selected scope | Ask Codex to delegate to `uncle-po`, `uncle-lead`, `uncle-dev-ag-code-reviewer`, etc. |
+| Scripts and rule references | Plugin root | Commands use the bundled helpers; project setup activates project instructions |
+
+A command entry reads the **entire original command**, including all routed
+skills and companion instructions. It does not replace the command with one
+skill. For example:
+
+```text
+$command-uncle-dev-spec Specify invitations for new team members.
+```
+
+Codex's automatic command migration skips rendered commands larger than 4,000
+bytes and some source-host template syntax. The installer avoids that lossy
+migration by generating small explicit entry points with references to complete,
+unchanged templates. These are Codex skill entry points, not new built-in slash
+commands. `COMMANDS.md` inside the assembled plugin lists every mapping.
+
+`agents/openai.yaml` inside a skill is presentation metadata, not an independent
+agent registration. Skills display their skill names; native personas use the
+agent source filenames. Source-host model aliases such as `sonnet` and `opus`
+are not copied into Codex model settings; agents inherit the session settings.
+
+For updates, rerun the installer with `--force`, then run the printed
+`codex plugin add` command. The assembled version includes a reproducible content
+hash to invalidate stale Codex caches without changing the repository's release
+version. Existing conflicting files require `--force`; unrelated agents remain.
+The generated archive includes the plugin, marketplace, and native agent files.
+
+Claude-specific lifecycle hooks are **not activated** by this installer; this
+does not mean Codex lacks hook support. Rule files bundled inside a plugin are
+not automatically project instructions. Run `$command-uncle-dev-setup` in the
+target project to configure its Uncle Dev workflow.
 
 ## Install for Cursor
 

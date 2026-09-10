@@ -71,14 +71,19 @@ Installs the full plugin bundle into Claude Code's plugin cache and registers it
 
 ### `install-codex.sh` — OpenAI Codex CLI
 
+See the [Codex installation guide](../docs/improved/guides/tool-setup/codex.md)
+for component activation, hook compatibility, and remaining setup gaps.
+
 Installs Uncle Dev as a native Codex plugin assembled at install time from shared repo sources.
 
 **Bundle contents:**
 - `plugins/uncle-dev/.codex-plugin/plugin.json` — Codex plugin manifest
-- `plugins/uncle-dev/commands/` — Codex command entrypoints (`uncle-dev-spec`, `uncle-dev-plan`, etc.)
-- `plugins/uncle-dev/skills/` — copied from the shared root `skills/` directory at install time
-- `plugins/uncle-dev/agent-manifests/` — Codex-only `openai.yaml` agent manifests copied into the bundled skill trees at install time
+- `plugins/uncle-dev/command-templates/` — complete, unchanged command workflows
+- `plugins/uncle-dev/skills/` — shared skills with Codex path guidance, plus small `command-*` entries that load full command workflows
+- Skill-local `agents/openai.yaml` — presentation metadata, not independent agent definitions
 - `plugins/uncle-dev/agents/` — copied from the shared root `agents/` directory at install time
+- `.codex/agents/*.toml` — independent native Codex agents, generated from those personas
+- `plugins/uncle-dev/CODEX.md` and `COMMANDS.md` — execution guidance and the command invocation catalog
 - `.agents/plugins/marketplace.json` — marketplace metadata for Codex plugin discovery
 
 **Usage:**
@@ -94,6 +99,19 @@ Installs Uncle Dev as a native Codex plugin assembled at install time from share
 - `--scope local` → `<workspace>/plugins/uncle-dev` plus `<workspace>/.agents/plugins/marketplace.json`
 
 **Output:** `dist/uncle-dev-codex.tar.gz`
+
+The archive contains `plugins/`, `.agents/`, and `.codex/` directly. Activate or
+refresh the assembled plugin with the `codex plugin add` command printed by the
+installer, then open a new task. Explicit project marketplaces also require
+`codex plugin marketplace add`. The generated version carries a reproducible
+content hash so changes do not reuse stale plugin caches.
+
+Invoke the full spec workflow with `$command-uncle-dev-spec` (displayed as
+`/uncle-dev-spec (command)`). This entry reads the original command and all its
+routed skills; it does not substitute `uncle-dev-spec-driven-development` or the
+independent `uncle-po` agent. The adapter avoids Codex's 4,000-byte automatic
+command migration limit. Claude hooks are not activated, and bundled root rules
+do not replace project setup.
 
 ---
 
@@ -203,7 +221,7 @@ Each tool's install script generates a `.tar.gz` archive suitable for distributi
 | Archive | Contents |
 |---------|----------|
 | `dist/uncle-dev-claude.tar.gz` | commands, skills, agents, hooks, plugin.json |
-| `dist/uncle-dev-codex.tar.gz` | Codex plugin wrapper, copied shared skills, copied shared agents, marketplace.json |
+| `dist/uncle-dev-codex.tar.gz` | Plugin, full command templates and entries, shared skills, native agents, marketplace.json |
 | `dist/uncle-dev-opencode.tar.gz` | AGENTS.md, skills, agents |
 
 Archives are regenerated on every install run. The `dist/` directory is not committed to the repository.

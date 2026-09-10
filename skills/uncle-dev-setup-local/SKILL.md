@@ -1,6 +1,6 @@
 ---
 name: uncle-dev-setup-local
-description: Wires uncle-dev fully into a target project for Claude Code, Codex, and/or OpenCode. Installs the plugin for each detected tool, scaffolds required directories, writes the project config file, injects hooks into .claude/settings.json (Claude Code only), and adds uncle-dev rules to CLAUDE.md or AGENTS.md. Use when setting up uncle-dev in a new or existing project, when hooks are not firing, or when the session does not load the Skill Discovery flowchart on start.
+description: Wires uncle-dev fully into a target project for Claude Code, Codex, and/or OpenCode. Installs the plugin for each detected tool, scaffolds required directories, writes the project config file, verifies plugin-owned Claude hooks and reports Codex hook compatibility, and adds uncle-dev rules to CLAUDE.md or AGENTS.md. Use when setting up uncle-dev in a new or existing project, when hooks are not firing, or when the session does not load the Skill Discovery flowchart on start.
 ---
 
 ## Overview
@@ -229,22 +229,25 @@ If `.agents/uncle-dev-setup.yaml` already exists, read the current values via `b
 
 ---
 
-### Step 4 — Wire hooks (Claude Code only)
+### Step 4 — Verify hook ownership and host compatibility
 
-Skip this step if Claude Code was not detected in Step 1.
+Verify each detected host separately. The manifest below belongs to Claude Code;
+the Codex compatibility section applies even when Claude Code is not installed.
 
 Read the eight `hooks.*` toggles with per-key scalar calls. Do **not** use `--list hooks`: `--list` only iterates arrays and exits silently on a mapping, so it prints nothing and every hook would look disabled.
 
 ```bash
 for k in session_start pre_commit spec_coherence openspec_guard \
          destructive_command_guard knowledge_capture_nudge wrap_nudge test_resource_guard; do
-  printf '%-26s %s\n' "$k" "$(bash scripts/uncle-dev-config.sh hooks.$k true)"
+  printf '%-26s %s\n' "$k" "$(bash "${AGENT_SKILLS_ROOT}/scripts/uncle-dev-config.sh" hooks.$k true)"
 done
 ```
 
-A toggle absent from an older `.agents/uncle-dev-setup.yaml` resolves to the `true` default above — treat it as enabled and leave the file alone. Never open `.agents/uncle-dev-setup.yaml` directly. Read the existing `.claude/settings.json` (create `{}` if missing). Merge only hooks whose `command` string is not already present — never duplicate.
+A toggle absent from an older config resolves to `true`; leave the file alone. Read config only through the helper. These are runtime toggles, not proof that a hook is registered or active.
 
-Full hook set. This block must match `hooks/hooks.json` exactly — `scripts/tests/hook-block-drift.test.sh` fails if the two diverge. Copy the command strings verbatim, including the quotes around `"${CLAUDE_PLUGIN_ROOT}/..."`; unquoted paths break on directories containing spaces and defeat the duplicate check above.
+Claude hooks are owned by the enabled plugin. Do not inject the following block into `.claude/settings.json`: `setup-project.sh` removes project-level entries containing `${CLAUDE_PLUGIN_ROOT}`. Preserve unrelated hooks. Verify plugin registration and actual hook execution instead.
+
+Full hook set (reference only, not project settings to install). This block must match `hooks/hooks.json` exactly; `scripts/tests/hook-block-drift.test.sh` checks it. The quoted plugin-root paths belong to the plugin manifest.
 
 ```json
 {
@@ -349,7 +352,7 @@ Full hook set. This block must match `hooks/hooks.json` exactly — `scripts/tes
 }
 ```
 
-Toggle gating — omit an entry only when its toggle reads `false`:
+Runtime toggles — the corresponding scripts return without work when their toggle is `false`:
 
 | Hook script | Toggle |
 |-------------|--------|
@@ -361,9 +364,9 @@ Toggle gating — omit an entry only when its toggle reads `false`:
 | `knowledge-capture-nudge.sh` | `hooks.knowledge_capture_nudge` |
 | `test-resource-guard.sh` | `hooks.test_resource_guard` |
 | `wrap-nudge.sh` | `hooks.wrap_nudge` |
-| `check-agents-md.sh`, `uncle-dev-mode.sh`, `permission-notify.sh`, `gate-notify.sh` | none — always install |
+| `check-agents-md.sh`, `uncle-dev-mode.sh`, `permission-notify.sh`, `gate-notify.sh` | none — registered by the plugin |
 
-If every hook inside a group is omitted, drop that whole group instead of leaving an empty `hooks` array.
+Do not filter or rewrite the shared plugin manifest for one project; the scripts read project toggles at runtime.
 
 Hook-to-toggle mapping:
 | Hook command | Toggle |
@@ -390,7 +393,7 @@ When either threshold is reached, it nudges the user to run `/uncle-dev-wrap` an
 
 When a test-runner command leaves more orphaned runtime processes alive than the threshold, it reports a suspected resource leak and points at the missing teardown. It advises only — it never kills processes, since orphans may be legitimate MCP servers, dev servers, or dashboards.
 
-Codex and OpenCode do not have a hook system — the install scripts handle all configuration for those tools.
+Codex supports hooks, but this installer does not activate the Claude hook manifest in Codex. Before porting, adapt patch inputs, output JSON, runtime paths, and unsupported events; then validate hook discovery and trust. Do not mark Codex hooks active because config toggles are true or files exist. See [Codex installation and hook compatibility](../../docs/improved/guides/tool-setup/codex.md). OpenCode hook support must be verified separately; do not infer it from the Claude manifest.
 
 ---
 
@@ -457,9 +460,11 @@ If the project has a local `AGENTS.md` but it does not reference `/uncle-dev-set
 
 to the appropriate command table in AGENTS.md.
 
-#### Codex — no rules injection needed
+#### Codex — activate the plugin and verify project instructions
 
-`install-codex.sh` registers the plugin in `.agents/plugins/marketplace.json`. Codex discovers skills from the plugin bundle. No additional rules file is required.
+`install-codex.sh` stages the plugin and native agents. Run its printed activation command and start a new task. Verify command entries, ordinary skills, and native agent definitions separately.
+
+Bundled root rules are not automatically project instructions. Check the target project's `AGENTS.md` and its referenced root instructions. `setup-project.sh` currently injects the shared rules block only when Claude Code is detected; report missing Codex-only project wiring rather than claiming full configuration. Do not overwrite existing project instructions. See the Codex guide above for the required installation contract and known gaps.
 
 ---
 
@@ -487,7 +492,7 @@ Common (all tools)
 
 Claude Code
  [✓/✗/—] Plugin in installed_plugins.json
- [✓/✗/—] .claude/settings.json  contains uncle-dev hooks
+ [✓/✗/—] Plugin hook manifest  owns uncle-dev hooks (no duplicate project entries)
  [✓/✗/—] CLAUDE.md              contains <!-- uncle-dev --> block
 
 Codex
@@ -502,7 +507,7 @@ OpenCode
 Next steps:
   1. Open .agents/uncle-dev-setup.yaml — set project.type, language, framework
   2. Claude Code: restart to activate hooks
-  3. Codex: verify with `codex plugin list`
+  3. Codex: activate with the printed `codex plugin add` command; open a new task
   4. OpenCode: verify AGENTS.md is loaded in your session
 ```
 
@@ -539,7 +544,7 @@ Next steps:
 Claude Code:
 
 - [ ] `jq '.plugins | keys[]' ~/.claude/plugins/installed_plugins.json 2>/dev/null | grep -q '^"uncle-dev@'` exits 0
-- [ ] `.claude/settings.json` contains `session-start.sh` in a SessionStart hook
+- [ ] Enabled Claude plugin registers `session-start.sh`; project settings do not duplicate plugin-root hooks
 - [ ] `CLAUDE.md` contains `<!-- uncle-dev -->` and `<!-- /uncle-dev -->`
 - [ ] Restart Claude Code in the project — session prints the Skill Discovery flowchart
 - [ ] Run `git commit -m "x"` — `pre-commit-guard.sh` blocks it
@@ -547,7 +552,11 @@ Claude Code:
 Codex:
 
 - [ ] `plugins/uncle-dev/.codex-plugin/plugin.json` exists (local) or `~/plugins/uncle-dev/` exists (user)
-- [ ] `.agents/plugins/marketplace.json` contains an uncle-dev entry
+- [ ] Marketplace contains uncle-dev and the plugin has been activated
+- [ ] Full command entry `$command-uncle-dev-spec` is available in a new task
+- [ ] Native agents exist in the selected `.codex/agents/` scope
+- [ ] Project instructions are loaded separately from bundled rule references
+- [ ] Hook status is reported accurately: Uncle Dev hooks are not yet activated in Codex
 
 OpenCode:
 

@@ -21,7 +21,7 @@
   "interface": {
     "displayName": "Uncle Dev",
     "shortDescription": "Senior engineering workflows for Codex",
-    "longDescription": "Bring Uncle Dev's production-grade engineering workflows into Codex with native commands plus shared skills and agent personas assembled from this repository's canonical sources.",
+    "longDescription": "Bring Uncle Dev's engineering workflows into Codex with complete command workflows exposed through explicit skill entry points, shared skills, and independent agent personas. The Codex installer also registers native agents in the selected scope.",
     "developerName": "Javier Benavides",
     "category": "Coding",
     "capabilities": [
