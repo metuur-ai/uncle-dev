@@ -9,7 +9,7 @@ Shared library sourced by the installer and guard scripts. The canonical asset i
 
 ## Contracts & Invariants
 - `manifest.sh` is the ONLY place an asset root is declared. Adding an installable asset = one edit here; never hard-code roots in installers or guards.
-- Copies of the inventory (`.claude-plugin/marketplace.json`, `plugins/uncle-dev/commands/`, README counts) are ENFORCED against these roots by `../check-manifest.sh`, never re-authored as a second source of truth.
+- Copies of the inventory (`../../.claude-plugin/marketplace.json`, `plugins/uncle-dev/commands/`, README counts) are ENFORCED against these roots by `../check-manifest.sh`, never re-authored as a second source of truth.
 - The allowlist is the only sanctioned way to keep a canonical asset out of a copy, and every entry must carry a reason comment.
 
 ## Anti-patterns
@@ -17,5 +17,5 @@ Shared library sourced by the installer and guard scripts. The canonical asset i
 - Never silence a drift by deleting the canonical asset; either reconcile the copy or add a justified allowlist entry.
 
 ## Related Context
-- Guard: `../check-manifest.sh` (sources both files; invoked by `install.sh verify` and `tests/run-all.sh`).
+- Guard: `../check-manifest.sh` (sources both files; invoked by `install.sh verify` and `../tests/run-all.sh`).
 - AGENTS.md authoring: `../../skills/uncle-dev-context-engineering/agents-md-guide.md`
