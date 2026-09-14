@@ -18,18 +18,18 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 ## Skills by Phase
 
 <!-- BEGIN GENERATED: skills-by-phase -->
-**Define:** uncle-dev-acknowledge, uncle-dev-design-architecture-docs, uncle-dev-grill, uncle-dev-idea-refine, uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-ubiquitous-language, uncle-dev-verbalized-sampling
-**Brownfield:** uncle-dev-brownfield, uncle-dev-feature-map
+**Define:** uncle-dev-codebase-research, uncle-dev-decision-acknowledgment, uncle-dev-design-architecture-docs, uncle-dev-grill, uncle-dev-idea-refine, uncle-dev-spec-driven-development, uncle-dev-ubiquitous-language, uncle-dev-verbalized-sampling
+**Brownfield:** uncle-dev-brownfield-reverse-engineering, uncle-dev-feature-discovery
 **Evaluate:** uncle-dev-duck
 **Plan:** uncle-dev-planning-and-task-breakdown
-**Build:** uncle-dev-api-and-interface-design, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-incremental-implementation, uncle-dev-source-driven-development, uncle-dev-spec-annotations, uncle-dev-test-driven-development
+**Build:** uncle-dev-api-and-interface-design, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-incremental-implementation, uncle-dev-source-driven-development, uncle-dev-spec-traceability, uncle-dev-test-driven-development
 **Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debug-error, uncle-dev-mutation-testing
 **Review:** uncle-dev-code-review-and-quality, uncle-dev-dev-code-simplification, uncle-dev-performance-optimization, uncle-dev-security-and-hardening
-**Ship:** uncle-dev-changelog, uncle-dev-ci-cd-and-automation, uncle-dev-deprecation-and-migration, uncle-dev-documentation-and-adrs, uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-speech
-**Capture:** uncle-dev-knowledge-capture
-**Handoff:** uncle-dev-wrap
-**Maintain:** uncle-dev-custom-me, uncle-dev-knowledge-maintenance
-**Support:** uncle-dev-business-observability, uncle-dev-code-context, uncle-dev-graphify-aware-analysis, uncle-dev-initiative-map, uncle-dev-next-task, uncle-dev-over-engineering-audit, uncle-dev-pre-mortem, uncle-dev-setup-local, uncle-dev-using-agent-skills, uncle-dev-subagent-model-routing
+**Ship:** uncle-dev-changelog-generation, uncle-dev-ci-cd-and-automation, uncle-dev-deprecation-and-migration, uncle-dev-documentation-and-adrs, uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-speech
+**Capture:** uncle-dev-learning-capture
+**Handoff:** uncle-dev-session-handoff
+**Maintain:** uncle-dev-custom-skill-authoring, uncle-dev-learning-maintenance
+**Support:** uncle-dev-business-observability, uncle-dev-code-context, uncle-dev-graphify-aware-analysis, uncle-dev-initiative-map, uncle-dev-over-engineering-audit, uncle-dev-pre-mortem-analysis, uncle-dev-setup-local, uncle-dev-task-selection, uncle-dev-using-agent-skills, uncle-dev-subagent-model-routing
 <!-- END GENERATED: skills-by-phase -->
 
 ## Conventions
@@ -40,7 +40,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 - Every skill has: Overview, When to Use, Process, Common Rationalizations, Red Flags, Verification
 - Supporting reference files (checklists, patterns) live alongside their SKILL.md in the same skill directory
 - Supporting files only created when content exceeds 100 lines
-- Architecture intent flows HLD → LLD → EARS specs → tests → code. Code and tests reference durable behavior via `@spec` annotations. See `uncle-dev-design-architecture-docs` and `uncle-dev-spec-annotations`.
+- Architecture intent flows HLD → LLD → EARS specs → tests → code. Code and tests reference durable behavior via `@spec` annotations. See `uncle-dev-design-architecture-docs` and `uncle-dev-spec-traceability`.
 - **Two spec universes (separate tracks, no automated bridge):**
   - `docs/hld/`, `docs/lld/`, `docs/ears/` use `R-x.y` IDs — coverage is a **MANUAL CHECK** (no scanner validates these IDs against tests).
   - `docs/specs/<segment>-specs.md` with `SEG-AREA-NNN` IDs — coverage is **scanner-enforced** via `scan-spec-coherence.py` / `hooks/spec-coherence-guard.sh` (`[A-Z][A-Z0-9-]*-[0-9]+` regex). The scanner is not extended to accept `R-x.y` IDs.
@@ -123,14 +123,14 @@ Intent → Skill mapping:
 - Refactoring / simplification → `uncle-dev-dev-code-simplification`
 - API or interface design → `uncle-dev-api-and-interface-design`
 - UI work → `uncle-dev-frontend-ui-engineering`
-- Design decision needing sign-off → `uncle-dev-acknowledge`
-- Problem just solved → `uncle-dev-knowledge-capture`
-- Architecture questions → `uncle-dev-research`
+- Design decision needing sign-off → `uncle-dev-decision-acknowledgment`
+- Problem just solved → `uncle-dev-learning-capture`
+- Architecture questions → `uncle-dev-codebase-research`
 
 OpenCode lifecycle (OpenCode does not support slash commands — follow internally):
 - DEFINE → `uncle-dev-spec-driven-development`
 - PLAN → `uncle-dev-planning-and-task-breakdown`
-- BUILD → `uncle-dev-next-task` then `uncle-dev-incremental-implementation` + `uncle-dev-test-driven-development`
+- BUILD → `uncle-dev-task-selection` then `uncle-dev-incremental-implementation` + `uncle-dev-test-driven-development`
 - VERIFY → `uncle-dev-debug-error`
 - REVIEW → `uncle-dev-code-review-and-quality`
 - SHIP → `uncle-dev-shipping-and-launch`
@@ -142,36 +142,36 @@ When the user types any `/uncle-dev-*` command, invoke the corresponding skill i
 <!-- BEGIN GENERATED: commands-table -->
 | Command | Skill |
 |---------|-------|
-| /uncle-dev-acknowledge | uncle-dev-acknowledge |
+| /uncle-dev-acknowledge | uncle-dev-decision-acknowledgment |
 | /uncle-dev-big-idea | uncle-dev-initiative-map |
-| /uncle-dev-brownfield | uncle-dev-brownfield |
+| /uncle-dev-brownfield | uncle-dev-brownfield-reverse-engineering |
 | /uncle-dev-build | uncle-dev-incremental-implementation + uncle-dev-test-driven-development |
-| /uncle-dev-changelog | uncle-dev-changelog |
+| /uncle-dev-changelog | uncle-dev-changelog-generation |
 | /uncle-dev-code-simplify | uncle-dev-dev-code-simplification |
-| /uncle-dev-custom-me | uncle-dev-custom-me |
+| /uncle-dev-custom-me | uncle-dev-custom-skill-authoring |
 | /uncle-dev-debt | uncle-dev-over-engineering-audit |
 | /uncle-dev-design-docs | uncle-dev-design-architecture-docs |
-| /uncle-dev-feature-map | uncle-dev-feature-map |
-| /uncle-dev-knowledge-capture | uncle-dev-knowledge-capture |
-| /uncle-dev-knowledge-maintenance | uncle-dev-knowledge-maintenance |
+| /uncle-dev-feature-map | uncle-dev-feature-discovery |
+| /uncle-dev-knowledge-capture | uncle-dev-learning-capture |
+| /uncle-dev-knowledge-maintenance | uncle-dev-learning-maintenance |
 | /uncle-dev-mode | (session strictness — strict/balanced/fast) |
-| /uncle-dev-next-task | uncle-dev-next-task |
+| /uncle-dev-next-task | uncle-dev-task-selection |
 | /uncle-dev-openspec-sync | (openspec tracker refresh) |
 | /uncle-dev-overkill-detector | uncle-dev-over-engineering-audit |
 | /uncle-dev-plan | uncle-dev-planning-and-task-breakdown |
-| /uncle-dev-pre-mortem | uncle-dev-pre-mortem |
+| /uncle-dev-pre-mortem | uncle-dev-pre-mortem-analysis |
 | /uncle-dev-pro | (senior-collaborator mode) |
 | /uncle-dev-proactive-memory | uncle-dev-using-agent-skills |
-| /uncle-dev-research | uncle-dev-research |
+| /uncle-dev-research | uncle-dev-codebase-research |
 | /uncle-dev-review | uncle-dev-code-review-and-quality |
 | /uncle-dev-setup | uncle-dev-setup-local |
 | /uncle-dev-ship | uncle-dev-shipping-and-launch |
 | /uncle-dev-spec | uncle-dev-spec-driven-development |
-| /uncle-dev-spec-annotations | uncle-dev-spec-annotations |
-| /uncle-dev-spec-graph | uncle-dev-spec-annotations |
-| /uncle-dev-spec-scan | uncle-dev-spec-annotations |
+| /uncle-dev-spec-annotations | uncle-dev-spec-traceability |
+| /uncle-dev-spec-graph | uncle-dev-spec-traceability |
+| /uncle-dev-spec-scan | uncle-dev-spec-traceability |
 | /uncle-dev-test | uncle-dev-test-driven-development |
-| /uncle-dev-wrap | uncle-dev-wrap |
+| /uncle-dev-wrap | uncle-dev-session-handoff |
 | /uncle-senior | uncle-senior (agent) · uncle-dev-duck (--duck) |
 <!-- END GENERATED: commands-table -->
 <!-- /uncle-dev -->

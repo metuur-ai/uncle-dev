@@ -56,24 +56,24 @@ build_skills_phase_block() {
   # Phase assignments — edit this list when skills change phases.
   # Format: one entry per line: "skill-name PHASE"
   local assignments
-  assignments="uncle-dev-acknowledge Define
+  assignments="uncle-dev-decision-acknowledgment Define
 uncle-dev-api-and-interface-design Build
-uncle-dev-brownfield Brownfield
+uncle-dev-brownfield-reverse-engineering Brownfield
 uncle-dev-browser-testing-with-devtools Verify
 uncle-dev-business-observability Support
-uncle-dev-changelog Ship
+uncle-dev-changelog-generation Ship
 uncle-dev-ci-cd-and-automation Ship
 uncle-dev-code-context Support
 uncle-dev-code-review-and-quality Review
 uncle-dev-context-engineering Build
-uncle-dev-custom-me Maintain
+uncle-dev-custom-skill-authoring Maintain
 uncle-dev-debug-error Verify
 uncle-dev-deprecation-and-migration Ship
 uncle-dev-design-architecture-docs Define
 uncle-dev-dev-code-simplification Review
 uncle-dev-documentation-and-adrs Ship
 uncle-dev-duck Evaluate
-uncle-dev-feature-map Brownfield
+uncle-dev-feature-discovery Brownfield
 uncle-dev-frontend-ui-engineering Build
 uncle-dev-git-workflow-and-versioning Ship
 uncle-dev-graphify-aware-analysis Support
@@ -81,27 +81,27 @@ uncle-dev-grill Define
 uncle-dev-idea-refine Define
 uncle-dev-incremental-implementation Build
 uncle-dev-initiative-map Support
-uncle-dev-knowledge-capture Capture
-uncle-dev-knowledge-maintenance Maintain
+uncle-dev-learning-capture Capture
+uncle-dev-learning-maintenance Maintain
 uncle-dev-mutation-testing Verify
-uncle-dev-next-task Support
+uncle-dev-task-selection Support
 uncle-dev-over-engineering-audit Support
 uncle-dev-performance-optimization Review
 uncle-dev-planning-and-task-breakdown Plan
-uncle-dev-pre-mortem Support
-uncle-dev-research Define
+uncle-dev-pre-mortem-analysis Support
+uncle-dev-codebase-research Define
 uncle-dev-security-and-hardening Review
 uncle-dev-setup-local Support
 uncle-dev-shipping-and-launch Ship
 uncle-dev-source-driven-development Build
-uncle-dev-spec-annotations Build
+uncle-dev-spec-traceability Build
 uncle-dev-spec-driven-development Define
 uncle-dev-speech Ship
 uncle-dev-test-driven-development Build
 uncle-dev-ubiquitous-language Define
 uncle-dev-using-agent-skills Support
 uncle-dev-verbalized-sampling Define
-uncle-dev-wrap Handoff"
+uncle-dev-session-handoff Handoff"
 
   # Collect skills per phase using indexed arrays (bash 3.2 safe).
   local phases

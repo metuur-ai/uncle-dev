@@ -16,23 +16,23 @@ SPLITTER="${REPO_ROOT}/scripts/lib/split-skill-branch.sh"
 SKILLS_DIR="${REPO_ROOT}/skills"
 
 # Dual-branch skills that carry both branch markers (subset of LLD #9's list).
-# uncle-dev-wrap is intentionally EXCLUDED: on inspection it has no mode-specific
+# uncle-dev-session-handoff is intentionally EXCLUDED: on inspection it has no mode-specific
 # branch to drop — it merely references both lid-ears and openspec artifact paths
 # side-by-side and works identically in either mode. The splitter copies it
 # verbatim (no markers ⇒ verbatim), which is the correct behavior. See
 # MARKER_FREE_SKILLS below for the verbatim assertion.
 AFFECTED_SKILLS=(
   uncle-dev-spec-driven-development
-  uncle-dev-next-task
+  uncle-dev-task-selection
   uncle-dev-planning-and-task-breakdown
-  uncle-dev-acknowledge
-  uncle-dev-knowledge-capture
+  uncle-dev-decision-acknowledgment
+  uncle-dev-learning-capture
   uncle-dev-shipping-and-launch
 )
 
 # Listed in LLD #9 but has no genuine two-branch split; must be copied verbatim.
 MARKER_FREE_SKILLS=(
-  uncle-dev-wrap
+  uncle-dev-session-handoff
 )
 
 PASS=0; FAIL=0

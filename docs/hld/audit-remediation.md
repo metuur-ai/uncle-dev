@@ -56,7 +56,7 @@ The following must NOT change as part of this initiative:
 - No scanner bridge for `R-x.y` IDs (EARS spec IDs): the "Separate" decision locks the two spec tracks (EARS reviewed manually; `SEG-AREA-NNN` scanner-enforced). The `@spec` scanner is not extended to load `docs/ears/*.md` or parse `R-\d+\.\d+` IDs.
 - No skill-directory renames: the skill directory `uncle-dev-dev-code-simplification` is not renamed to `uncle-dev-code-simplification` (audit 04 explicitly flags this as separate work requiring marketplace.json, CLAUDE.md, and installer coordination).
 - No new `plan-reviewer` agent: the phantom reference is rerouted to an existing agent; no new agent file is created.
-- No redesign of the `uncle-dev-acknowledge` lid-ears gap beyond the minimum viable fix (surface proposed ADRs in next-task Path A, or document the asymmetry explicitly).
+- No redesign of the `uncle-dev-decision-acknowledgment` lid-ears gap beyond the minimum viable fix (surface proposed ADRs in next-task Path A, or document the asymmetry explicitly).
 - No changes to the `.claude-plugin/marketplace.json` skill/agent count unless a command file is added (audit 07 creates two command files; counts must be updated accordingly).
 
 ## Success Criteria

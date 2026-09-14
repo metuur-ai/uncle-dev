@@ -9,7 +9,7 @@ description: Reverse-engineer LLD + EARS specs from a /uncle-dev-feature-map out
 3. **Surgical Changes** — Agents output only; nothing is written until reconciliation. `@spec` annotations land only for `[x]` (implemented) specs.
 4. **Goal-Driven Execution** — Done when `docs/llds/`, `docs/specs/`, and `docs/arrows/index.yaml` exist for every segment and `/uncle-dev-spec-scan` exits clean.
 
-This command is backed by `uncle-dev-feature-map` (input), `uncle-dev-design-architecture-docs` (LLD/segment rules), and `uncle-dev-spec-annotations` (EARS IDs, `@spec`).
+This command is backed by `uncle-dev-feature-discovery` (input), `uncle-dev-design-architecture-docs` (LLD/segment rules), and `uncle-dev-spec-traceability` (EARS IDs, `@spec`).
 
 ---
 
@@ -199,6 +199,6 @@ Surface anything the scanner flags. A clean scan plus a refreshed graph means th
 
 - This command writes documentation (`docs/llds/`, `docs/specs/`, `docs/arrows/`) and applies `@spec` annotations only to already-implemented entry points. It does not refactor source.
 - It never invents a feature map — if none exists, it hands off to `/uncle-dev-feature-map`.
-- For deeper segment/prefix guidance hand off to `uncle-dev-design-architecture-docs`; for annotation syntax, `uncle-dev-spec-annotations`.
+- For deeper segment/prefix guidance hand off to `uncle-dev-design-architecture-docs`; for annotation syntax, `uncle-dev-spec-traceability`.
 
 $ARGUMENTS

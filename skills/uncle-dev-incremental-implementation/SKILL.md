@@ -246,7 +246,7 @@ AUTH-UI-001
    └──▶ sessionStore.ts     // @spec AUTH-UI-001
 ```
 
-The `spec-coherence-guard.sh` hook blocks edits and commits that cite undefined IDs in real time. Run `/uncle-dev-spec-scan` to surface annotations on non-entry-point AST nodes (HELPER ANNOTATION warnings). See `uncle-dev-spec-annotations` for per-language examples, the segment-boundary rule, and negative-requirement patterns.
+The `spec-coherence-guard.sh` hook blocks edits and commits that cite undefined IDs in real time. Run `/uncle-dev-spec-scan` to surface annotations on non-entry-point AST nodes (HELPER ANNOTATION warnings). See `uncle-dev-spec-traceability` for per-language examples, the segment-boundary rule, and negative-requirement patterns.
 
 ## Verification
 

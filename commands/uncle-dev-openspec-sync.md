@@ -66,6 +66,6 @@ The output looks like:
       FAV-002: [test]
 ```
 
-If `docs/specs/` does not exist, or a `proposal.md` has no `## EARS Specs` block, the field is `spec_coverage: null` (graceful no-op — does not crash). See `uncle-dev-spec-annotations` for the EARS Specs proposal block convention.
+If `docs/specs/` does not exist, or a `proposal.md` has no `## EARS Specs` block, the field is `spec_coverage: null` (graceful no-op — does not crash). See `uncle-dev-spec-traceability` for the EARS Specs proposal block convention.
 
 If the script is not found, tell the user: "generate-tracker.py not found. Run `install-claude.sh` from the agent-skills repo."

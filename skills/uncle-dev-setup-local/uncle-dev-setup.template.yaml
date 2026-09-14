@@ -36,7 +36,7 @@ tool:
 
 # ── Skill configuration ───────────────────────────────────────────────────────
 # All uncle-dev skills are always available — there is no opt-in/opt-out list.
-# To customize a skill, see /uncle-dev-custom-me and the uncle-dev-custom-me skill.
+# To customize a skill, see /uncle-dev-custom-me and the uncle-dev-custom-skill-authoring skill.
 skills:
   # Per-skill OVERRIDES — replace an uncle-dev skill with your own SKILL.md.
   #

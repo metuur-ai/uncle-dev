@@ -13,7 +13,7 @@ When a task arrives, identify the development phase and apply the corresponding 
 ```
 Task arrives
     │
-    ├── Need to understand codebase first? ──→ uncle-dev-research
+    ├── Need to understand codebase first? ──→ uncle-dev-codebase-research
     ├── Vague idea/need refinement? ──────────→ idea-refine
     ├── New project/feature/change? ──────────→ spec-driven-development
     ├── Have a spec, need tasks? ──────→ planning-and-task-breakdown
@@ -121,7 +121,7 @@ Your first sentence answers "what happened" or "what I found" — the bottom lin
 
 ### 8. Assess, Don't Act Uninvited
 
-When the human is describing a problem, asking a question, or thinking out loud rather than requesting a change, the deliverable is your assessment — report findings and stop. Do not apply a fix until asked. (Read-only skills like uncle-dev-research are one codified instance of this; the principle is general.)
+When the human is describing a problem, asking a question, or thinking out loud rather than requesting a change, the deliverable is your assessment — report findings and stop. Do not apply a fix until asked. (Read-only skills like uncle-dev-codebase-research are one codified instance of this; the principle is general.)
 
 ## Failure Modes to Avoid
 
@@ -179,7 +179,7 @@ knowledge-maintenance → Triggered after refactors, migrations, or when docs fe
 
 | Phase | Skill | One-Line Summary |
 |-------|-------|-----------------|
-| Define | uncle-dev-research | Document what exists before speccing what to build |
+| Define | uncle-dev-codebase-research | Document what exists before speccing what to build |
 | Define | idea-refine | Refine ideas through structured divergent and convergent thinking |
 | Define | spec-driven-development | Requirements and acceptance criteria before code |
 | Plan | planning-and-task-breakdown | Decompose into small, verifiable tasks |

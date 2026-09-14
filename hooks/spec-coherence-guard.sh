@@ -105,7 +105,7 @@ handle_edit_or_write() {
     - Look it up in the story's spec_ids: field in stories.yaml
     - Do NOT add the story ID to docs/specs/ — that pollutes the registry
 
-  See uncle-dev-spec-annotations > BMAD Artifact Interop."
+  See uncle-dev-spec-traceability > BMAD Artifact Interop."
     if [ "$EXEC_PROFILE" = "strict" ]; then
       hook_block "$smsg"
     else
@@ -165,9 +165,9 @@ handle_bash() {
   # Locate the scanner. Try installed plugin path first, then sibling repo path.
   local scanner=""
   for candidate in \
-    "${CLAUDE_PLUGIN_ROOT:-}/skills/uncle-dev-spec-annotations/scan-spec-coherence.py" \
-    "$HOME/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/skills/uncle-dev-spec-annotations/scan-spec-coherence.py" \
-    "$REPO_ROOT/skills/uncle-dev-spec-annotations/scan-spec-coherence.py"
+    "${CLAUDE_PLUGIN_ROOT:-}/skills/uncle-dev-spec-traceability/scan-spec-coherence.py" \
+    "$HOME/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/skills/uncle-dev-spec-traceability/scan-spec-coherence.py" \
+    "$REPO_ROOT/skills/uncle-dev-spec-traceability/scan-spec-coherence.py"
   do
     if [ -n "$candidate" ] && [ -f "$candidate" ]; then
       scanner="$candidate"

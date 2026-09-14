@@ -10,7 +10,7 @@
 #       dependency is unresolved (R-6.3 mutex semantics).
 #
 # The "parsing logic" is the bash-native subset described in
-# skills/uncle-dev-next-task/parsing-and-annotations.md:
+# skills/uncle-dev-task-selection/parsing-and-annotations.md:
 #   - Story header regex:  "^### Story ([0-9]+(\.[0-9]+)*): "
 #   - Annotations line:    "^\*\*Annotations:\*\*"
 #   - mutex key:           "[mutex: Story-X.Y]"
@@ -326,7 +326,7 @@ fi
 
 # No non-conforming PF-001 change-ID example in next-task SKILL.md (R-6.6)
 PF_HITS="$(grep -n 'PF-001' \
-  "${REPO_ROOT}/skills/uncle-dev-next-task/SKILL.md" 2>/dev/null || true)"
+  "${REPO_ROOT}/skills/uncle-dev-task-selection/SKILL.md" 2>/dev/null || true)"
 if [[ -z "${PF_HITS}" ]]; then
   ok "no non-conforming 'PF-001' change-ID example in next-task skill (R-6.6)"
 else

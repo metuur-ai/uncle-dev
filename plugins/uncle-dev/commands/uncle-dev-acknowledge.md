@@ -26,7 +26,7 @@ Design decisions in lid-ears mode are captured as ADRs, not as gating acknowledg
 - For a **quick inline decision** that doesn't warrant a full ADR: write a comment directly in the relevant `docs/lld/<slug>.md` under a "Key Decisions" section.
 - The `/uncle-dev-build` **gate does not apply** in lid-ears mode — there are no pending acknowledgements to block implementation.
 
-Exit after explaining the above. Do NOT invoke the uncle-dev:uncle-dev-acknowledge skill or create `openspec/acknowledge/` files.
+Exit after explaining the above. Do NOT invoke the uncle-dev:uncle-dev-decision-acknowledgment skill or create `openspec/acknowledge/` files.
 
 ---
 
@@ -39,7 +39,7 @@ Resolve the active skill and honor any project overrides/companions:
 ```bash
 _loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
 [[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
-bash "$_loader" uncle-dev-acknowledge
+bash "$_loader" uncle-dev-decision-acknowledgment
 ```
 
 Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
@@ -56,8 +56,8 @@ Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading di
 ## Process
 
 1. Pick the mode from arguments.
-2. **Capture** (paste / extract): follow the Capture mode in `skills/uncle-dev-acknowledge/SKILL.md`.
-3. **Workflow** (`ack` / `reject` / `supersede` / `list`): follow `skills/uncle-dev-acknowledge/acknowledge-workflow.md` exactly — including the `_meta.yaml` lock and the rule that workflow operations never touch prose bodies.
+2. **Capture** (paste / extract): follow the Capture mode in `skills/uncle-dev-decision-acknowledgment/SKILL.md`.
+3. **Workflow** (`ack` / `reject` / `supersede` / `list`): follow `skills/uncle-dev-decision-acknowledgment/acknowledge-workflow.md` exactly — including the `_meta.yaml` lock and the rule that workflow operations never touch prose bodies.
 4. After any write, print the routing summary or the workflow output as defined in the skill files.
 
 ## Output

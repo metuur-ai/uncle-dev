@@ -1,0 +1,4 @@
+interface:
+  display_name: "uncle-dev-codebase-research"
+  short_description: "Repository researcher for structure, conventions, and documentation"
+  default_prompt: "Use $uncle-dev-codebase-research to document the repository as it exists today, focusing on structure, patterns, and conventions."

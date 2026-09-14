@@ -68,7 +68,7 @@ SIMPLIFY AND PROCEED — direction right, but [aspect] can be cut: [simpler alte
 RECONSIDER APPROACH  — solving [assumed/speculative constraint]; actual problem is [X]; simpler path is [Y]
 ```
 
-A `SIMPLIFY AND PROCEED` or `RECONSIDER APPROACH` verdict that drops scope is **incomplete** until each dropped item has a ceiling and upgrade path recorded in `DEFERRED:`. If a deferral will live as a shortcut in the code, write it there as `// @debt <ceiling>, <upgrade>` (grammar: `uncle-dev-spec-annotations`) so `/uncle-dev-overkill-detector debt` can harvest it later — that is how this design-time cut stays visible instead of rotting silently.
+A `SIMPLIFY AND PROCEED` or `RECONSIDER APPROACH` verdict that drops scope is **incomplete** until each dropped item has a ceiling and upgrade path recorded in `DEFERRED:`. If a deferral will live as a shortcut in the code, write it there as `// @debt <ceiling>, <upgrade>` (grammar: `uncle-dev-spec-traceability`) so `/uncle-dev-overkill-detector debt` can harvest it later — that is how this design-time cut stays visible instead of rotting silently.
 
 ## Output Format
 
@@ -196,4 +196,4 @@ Stop and re-examine the approach when you see:
 - `uncle-dev-code-review-and-quality` — review code that is already written
 - `uncle-dev-design-architecture-docs` — document architecture after it's validated
 - `uncle-dev-over-engineering-audit` — once code exists, name and quantify what to cut (`delete|stdlib|native|yagni|shrink`)
-- `uncle-dev-spec-annotations` — the `// @debt <ceiling>, <upgrade>` grammar for deferrals that live in code
+- `uncle-dev-spec-traceability` — the `// @debt <ceiling>, <upgrade>` grammar for deferrals that live in code

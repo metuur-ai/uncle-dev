@@ -62,7 +62,7 @@ Recent learnings (.uncle-dev/learns/): $RECENT"
     fi
   fi
 
-  # Surface the most recent uncle-dev-wrap handoff so the next session can resume.
+  # Surface the most recent uncle-dev-session-handoff handoff so the next session can resume.
   # Handoffs live in .devlocal/handoffs/ (gitignored personal scratchpad) and are
   # written by /uncle-dev-wrap. We list the newest file by mtime; the agent loads
   # it on demand via Read — we never paste the body into the session prompt.

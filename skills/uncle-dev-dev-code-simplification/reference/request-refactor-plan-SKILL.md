@@ -19,7 +19,7 @@ This skill will be invoked when the user wants to create a refactor request. You
 
 7. Break the implementation into a plan of tiny commits. Remember Martin Fowler's advice to "make each refactoring step as small as possible, so that you can always see the program working."
 
-8. Write the refactor plan to `.devlocal/refactor-plans/refactor-<slug>.md` (gitignored personal scratchpad — same `.devlocal/` convention as `uncle-dev-wrap`). Confirm `.devlocal/` is gitignored before writing (it is, project-wide, per `.gitignore`). Derive `<slug>` from the refactor topic. Use the following template as the file content:
+8. Write the refactor plan to `.devlocal/refactor-plans/refactor-<slug>.md` (gitignored personal scratchpad — same `.devlocal/` convention as `uncle-dev-session-handoff`). Confirm `.devlocal/` is gitignored before writing (it is, project-wide, per `.gitignore`). Derive `<slug>` from the refactor topic. Use the following template as the file content:
 
 <refactor-plan-template>
 

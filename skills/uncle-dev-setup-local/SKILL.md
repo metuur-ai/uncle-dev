@@ -414,14 +414,14 @@ This project uses uncle-dev engineering skills for structured AI-assisted develo
 
 ### Skills by Phase
 
-**Define:** uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-acknowledge
+**Define:** uncle-dev-codebase-research, uncle-dev-spec-driven-development, uncle-dev-design-architecture-docs, uncle-dev-decision-acknowledgment
 **Plan:** uncle-dev-planning-and-task-breakdown
-**Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-spec-annotations, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
+**Build:** uncle-dev-incremental-implementation, uncle-dev-test-driven-development, uncle-dev-spec-traceability, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-api-and-interface-design
 **Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debug-error
 **Review:** uncle-dev-code-review-and-quality, uncle-dev-security-and-hardening, uncle-dev-performance-optimization
 **Ship:** uncle-dev-git-workflow-and-versioning, uncle-dev-shipping-and-launch, uncle-dev-documentation-and-adrs
-**Capture:** uncle-dev-knowledge-capture
-**Maintain:** uncle-dev-knowledge-maintenance
+**Capture:** uncle-dev-learning-capture
+**Maintain:** uncle-dev-learning-maintenance
 
 ### Conventions
 

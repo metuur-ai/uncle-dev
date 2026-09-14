@@ -35,7 +35,7 @@ Resolve the active skill and honor any project overrides/companions:
 
 ```bash
 _loader="${_scripts}/uncle-dev-load-skill.sh"
-bash "$_loader" uncle-dev-wrap
+bash "$_loader" uncle-dev-session-handoff
 ```
 
 Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.

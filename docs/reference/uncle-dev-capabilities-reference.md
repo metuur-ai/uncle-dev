@@ -110,28 +110,28 @@ Skills carry the workflow knowledge. They activate through a command, by auto-tr
 
 | Skill                                | What it does                                                                                 |
 | ------------------------------------ | -------------------------------------------------------------------------------------------- |
-| `uncle-dev-research`                 | Documents the codebase as it exists today via parallel subagent exploration                  |
+| `uncle-dev-codebase-research`                 | Documents the codebase as it exists today via parallel subagent exploration                  |
 | `uncle-dev-idea-refine`              | Refines ideas through structured divergent and convergent thinking                           |
 | `uncle-dev-grill`                    | Interviews you branch-by-branch to build a shared design concept, then synthesizes a PRD     |
 | `uncle-dev-ubiquitous-language`      | Builds a DDD-style glossary of canonical domain terms in `docs/ubiquitous-language.md`       |
-| `uncle-dev-feature-map`              | Catalogs product features from routes, controllers, services, and frontend pages             |
+| `uncle-dev-feature-discovery`              | Catalogs product features from routes, controllers, services, and frontend pages             |
 | `uncle-dev-spec-driven-development`  | Drives spec definition before code; routes to LID+EARS mode or OpenSpec mode                 |
 | `uncle-dev-design-architecture-docs` | Authors durable HLD and LLD documents that partition intent into segments feeding EARS specs |
-| `uncle-dev-acknowledge`              | Captures design-decision notes as gating decisions or ADRs                                   |
+| `uncle-dev-decision-acknowledgment`              | Captures design-decision notes as gating decisions or ADRs                                   |
 
 ### Evaluate
 
 | Skill                  | What it does                                                                          |
 | ---------------------- | ------------------------------------------------------------------------------------- |
 | `uncle-senior`         | Challenge or Duck mode review of a proposed approach before it becomes code           |
-| `uncle-dev-pre-mortem` | Imagines a plan has failed and works backward to surface hidden risks and preventions |
+| `uncle-dev-pre-mortem-analysis` | Imagines a plan has failed and works backward to surface hidden risks and preventions |
 
 ### Plan
 
 | Skill                                   | What it does                                                                       |
 | --------------------------------------- | ---------------------------------------------------------------------------------- |
 | `uncle-dev-planning-and-task-breakdown` | Breaks an approved OpenSpec change into ordered shared stories and execution notes |
-| `uncle-dev-next-task`                   | Computes a parallel-safe ready set of tasks and surfaces conflicts                 |
+| `uncle-dev-task-selection`                   | Computes a parallel-safe ready set of tasks and surfaces conflicts                 |
 
 ### Build
 
@@ -139,7 +139,7 @@ Skills carry the workflow knowledge. They activate through a command, by auto-tr
 | -------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `uncle-dev-incremental-implementation` | Delivers changes in small, verifiable slices instead of one large drop                             |
 | `uncle-dev-test-driven-development`    | Proves code works by writing tests first                                                           |
-| `uncle-dev-spec-annotations`           | Links durable behavior to specs, tests, and code via `@spec` annotations                           |
+| `uncle-dev-spec-traceability`           | Links durable behavior to specs, tests, and code via `@spec` annotations                           |
 | `uncle-dev-context-engineering`        | Optimizes agent context — rules files, context hierarchy, AGENTS.md setup                          |
 | `uncle-dev-code-context`               | (Now a rule.) Enforces reading local AGENTS.md and respecting architecture boundaries before edits |
 | `uncle-dev-source-driven-development`  | Grounds every implementation decision in official, cited documentation                             |
@@ -177,10 +177,10 @@ Skills carry the workflow knowledge. They activate through a command, by auto-tr
 
 | Skill                             | What it does                                                                         |
 | --------------------------------- | ------------------------------------------------------------------------------------ |
-| `uncle-dev-knowledge-capture`     | Captures solved problems as searchable docs in `.uncle-dev/learns/`                  |
-| `uncle-dev-wrap`                  | Compacts the conversation into a handoff doc so a fresh session can continue         |
-| `uncle-dev-knowledge-maintenance` | Keeps `.uncle-dev/learns/` accurate over time — review, consolidate, replace, delete |
-| `uncle-dev-custom-me`             | Authors and registers user-defined override or companion skills                      |
+| `uncle-dev-learning-capture`     | Captures solved problems as searchable docs in `.uncle-dev/learns/`                  |
+| `uncle-dev-session-handoff`                  | Compacts the conversation into a handoff doc so a fresh session can continue         |
+| `uncle-dev-learning-maintenance` | Keeps `.uncle-dev/learns/` accurate over time — review, consolidate, replace, delete |
+| `uncle-dev-custom-skill-authoring`             | Authors and registers user-defined override or companion skills                      |
 
 ### Meta and Infrastructure
 

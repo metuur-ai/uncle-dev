@@ -355,7 +355,7 @@ all edits.
 `skills/uncle-dev-planning-and-task-breakdown/SKILL.md:195,285` — story
 templates changed from `## Story STORY-101: [Title]` (h2, non-numeric ID) to
 `### Story 1.1: [Title]` (h3, numeric dotted ID matching the parser's grammar
-at `skills/uncle-dev-next-task/parsing-and-annotations.md:15,33`).
+at `skills/uncle-dev-task-selection/parsing-and-annotations.md:15,33`).
 
 **Annotations line added to plan template**
 
@@ -376,7 +376,7 @@ to `.devlocal/handoffs/` via `/uncle-dev-wrap`. References in the required
 
 **Change-ID format fixed**
 
-`skills/uncle-dev-next-task/SKILL.md:27` — example `PF-001-foundations-cross-cutting`
+`skills/uncle-dev-task-selection/SKILL.md:27` — example `PF-001-foundations-cross-cutting`
 replaced with a compliant `NNN-slug` example (`001-foundations-cross-cutting`).
 The repo's own non-compliant change `openspec/changes/companion-modes-foundation/`
 is handled per Work Unit 05 Finding G (renamed, archived, or deleted).
@@ -421,8 +421,8 @@ Single owner of the mode detection logic:
 **8 inline blocks replaced**
 
 `commands/uncle-dev-spec.md`, `uncle-dev-plan.md`, `uncle-dev-build.md`,
-`uncle-dev-next-task.md`, `uncle-dev-review.md`, `uncle-dev-ship.md`,
-`uncle-dev-acknowledge.md`, `uncle-dev-openspec-sync.md` — each replaces its
+`uncle-dev-task-selection.md`, `uncle-dev-review.md`, `uncle-dev-ship.md`,
+`uncle-dev-decision-acknowledgment.md`, `uncle-dev-openspec-sync.md` — each replaces its
 ~20-line Step-0 block with:
 ```bash
 _mode=$(bash "$_scripts/uncle-dev-detect-mode.sh")
@@ -440,7 +440,7 @@ fallthrough (Finding C).
 
 **next-task SKILL Phase 0 fixed**
 
-`skills/uncle-dev-next-task/SKILL.md:76–86` — empty `sdd_mode` routed to
+`skills/uncle-dev-task-selection/SKILL.md:76–86` — empty `sdd_mode` routed to
 `lid-ears` (or delegates to `uncle-dev-detect-mode.sh`) so direct skill
 invocation is defined behavior.
 
@@ -496,11 +496,11 @@ next-task.
 **Two new workflow-critical command files created**
 
 - `commands/uncle-dev-pre-mortem.md` — thin wrapper loading the
-  `uncle-dev-pre-mortem` skill, following the pattern of
+  `uncle-dev-pre-mortem-analysis` skill, following the pattern of
   `commands/uncle-dev-changelog.md`. Mandatory Step 4.5 in
   `commands/uncle-dev-spec.md:162` now resolves.
 - `commands/uncle-dev-feature-map.md` — thin wrapper loading the
-  `uncle-dev-feature-map` skill. First-step reference in
+  `uncle-dev-feature-discovery` skill. First-step reference in
   `commands/uncle-dev-brownfield.md:2,25,201` and `CLAUDE.md:11` now resolve.
 
 Both files added to `.claude-plugin/marketplace.json`; command count in
@@ -639,7 +639,7 @@ replaced with a link to CLAUDE.md.
   `skills/uncle-dev-performance-optimization/performance-checklist.md`
 - `skills/uncle-dev-shipping-and-launch/SKILL.md:294,295,296` → explicit
   cross-skill absolute paths
-- `skills/uncle-dev-custom-me/SKILL.md:26,115` →
+- `skills/uncle-dev-custom-skill-authoring/SKILL.md:26,115` →
   `docs/originals/skill-anatomy.md`
 - `skills/uncle-dev-setup/SKILL.md:15` → `docs/originals/cursor-setup.md`,
   `docs/originals/windsurf-setup.md`, `docs/originals/copilot-setup.md`
@@ -665,7 +665,7 @@ eliminating the failed check on every spawned agent.
 
 - `skills/uncle-dev-initiative-map/README.md` — wired into the skill's
   SKILL.md as a reference, or deleted with content merged into SKILL.md.
-- `skills/uncle-dev-spec-annotations/requirements.txt` — wired into
+- `skills/uncle-dev-spec-traceability/requirements.txt` — wired into
   install/CI docs or deleted.
 - `.claude/settings.json` — replaced with valid `{}` or deleted.
 - `.uncle-dev/research/` — migrated to `.devlocal/research/` with a
@@ -697,7 +697,7 @@ CLAUDE.md amended to state trigger conditions live in frontmatter `description`
 (matching 40/46 reality); "When to Use" removed from the required section list.
 Five non-conforming descriptions fixed. `skills/uncle-dev-code-context/SKILL.md`
 (27-line tombstone) deleted; `marketplace.json` and installers updated.
-`skills/uncle-dev-pre-mortem/SKILL.md` fleshed out to standard (especially
+`skills/uncle-dev-pre-mortem-analysis/SKILL.md` fleshed out to standard (especially
 since Work Unit 07 promotes it to a command). Template exemption to the 100-line
 rule documented in `docs/originals/skill-anatomy.md`. `scripts/nori-lint.config.json`
 curated for the agreed rule set; `--enforce` enabled in CI.
@@ -780,7 +780,7 @@ the toggles) would be a breaking config schema change.
 EARS (`R-x.y`) IDs remain a manually-reviewed track; `@spec` annotations
 (`SEG-AREA-NNN`) remain the scanner-enforced track. The scanner is not
 extended to parse `docs/ears/` or `R-\d+\.\d+` IDs. Rationale: extending
-the scanner touches `skills/uncle-dev-spec-annotations/scanner/`, adds a
+the scanner touches `skills/uncle-dev-spec-traceability/scanner/`, adds a
 new ID grammar, and changes what `spec-coherence-guard.sh` blocks — scope
 that is disproportionate to the immediate fix. The honest label (MANUAL CHECK)
 in ship.md is the correct short-term fix. The bridge option remains open for a
@@ -825,7 +825,7 @@ The following items are explicitly excluded from this remediation initiative:
   inventory; addressed separately if at all (Work Unit 04 fixes only the
   typo in the command's loader call).
 - **Scanner extension for `R-x.y` IDs** — extending the `@spec` scanner
-  (`skills/uncle-dev-spec-annotations/scanner/`) to accept EARS IDs and scan
+  (`skills/uncle-dev-spec-traceability/scanner/`) to accept EARS IDs and scan
   `docs/ears/` is the "bridge" option from Audit 06; explicitly deferred.
 - **Creating a `plan-reviewer` agent** — the audit recommendation (and the
   locked decision) is to repoint existing references; no new agent file is in

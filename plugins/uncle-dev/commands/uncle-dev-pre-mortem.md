@@ -16,7 +16,7 @@ Resolve the active skill and honor any project overrides/companions:
 ```bash
 _loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
 [[ ! -f "$_loader" ]] && _loader=$(ls -1d "${HOME}/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/"*/ 2>/dev/null | sort -V | tail -1)scripts/uncle-dev-load-skill.sh
-bash "$_loader" uncle-dev-pre-mortem
+bash "$_loader" uncle-dev-pre-mortem-analysis
 ```
 
 Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.

@@ -464,7 +464,7 @@ Negative requirements (`shall NOT`) usually live or die in tests — annotate th
 it("does not expose raw authentication failure details", () => { ... });
 ```
 
-Run `/uncle-dev-spec-scan` to confirm every behavioral test cites a real spec ID. The coherence guard hook also blocks edits/commits that cite undefined IDs. See `uncle-dev-spec-annotations` for placement rules, per-language syntax, and segment conventions.
+Run `/uncle-dev-spec-scan` to confirm every behavioral test cites a real spec ID. The coherence guard hook also blocks edits/commits that cite undefined IDs. See `uncle-dev-spec-traceability` for placement rules, per-language syntax, and segment conventions.
 
 ## Verification
 

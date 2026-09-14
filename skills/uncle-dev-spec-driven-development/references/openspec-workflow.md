@@ -229,7 +229,7 @@ For each declared ID:
 - **Introduces**: add to `docs/specs/<segment>-specs.md` with status `[ ]` or `[x]`
 - **Modifies**: re-read existing definition; edit in-place if wording sharpens; retire and introduce new ID if behaviour fundamentally changes
 
-See `uncle-dev-spec-annotations` for ID format and `@spec` annotation rules.
+See `uncle-dev-spec-traceability` for ID format and `@spec` annotation rules.
 
 ---
 

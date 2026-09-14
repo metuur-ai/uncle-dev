@@ -36,7 +36,7 @@ Run `/uncle-dev-next-task --claim` (which is now sdd_mode-aware) to:
 - Recommend one story with a clear `why:` line
 - If the user has already named a story, pass `--story <id>` to skip recommendation
 
-If `uncle-dev-next-task` reports the ready set is empty or there is no tracked work, stop and follow its guidance — do not invent work.
+If `uncle-dev-task-selection` reports the ready set is empty or there is no tracked work, stop and follow its guidance — do not invent work.
 
 ---
 
@@ -129,7 +129,7 @@ For the chosen story:
 9. Commit with a descriptive message
 10. Mark the story complete and move to the next one
 
-If `uncle-dev-next-task` reports `BLOCKED: pending acknowledgements`, do not proceed. Print the block message verbatim. The user must run `/uncle-dev-acknowledge ack <ids>` (or `reject` / `supersede` / hand-edit `openspec/acknowledge/<scope>.md`) and then re-invoke `/uncle-dev-build` before any code is written. This gate is **non-bypassable**.
+If `uncle-dev-task-selection` reports `BLOCKED: pending acknowledgements`, do not proceed. Print the block message verbatim. The user must run `/uncle-dev-acknowledge ack <ids>` (or `reject` / `supersede` / hand-edit `openspec/acknowledge/<scope>.md`) and then re-invoke `/uncle-dev-build` before any code is written. This gate is **non-bypassable**.
 
 If any step fails, resolve and follow the debug-error skill:
 

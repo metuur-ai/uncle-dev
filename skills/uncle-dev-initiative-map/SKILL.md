@@ -35,7 +35,7 @@ not run the heavy spec ceremony (no HLD/LLD/EARS, no pre-mortem). Those come lat
 NOT for:
 - Writing the detailed spec for a single piece → use `uncle-dev-grill` then `uncle-dev-spec`.
 - Breaking one approved change into implementation tasks → use `uncle-dev-planning-and-task-breakdown`.
-- A pure code-explanation question → use `uncle-dev-research`.
+- A pure code-explanation question → use `uncle-dev-codebase-research`.
 
 ## Core Process
 
@@ -48,7 +48,7 @@ NOT for:
 
 ### Phase 2 — Gather platform context (read-only)
 - **Brownfield:** for each repo/platform, reuse an existing `.uncle-dev/feature-maps/*.md` if present;
-  otherwise run `uncle-dev-feature-map` for that repo. Fan out parallel subagents for multi-repo.
+  otherwise run `uncle-dev-feature-discovery` for that repo. Fan out parallel subagents for multi-repo.
 - Read architecture docs: `docs/hld/`, root `README` architecture sections, and `AGENTS.md` files in
   affected directories.
 - If `graphify-out/graph.json` or a `spec-graph` artifact exists, use it for the impacted/cascade signal
@@ -296,7 +296,7 @@ Run `uncle-dev-grill` (PRD) or `uncle-dev-spec` (spec) on this stub when ready t
 
 ## Gotchas
 
-- `uncle-dev-feature-map` is **single-repo** — run it once per repo/platform and merge; it will not span
+- `uncle-dev-feature-discovery` is **single-repo** — run it once per repo/platform and merge; it will not span
   a multi-repo initiative on its own.
 - Read project config only through `scripts/uncle-dev-config.sh`; never open `.agents/uncle-dev-setup.yaml`.
 - Any spawned subagent must run the graphify on/off check (`[ -f graphify-out/graph.json ]`) before

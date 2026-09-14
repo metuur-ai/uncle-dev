@@ -483,7 +483,7 @@ Rule: Prefer standard library and existing utilities over new dependencies. Ever
 
 ## `@spec` Coherence in Review
 
-If the repo uses durable EARS spec IDs (`docs/specs/`), the diff must keep the spec graph coherent. Run `/uncle-dev-spec-scan` on the diff before approving — it surfaces broken citations the hooks may have missed (e.g. when an EARS ID was deleted from `docs/specs/` after the code was annotated). See `uncle-dev-spec-annotations` for the full coherence model.
+If the repo uses durable EARS spec IDs (`docs/specs/`), the diff must keep the spec graph coherent. Run `/uncle-dev-spec-scan` on the diff before approving — it surfaces broken citations the hooks may have missed (e.g. when an EARS ID was deleted from `docs/specs/` after the code was annotated). See `uncle-dev-spec-traceability` for the full coherence model.
 
 Add to the review checklist:
 

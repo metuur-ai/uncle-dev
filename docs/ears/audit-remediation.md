@@ -89,9 +89,9 @@ Locked decisions: Audit 03 → Strategy 1 (Generate); Audit 06 → Separate univ
 | R-5.1 | THE SYSTEM SHALL provide `scripts/uncle-dev-detect-mode.sh` as the single authoritative implementation of SDD-mode detection, printing exactly `lid-ears` or `openspec` to stdout. |
 | R-5.2 | WHEN `scripts/uncle-dev-detect-mode.sh` runs in a directory that contains `docs/llds/` or `docs/specs/` but no `openspec/` directory, THE SYSTEM SHALL print `lid-ears`. |
 | R-5.3 | WHEN `scripts/uncle-dev-detect-mode.sh` runs and neither config nor filesystem signals are present, THE SYSTEM SHALL default to `lid-ears`. |
-| R-5.4 | THE SYSTEM SHALL contain zero inline SDD-mode detection bash blocks in `commands/uncle-dev-spec.md`, `uncle-dev-plan.md`, `uncle-dev-build.md`, `uncle-dev-next-task.md`, `uncle-dev-review.md`, `uncle-dev-ship.md`, `uncle-dev-acknowledge.md`, and `uncle-dev-openspec-sync.md`; each SHALL call `uncle-dev-detect-mode.sh` instead. |
+| R-5.4 | THE SYSTEM SHALL contain zero inline SDD-mode detection bash blocks in `commands/uncle-dev-spec.md`, `uncle-dev-plan.md`, `uncle-dev-build.md`, `uncle-dev-task-selection.md`, `uncle-dev-review.md`, `uncle-dev-ship.md`, `uncle-dev-decision-acknowledgment.md`, and `uncle-dev-openspec-sync.md`; each SHALL call `uncle-dev-detect-mode.sh` instead. |
 | R-5.5 | THE SYSTEM SHALL contain zero occurrences of "openspec or missing (default)" or equivalent phrasing in any `commands/uncle-dev-*.md` Path B header. |
-| R-5.6 | WHEN `skills/uncle-dev-next-task/SKILL.md` Phase 0 resolves `sdd_mode` to an empty string, THE SYSTEM SHALL treat it as `lid-ears`. |
+| R-5.6 | WHEN `skills/uncle-dev-task-selection/SKILL.md` Phase 0 resolves `sdd_mode` to an empty string, THE SYSTEM SHALL treat it as `lid-ears`. |
 | R-5.7 | WHEN `commands/uncle-dev-test.md` runs in lid-ears mode, THE SYSTEM SHALL map test output to requirement IDs in `docs/ears/<slug>.md`; when run in openspec mode, THE SYSTEM SHALL map to the active change's acceptance criteria. |
 | R-5.8 | WHEN `commands/uncle-dev-wrap.md` produces a handoff document, THE SYSTEM SHALL record the resolved SDD mode and link the mode's active artifacts (`docs/tasks/` for lid-ears; `openspec/changes/<id>/` for openspec). |
 | R-5.9 | WHEN `commands/uncle-dev-next-task.md` determines that all lid-ears tasks are complete, THE SYSTEM SHALL route to `/uncle-dev-review` rather than directly to `/uncle-dev-ship`. |
@@ -111,7 +111,7 @@ Locked decisions: Audit 03 → Strategy 1 (Generate); Audit 06 → Separate univ
 | R-6.3 | WHEN a plan file produced by `/uncle-dev-plan` is consumed by `/uncle-dev-next-task` and that plan contains a Story with a `[mutex: Story-X.Y]` annotation, THE SYSTEM SHALL exclude the mutex story from the ready set when its dependent story is already in progress, and SHALL include it once the dependency clears — verified by the round-trip test defined in R-6.9. |
 | R-6.4 | THE SYSTEM SHALL NOT create `openspec/changes/<id>/handoff.md` from `commands/uncle-dev-spec.md`; handoff artifacts SHALL be written only to `.devlocal/handoffs/` via `/uncle-dev-wrap`. |
 | R-6.5 | WHEN `commands/uncle-dev-spec.md` or `hooks/openspec-guard.sh` validates a change ID, THE SYSTEM SHALL require the ID to match `^[0-9]{3}-` and reject IDs that do not conform. |
-| R-6.6 | THE SYSTEM SHALL contain zero occurrences of a non-conforming change-ID example (such as `PF-001-foundations-cross-cutting`) in `skills/uncle-dev-next-task/SKILL.md`. |
+| R-6.6 | THE SYSTEM SHALL contain zero occurrences of a non-conforming change-ID example (such as `PF-001-foundations-cross-cutting`) in `skills/uncle-dev-task-selection/SKILL.md`. |
 | R-6.7 | WHERE EARS `R-x.y` IDs are used, THE SYSTEM SHALL treat coverage verification as a manual step; `commands/uncle-dev-ship.md` SHALL NOT imply a mechanical check for `R-x.y` test coverage that has no implementation. |
 | R-6.8 | WHERE `@spec` annotations use `SEG-AREA-NNN` IDs, THE SYSTEM SHALL enforce coverage via the existing `scan-spec-coherence.py` scanner without extending the scanner to accept `R-x.y` IDs. |
 | R-6.9 | WHEN `scripts/tests/run-all.sh` runs, THE SYSTEM SHALL execute `scripts/tests/plan-next-task-roundtrip.test.sh` that: (a) generates a plan file from the fixed template containing at least two stories with `[mutex:]` and `[depends:]` annotations, (b) runs the next-task parsing logic against that file, (c) asserts that both story IDs match the `^[0-9]+(\.[0-9]+)*$` grammar, and (d) asserts that the mutex story does NOT appear in the ready set when its dependency is unresolved. |
@@ -124,8 +124,8 @@ Locked decisions: Audit 03 → Strategy 1 (Generate); Audit 06 → Separate univ
 
 | ID | EARS statement |
 | --- | --- |
-| R-7.1 | THE SYSTEM SHALL provide `commands/uncle-dev-pre-mortem.md` as a thin wrapper that loads the `uncle-dev-pre-mortem` skill, enabling `/uncle-dev-pre-mortem` to be invoked as a mandatory lid-ears Step 4.5. |
-| R-7.2 | THE SYSTEM SHALL provide `commands/uncle-dev-feature-map.md` as a thin wrapper that loads the `uncle-dev-feature-map` skill, enabling `/uncle-dev-feature-map` to be invoked before brownfield analysis. |
+| R-7.1 | THE SYSTEM SHALL provide `commands/uncle-dev-pre-mortem.md` as a thin wrapper that loads the `uncle-dev-pre-mortem-analysis` skill, enabling `/uncle-dev-pre-mortem` to be invoked as a mandatory lid-ears Step 4.5. |
+| R-7.2 | THE SYSTEM SHALL provide `commands/uncle-dev-feature-map.md` as a thin wrapper that loads the `uncle-dev-feature-discovery` skill, enabling `/uncle-dev-feature-map` to be invoked before brownfield analysis. |
 | R-7.3 | THE SYSTEM SHALL contain zero slash-command references to `/uncle-dev-documentation-and-adrs`, `/uncle-dev-using-agent-skills`, or `/uncle-dev-grill` in `commands/` or `skills/`; each SHALL be replaced with a prose reference to the corresponding skill. |
 | R-7.4 | THE SYSTEM SHALL contain zero references to a `plan-reviewer` agent in `agents/`, `skills/`, or `commands/` unless a file `agents/uncle-dev-ag-plan-reviewer.md` exists and is registered in `.claude-plugin/`. |
 | R-7.5 | WHEN a skill spawns a subagent via `subagent_type=`, THE SYSTEM SHALL use a name that matches the `name:` frontmatter field of an agent file registered in the plugin. |

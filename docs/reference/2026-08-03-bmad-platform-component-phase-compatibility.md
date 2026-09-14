@@ -34,9 +34,9 @@ This document proceeds on reading (2), and flags reading (1) as an open question
 **The `@spec` EARS annotation stays mandatory.** Any BMAD compatibility work must preserve it as-is:
 
 - `@spec <ID>` remains required on every behavior entry point when the repo uses `docs/specs/` — `skills/uncle-dev-incremental-implementation/SKILL.md:227-249,251-260`.
-- It stays on the **owner/entry point only, never on helpers** — `skills/uncle-dev-spec-annotations/SKILL.md:86-124`.
+- It stays on the **owner/entry point only, never on helpers** — `skills/uncle-dev-spec-traceability/SKILL.md:86-124`.
 - The live enforcement layer stays armed: `hooks/spec-coherence-guard.sh:1-8` blocks Edit|Write citing an undefined `@spec` ID (exit 2) and blocks `git commit*` when `scanner/scan-spec-coherence.py` exits non-zero on ORPHAN.
-- The traceability chain `HLD ──▶ LLD ──▶ EARS spec ──▶ Test ──▶ Code` (`skills/uncle-dev-spec-annotations/SKILL.md:10`) is therefore load-bearing and cannot be replaced by a BMAD-style status state machine.
+- The traceability chain `HLD ──▶ LLD ──▶ EARS spec ──▶ Test ──▶ Code` (`skills/uncle-dev-spec-traceability/SKILL.md:10`) is therefore load-bearing and cannot be replaced by a BMAD-style status state machine.
 
 **Consequences for the seams below:**
 
@@ -48,7 +48,7 @@ This document proceeds on reading (2), and flags reading (1) as an open question
 | §4.2 — soft PRD seam | Unchanged. Anything added above the HLD (a `@prd`-style edge or `index.yaml` parent/child registry, per `.devlocal/research/2026-06-24-...:294-296`) is a **new, separate** annotation axis — it must not weaken, alias, or substitute for `@spec`. |
 | §4.1 — platform tier | `uncle-dev-initiative-map` stubs still hand off to `/uncle-dev-spec`, which still lands in `docs/specs/`; the platform tier is a map, never a bypass around the annotated chain. |
 
-Precedent for adding a parallel axis without touching `@spec`: `@debt <ceiling>, <upgrade>` already exists as an explicitly separate axis (`skills/uncle-dev-spec-annotations/SKILL.md:150-188`).
+Precedent for adding a parallel axis without touching `@spec`: `@debt <ceiling>, <upgrade>` already exists as an explicitly separate axis (`skills/uncle-dev-spec-traceability/SKILL.md:150-188`).
 
 ---
 
@@ -160,7 +160,7 @@ Note the separation BMAD enforces on disk: **config** (`_bmad/`), **durable know
 Full evidence in §2 of the scout report; condensed here.
 
 ### Mode routing (governs everything)
-`scripts/uncle-dev-detect-mode.sh:8-16` resolves `lid-ears` or `openspec` from `preferences.sdd_mode` → filesystem signals → default `lid-ears`. Every lifecycle skill opens with a Phase 0 that prints the mode (`skills/uncle-dev-spec-driven-development/SKILL.md:14-32`, `skills/uncle-dev-planning-and-task-breakdown/SKILL.md:11-24`, `skills/uncle-dev-next-task/SKILL.md:72-93`). Inactive branches are stripped at install time via `<!-- UNCLE_DEV:BRANCH:… -->` markers and `scripts/lib/split-skill-branch.sh` (`README.md:279`).
+`scripts/uncle-dev-detect-mode.sh:8-16` resolves `lid-ears` or `openspec` from `preferences.sdd_mode` → filesystem signals → default `lid-ears`. Every lifecycle skill opens with a Phase 0 that prints the mode (`skills/uncle-dev-spec-driven-development/SKILL.md:14-32`, `skills/uncle-dev-planning-and-task-breakdown/SKILL.md:11-24`, `skills/uncle-dev-task-selection/SKILL.md:72-93`). Inactive branches are stripped at install time via `<!-- UNCLE_DEV:BRANCH:… -->` markers and `scripts/lib/split-skill-branch.sh` (`README.md:279`).
 
 ### Phase chain (lid-ears, this repo's active mode)
 
@@ -169,14 +169,14 @@ Full evidence in §2 of the scout report; condensed here.
 | DEFINE | `/uncle-dev-spec` | `uncle-dev-spec-driven-development` | `docs/hld/<slug>.md`, `docs/lld/<slug>.md`, `docs/ears/<slug>.md` (`R-x.y` IDs) — `SKILL.md:65-140` |
 | DEFINE (arch) | `/uncle-dev-design-docs` | `uncle-dev-design-architecture-docs` | `docs/high-level-design.md`, `docs/llds/<segment>.md`, `docs/specs/<segment>-specs.md` (`SEG-AREA-NNN`), `docs/arrows/<segment>.md`, `docs/arrows/index.yaml` |
 | PLAN | `/uncle-dev-plan` | `uncle-dev-planning-and-task-breakdown` | `docs/tasks/<slug>.md` — stories with `why:`, `acceptance: R-1.1`, `verify:`, `landed:` (`SKILL.md:40-69`) |
-| BUILD (select) | `/uncle-dev-next-task` | `uncle-dev-next-task` | ready-set + `.devlocal/_locks/<change-id>/<story-id>.lock` |
+| BUILD (select) | `/uncle-dev-next-task` | `uncle-dev-task-selection` | ready-set + `.devlocal/_locks/<change-id>/<story-id>.lock` |
 | BUILD (do) | `/uncle-dev-build` | `uncle-dev-incremental-implementation` + `uncle-dev-test-driven-development` | source + tests + `@spec` annotations |
 | VERIFY / REVIEW / SHIP | `/uncle-dev-test`, `/uncle-dev-review`, `/uncle-dev-ship` | per `CLAUDE.md:26-28` | — |
 
 Gates that actually block:
 - **Spec lock** — one exact question, then STOP (`uncle-dev-spec-driven-development/SKILL.md:150-156`).
 - **Plan review** — human approval before stories are actionable (`uncle-dev-planning-and-task-breakdown/SKILL.md:360-370`).
-- **Acknowledge gate** — pending `### D<N>` entries with `status: pending` in `openspec/acknowledge/<scope>.md` remove a story from the ready set (`uncle-dev-next-task/SKILL.md:49-68,284-294`). **openspec mode only.**
+- **Acknowledge gate** — pending `### D<N>` entries with `status: pending` in `openspec/acknowledge/<scope>.md` remove a story from the ready set (`uncle-dev-task-selection/SKILL.md:49-68,284-294`). **openspec mode only.**
 - **`spec-coherence-guard.sh`** — PreToolUse Edit|Write blocks unknown `@spec` IDs; on `git commit*` runs `scan-spec-coherence.py` and blocks on non-zero exit (`hooks/spec-coherence-guard.sh:1-8`).
 
 ### uncle-dev's "always-loaded" layer
@@ -211,7 +211,7 @@ Gates that actually block:
 
 Established by prior research and re-confirmed unchanged this session (`.devlocal/research/2026-06-24-cross-platform-master-prd-decomposition.md:138-163`):
 
-- `uncle-dev-feature-map`, `uncle-dev-research`, `uncle-dev-brownfield` each read **one** codebase; no skill fans out across repos and merges into one impact map (`:143-146`).
+- `uncle-dev-feature-discovery`, `uncle-dev-codebase-research`, `uncle-dev-brownfield-reverse-engineering` each read **one** codebase; no skill fans out across repos and merges into one impact map (`:143-146`).
 - `uncle-dev-grill` produces **exactly one PRD per slug**; there is no master-PRD artifact linking child PRDs (`:148-151`).
 - No formal parent→child sub-PRD relationship — "the linkage lives in your directory naming, not in tooling" (`:153-157`).
 - Impact analysis (`spec-graph`) is **downstream of specs**, so it cannot answer "what would this impact" before specs exist (`:159-162`).
@@ -245,10 +245,10 @@ Purely a correspondence table — no claim that any of these are implemented.
 
 | BMAD phase | BMAD workflows | uncle-dev phase | uncle-dev skills | Meeting point |
 |---|---|---|---|---|
-| 1. Analysis (optional) | `bmad-brainstorming`, `bmad-forge-idea`, `bmad-deep-recon`, `bmad-product-brief`, `bmad-prfaq` | Define | `uncle-dev-idea-refine`, `uncle-dev-verbalized-sampling`, `uncle-dev-research`, `uncle-dev-grill` | Output of BMAD's `brief.md` / `research.md` = input slot of `/uncle-dev-grill` |
+| 1. Analysis (optional) | `bmad-brainstorming`, `bmad-forge-idea`, `bmad-deep-recon`, `bmad-product-brief`, `bmad-prfaq` | Define | `uncle-dev-idea-refine`, `uncle-dev-verbalized-sampling`, `uncle-dev-codebase-research`, `uncle-dev-grill` | Output of BMAD's `brief.md` / `research.md` = input slot of `/uncle-dev-grill` |
 | 2. Planning | `bmad-prd`, `bmad-ux`, `bmad-spec` | Define | `uncle-dev-grill` → `docs/prd/<slug>.md`; `uncle-dev-spec-driven-development` | BMAD `SPEC.md` five-field contract ≈ the *input* `/uncle-dev-spec` expects, not its output |
 | 3. Solutioning | `bmad-architecture`, `bmad-create-epics-and-stories`, `bmad-sprint-planning` | Define(arch) + Plan | `uncle-dev-design-architecture-docs`, `uncle-dev-planning-and-task-breakdown` | `ARCHITECTURE-SPINE.md` ≈ `docs/high-level-design.md`; epics/stories ≈ `docs/tasks/<slug>.md` |
-| 4. Implementation | `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-correct-course`, `bmad-retrospective` | Build + Verify + Review | `uncle-dev-next-task`, `uncle-dev-incremental-implementation`, `uncle-dev-test-driven-development`, `uncle-dev-code-review-and-quality` | Story dispatch: BMAD folder+ID vs uncle-dev ready-set+lock |
+| 4. Implementation | `bmad-build`, `bmad-build-auto`, `bmad-code-review`, `bmad-correct-course`, `bmad-retrospective` | Build + Verify + Review | `uncle-dev-task-selection`, `uncle-dev-incremental-implementation`, `uncle-dev-test-driven-development`, `uncle-dev-code-review-and-quality` | Story dispatch: BMAD folder+ID vs uncle-dev ready-set+lock |
 | (cross-cutting) | `bmad-project-context` (kernel + bundle) | — | `uncle-dev-context-engineering` (`AGENTS.md`) + `.uncle-dev/learns/` | **The largest structural difference** — see §3 row 1–3 |
 | (cross-cutting) | `bmad-customize` three-layer TOML | — | `scripts/uncle-dev-config.sh` four-tier resolution | Already equivalent |
 
@@ -265,7 +265,7 @@ Notable one-way asymmetries:
 | Doc | What it already settles |
 |---|---|
 | `.devlocal/research/2026-06-24-cross-platform-master-prd-decomposition.md` | **Load-bearing.** Segment (not repo/platform) is the decomposition primitive; no cross-repo aggregator; PRD tier sits above the enforcement boundary. Closing proposal — a `@prd`-style annotation or an `index.yaml` parent/child registry so `spec-scan`/`spec-graph` can reach above the HLD (`:294-296`) — **unimplemented**. |
-| `.devlocal/research/2026-07-30-wayfinder-vs-uncle-dev-spec-build.md` | Six gaps in the *pre-spec* funnel, none closed: no computed frontier at pre-spec tier, no claiming/concurrency above story level, decisions tracked with inverted polarity (`uncle-dev-acknowledge` records already-made decisions, openspec-mode only), free-text `## Open Questions` with "no id, no status, no owner, no resolution transition, and no downstream consumer" and "no graduation rule anywhere" (`:194,230-231`), out-of-scope as static list not transition, no session budgeting at pre-spec tier. Nearest analogue to BMAD's story-level context isolation. |
+| `.devlocal/research/2026-07-30-wayfinder-vs-uncle-dev-spec-build.md` | Six gaps in the *pre-spec* funnel, none closed: no computed frontier at pre-spec tier, no claiming/concurrency above story level, decisions tracked with inverted polarity (`uncle-dev-decision-acknowledgment` records already-made decisions, openspec-mode only), free-text `## Open Questions` with "no id, no status, no owner, no resolution transition, and no downstream consumer" and "no graduation rule anywhere" (`:194,230-231`), out-of-scope as static list not transition, no session budgeting at pre-spec tier. Nearest analogue to BMAD's story-level context isolation. |
 | `.devlocal/research/2026-07-30-plan-spec-story-fields.md` | `why:`/`acceptance:`/`verify:` are real per-story keys; **`landed:` does not exist anywhere in the repo** — completion is the `- [ ]`→`- [x]` checkbox. Any BMAD-style status state machine must compose with the checkbox model. |
 | `.devlocal/research/2026-06-16-improving-uncle-dev-with-ponytail-patterns.md` | Item 9 + the "per-turn full-ruleset injection" boundary note (`:135`) is the **existing** discussion of always-loaded vs on-demand — it documents why uncle-dev deliberately avoids ponytail's always-on full-ruleset injection (corpus too large). Directly relevant before importing BMAD's kernel concept. Items 1, 2, 4, 5 now implemented (`scripts/check-manifest.sh`, `skills/uncle-dev-over-engineering-audit/`, `commands/uncle-dev-debt.md`, `commands/uncle-dev-mode.md`). |
 | `.devlocal/research/2026-06-17-upstream-0.5.0-to-0.6.2-gap-analysis.md` | Only #2 (observability) implemented. #1 security expansion, #3 doubt-driven-development, #4 web-performance-auditor, #5 frontend Space-key a11y still open. #6 `/build auto` is a **deliberate** non-implementation — `uncle-dev-incremental-implementation` rejects one-pass builds by design. This matters: BMAD's `bmad-build-auto` is exactly the pattern uncle-dev has already decided against. |
@@ -293,10 +293,10 @@ Notable one-way asymmetries:
 - `skills/uncle-dev-spec-driven-development/SKILL.md:65-172` — HLD/LLD/EARS + spec-lock gate
 - `skills/uncle-dev-design-architecture-docs/SKILL.md:19-116,207-218` — authorship order, segment/prefix rules, verification
 - `skills/uncle-dev-planning-and-task-breakdown/SKILL.md:40-69,360-370` — story format, plan gate
-- `skills/uncle-dev-next-task/SKILL.md:49-68,126-131,284-294` — acknowledge gate, ready-set ranking
+- `skills/uncle-dev-task-selection/SKILL.md:49-68,126-131,284-294` — acknowledge gate, ready-set ranking
 - `skills/uncle-dev-initiative-map/SKILL.md` — the platform-tier map skill (stops before specs)
 - `skills/uncle-dev-context-engineering/SKILL.md:77-93` + `agents-md-guide.md:9-54,73-79` — always-loaded context hierarchy
-- `skills/uncle-dev-spec-annotations/SKILL.md:56-68,86-124,190-243` — `@spec`, `docs/specs/`, scanner
+- `skills/uncle-dev-spec-traceability/SKILL.md:56-68,86-124,190-243` — `@spec`, `docs/specs/`, scanner
 - `hooks/hooks.json` + `hooks/spec-coherence-guard.sh:1-8` — live enforcement layer
 - `CLAUDE.md:44-46` — the two-ID-universe convention
 

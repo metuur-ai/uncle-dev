@@ -199,14 +199,14 @@ def parse_proposal_ears_block(proposal_path):
 
 
 def find_sibling_script(name):
-    """Locate a sibling script in skills/uncle-dev-spec-annotations/."""
+    """Locate a sibling script in skills/uncle-dev-spec-traceability/."""
     here = os.path.dirname(os.path.abspath(__file__))
-    sibling = os.path.normpath(os.path.join(here, "..", "uncle-dev-spec-annotations", name))
+    sibling = os.path.normpath(os.path.join(here, "..", "uncle-dev-spec-traceability", name))
     if os.path.isfile(sibling):
         return sibling
     plugin_root = os.environ.get("CLAUDE_PLUGIN_ROOT")
     if plugin_root:
-        candidate = os.path.join(plugin_root, "skills", "uncle-dev-spec-annotations", name)
+        candidate = os.path.join(plugin_root, "skills", "uncle-dev-spec-traceability", name)
         if os.path.isfile(candidate):
             return candidate
     return None

@@ -12,7 +12,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
-HARVEST="${REPO_ROOT}/skills/uncle-dev-spec-annotations/harvest-debt.py"
+HARVEST="${REPO_ROOT}/skills/uncle-dev-spec-traceability/harvest-debt.py"
 
 PASS=0; FAIL=0
 ok()   { echo "  PASS: $*"; ((PASS++)) || true; }

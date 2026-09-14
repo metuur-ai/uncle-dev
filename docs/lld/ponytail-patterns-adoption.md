@@ -14,7 +14,7 @@ The change spans four subsystems of the repo. Each pattern is implemented where 
   - `plugins/uncle-dev/commands/` set vs canonical command list.
   - (After Phase 3) the generated instruction-host adapters.
 - Wired into `scripts/tests/run-all.sh` and `install.sh verify`. Non-zero exit + per-divergence message on drift.
-- **Also fixes current drift** so the guard passes on first commit: reconcile marketplace.json (add `uncle-dev-speech`, `uncle-dev-verbalized-sampling`, `uncle-dev-brownfield`, `uncle-dev-custom-me`, …), README counts, and `plugins/uncle-dev/commands/`.
+- **Also fixes current drift** so the guard passes on first commit: reconcile marketplace.json (add `uncle-dev-speech`, `uncle-dev-verbalized-sampling`, `uncle-dev-brownfield-reverse-engineering`, `uncle-dev-custom-skill-authoring`, …), README counts, and `plugins/uncle-dev/commands/`.
 
 **#6 Env-var override tier — `scripts/uncle-dev-config.sh`**
 - Today resolution is: file value → caller default. Add a tier ahead of the file: `UNCLE_DEV_<KEY>` (key derived from the dotted config path, uppercased, dots→underscores) → file value → caller default.
@@ -23,7 +23,7 @@ The change spans four subsystems of the repo. Each pattern is implemented where 
 **#9 Install-time mode-branch split**
 - Constraint: skills are static `.md` the host loads verbatim; there is no "on skill read" hook. So filtering at runtime (ponytail's `filterSkillBodyForMode`) cannot be ported directly.
 - Chosen mechanism (research option **a**, the lazy choice): at **install time**, `setup-project.sh`/`install-plugin.sh` selects a single-mode variant of each dual-branch skill based on resolved `sdd_mode`, dropping the inactive `## …-LID` / `## …OpenSpec` section before the file lands in the project.
-- Affected skills: `uncle-dev-spec-driven-development`, `uncle-dev-next-task`, `uncle-dev-planning-and-task-breakdown`, `uncle-dev-acknowledge`, and the dual-mode references in `uncle-dev-{wrap,knowledge-capture,shipping-and-launch}`.
+- Affected skills: `uncle-dev-spec-driven-development`, `uncle-dev-task-selection`, `uncle-dev-planning-and-task-breakdown`, `uncle-dev-decision-acknowledgment`, and the dual-mode references in `uncle-dev-{wrap,knowledge-capture,shipping-and-launch}`.
 - Canonical sources keep both branches (delimited by stable section markers the splitter keys on); only the installed copy is trimmed.
 
 ### Phase 2 — Audit & self-application
@@ -39,7 +39,7 @@ The change spans four subsystems of the repo. Each pattern is implemented where 
 
 ### Phase 3 — Developer conventions & reach
 
-**#4 `@debt` marker + harvest — `skills/uncle-dev-spec-annotations/` + new `/uncle-dev-debt`**
+**#4 `@debt` marker + harvest — `skills/uncle-dev-spec-traceability/` + new `/uncle-dev-debt`**
 - Convention: `// @debt <ceiling>, <upgrade>` marks a consciously-kept shortcut with its limit and upgrade path. Distinct from `@spec` (forward traceability) and `[D]` (unbuilt requirement status).
 - Harvest command greps markers into a ledger (modeled on `scan-spec-coherence.py` grep-to-report machinery) and flags any marker lacking a trigger/upgrade path as silent-rot risk.
 - Framed as conscious debt, not a TODO dump (stays consistent with "fix now" culture).

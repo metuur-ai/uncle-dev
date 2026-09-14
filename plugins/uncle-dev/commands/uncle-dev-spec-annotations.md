@@ -11,6 +11,6 @@ description: Connect durable product behavior to specs, tests, and code via @spe
 
 ## Skill
 
-Use the `uncle-dev-spec-annotations` skill.
+Use the `uncle-dev-spec-traceability` skill.
 
 $ARGUMENTS

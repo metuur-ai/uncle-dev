@@ -10,7 +10,7 @@ Architecture intent flows in one direction:
 HLD ──▶ LLD ──▶ EARS specs ──▶ Tests ──▶ Code
 ```
 
-This skill owns the upstream half — the HLD (product intent) and per-segment LLDs (system-level approach). The downstream half — EARS specs, tests, and code with `@spec` annotations — is owned by `uncle-dev-spec-annotations`.
+This skill owns the upstream half — the HLD (product intent) and per-segment LLDs (system-level approach). The downstream half — EARS specs, tests, and code with `@spec` annotations — is owned by `uncle-dev-spec-traceability`.
 
 A well-designed HLD/LLD pair makes the spec graph stable. A poorly-scoped one leaves segments fuzzy, prefixes overlapping, and EARS specs orphaned from intent.
 
@@ -40,7 +40,7 @@ Tests with @spec
 Code with @spec
 ```
 
-The downstream half (EARS → Tests → Code) is owned by `uncle-dev-spec-annotations`. This skill owns the first three layers.
+The downstream half (EARS → Tests → Code) is owned by `uncle-dev-spec-traceability`. This skill owns the first three layers.
 
 ## Segment Selection Rules
 

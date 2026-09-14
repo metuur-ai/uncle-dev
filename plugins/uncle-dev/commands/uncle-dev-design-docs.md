@@ -38,9 +38,9 @@ If unclear, read `docs/high-level-design.md` and `docs/arrows/index.yaml` to inf
 3. Confirm no existing segment in `docs/arrows/index.yaml` already uses the prefix.
 4. Scaffold these files (do not overwrite if present):
    - `docs/llds/<segment>.md` from `lld-template.md` in the design-architecture-docs skill resources
-   - `docs/specs/<segment>-specs.md` from the spec template in `uncle-dev-spec-annotations/resources/templates/specs/SEGMENT-specs.md`
-   - `docs/arrows/<segment>.md` from the arrow template in `uncle-dev-spec-annotations/resources/templates/arrows/SEGMENT.md`
-5. Update `docs/arrows/index.yaml` — append a new entry under `arrows:` with the segment name, prefix, status `PROPOSED`, and `detail: <segment>.md`. If `docs/arrows/index.yaml` does not exist, scaffold it from `uncle-dev-spec-annotations/resources/templates/arrows/index.yaml`.
+   - `docs/specs/<segment>-specs.md` from the spec template in `uncle-dev-spec-traceability/resources/templates/specs/SEGMENT-specs.md`
+   - `docs/arrows/<segment>.md` from the arrow template in `uncle-dev-spec-traceability/resources/templates/arrows/SEGMENT.md`
+5. Update `docs/arrows/index.yaml` — append a new entry under `arrows:` with the segment name, prefix, status `PROPOSED`, and `detail: <segment>.md`. If `docs/arrows/index.yaml` does not exist, scaffold it from `uncle-dev-spec-traceability/resources/templates/arrows/index.yaml`.
 6. Substitute `{{segment}}` and `{{SEGMENT}}` placeholders in all four scaffolded files with the actual segment name + uppercase prefix root.
 7. Walk the human through filling in:
    - LLD: responsibilities, what's in/out of scope for the segment, key flows
@@ -77,5 +77,5 @@ Surface any orphans, missing tests, or boundary crossings introduced by the oper
 
 - This command never edits source code — it scaffolds documentation only.
 - It will not overwrite an existing file. If a target file exists, prompt the human first.
-- Templates live with `uncle-dev-design-architecture-docs` (HLD/LLD) and `uncle-dev-spec-annotations` (specs/arrows). Cross-reference; do not duplicate.
+- Templates live with `uncle-dev-design-architecture-docs` (HLD/LLD) and `uncle-dev-spec-traceability` (specs/arrows). Cross-reference; do not duplicate.
 - For deeper guidance on segment selection and prefix strategy, hand off to `uncle-dev-design-architecture-docs`.

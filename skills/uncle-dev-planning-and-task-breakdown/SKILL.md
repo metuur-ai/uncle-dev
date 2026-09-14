@@ -215,7 +215,7 @@ Each story should follow this structure:
 **Annotations:** [files: path/a.ts, path/b.ts] [mutex: Story-1.2] [depends: Story-1.1]
 ```
 
-Story IDs must be numeric dotted (`1.1`, `1.2`, `2.1`) — the next-task parser's grammar is `^[0-9]+(\.[0-9]+)*$`. Omitting the `**Annotations:**` line forces sequential execution (the picker's backwards-compatibility fallback serialises to document order). Include `[mutex: Story-X.Y]` when two stories cannot run concurrently (e.g., both modify the same file); include `[depends: Story-X.Y]` when one story must complete before another can begin. See `skills/uncle-dev-next-task/parsing-and-annotations.md` for the full annotation grammar and semantics.
+Story IDs must be numeric dotted (`1.1`, `1.2`, `2.1`) — the next-task parser's grammar is `^[0-9]+(\.[0-9]+)*$`. Omitting the `**Annotations:**` line forces sequential execution (the picker's backwards-compatibility fallback serialises to document order). Include `[mutex: Story-X.Y]` when two stories cannot run concurrently (e.g., both modify the same file); include `[depends: Story-X.Y]` when one story must complete before another can begin. See `skills/uncle-dev-task-selection/parsing-and-annotations.md` for the full annotation grammar and semantics.
 
 ### Step 5: Order and Checkpoint
 
@@ -309,7 +309,7 @@ When to break a story down further:
 **Annotations:** [files: path/a.ts] [mutex: Story-1.2] [depends: none]
 ```
 
-Story IDs use numeric dotted format (`1.1`, `1.2`, `2.1`). The `**Annotations:**` line is required for the next-task parser to compute a parallel-safe ready set. Omitting it causes the picker to fall back to document order (sequential execution). See `skills/uncle-dev-next-task/parsing-and-annotations.md` for key semantics.
+Story IDs use numeric dotted format (`1.1`, `1.2`, `2.1`). The `**Annotations:**` line is required for the next-task parser to compute a parallel-safe ready set. Omitting it causes the picker to fall back to document order (sequential execution). See `skills/uncle-dev-task-selection/parsing-and-annotations.md` for key semantics.
 
 ```markdown
 # execution.md

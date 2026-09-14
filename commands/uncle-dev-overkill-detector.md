@@ -57,11 +57,11 @@ Run `uncle-dev-over-engineering-audit` in **Scope 2 — Whole-repo**. Reuse the 
 
 ## Debt Mode — @debt ledger
 
-Harvest `@debt` markers. `@debt <ceiling>, <upgrade>` marks a consciously-kept shortcut with its limit and escape hatch — distinct from `@spec` and `[D]`. See `skills/uncle-dev-spec-annotations/SKILL.md` for the grammar.
+Harvest `@debt` markers. `@debt <ceiling>, <upgrade>` marks a consciously-kept shortcut with its limit and escape hatch — distinct from `@spec` and `[D]`. See `skills/uncle-dev-spec-traceability/SKILL.md` for the grammar.
 
 1. Locate `harvest-debt.py`, in this order:
-   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-annotations/harvest-debt.py`
-   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-annotations/harvest-debt.py`
+   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-traceability/harvest-debt.py`
+   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-traceability/harvest-debt.py`
    - The agent-skills repo if cloned locally
 2. Run it from the project root:
 

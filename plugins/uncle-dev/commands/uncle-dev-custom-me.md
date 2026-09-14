@@ -40,10 +40,10 @@ echo "PLUGIN_ROOT: $_plugin_root"
 
 ---
 
-## Step 1 — Resolve the active uncle-dev-custom-me skill (honor overrides/companions)
+## Step 1 — Resolve the active uncle-dev-custom-skill-authoring skill (honor overrides/companions)
 
 ```bash
-bash "$_loader" uncle-dev-custom-me
+bash "$_loader" uncle-dev-custom-skill-authoring
 ```
 
 Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.
@@ -80,9 +80,9 @@ MODE="<override|companion>"  # substitute from arguments
 mkdir -p ".agents/skills/${NEW}"
 
 if [[ "$MODE" == "override" ]]; then
-  TEMPLATE="${_plugin_root}/skills/uncle-dev-custom-me/templates/override-skill.md"
+  TEMPLATE="${_plugin_root}/skills/uncle-dev-custom-skill-authoring/templates/override-skill.md"
 else
-  TEMPLATE="${_plugin_root}/skills/uncle-dev-custom-me/templates/companion-skill.md"
+  TEMPLATE="${_plugin_root}/skills/uncle-dev-custom-skill-authoring/templates/companion-skill.md"
 fi
 
 if [[ ! -f "$TEMPLATE" ]]; then

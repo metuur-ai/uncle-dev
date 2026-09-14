@@ -20,7 +20,7 @@ If you could not run Step 0, treat the mode as `lid-ears`.
 
 ## Path A — `lid-ears` mode
 
-**If sdd_mode is `lid-ears`: follow this path. Do NOT invoke the uncle-dev:uncle-dev-next-task skill.**
+**If sdd_mode is `lid-ears`: follow this path. Do NOT invoke the uncle-dev:uncle-dev-task-selection skill.**
 
 Work items live in `docs/tasks/<slug>.md` (produced by `/uncle-dev-plan`).
 
@@ -79,7 +79,7 @@ Resolve the active skill and honor any project overrides/companions:
 ```bash
 _loader="${CLAUDE_PLUGIN_ROOT:-}/scripts/uncle-dev-load-skill.sh"
 [[ ! -f "$_loader" ]] && _loader=$(find "${HOME}/.claude/plugins" -name "uncle-dev-load-skill.sh" 2>/dev/null | head -1)
-bash "$_loader" uncle-dev-next-task
+bash "$_loader" uncle-dev-task-selection
 ```
 
 Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading directive in your project CLAUDE.md.

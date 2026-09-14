@@ -4,11 +4,11 @@ description: Validate @spec annotations against docs/specs/ and report orphans /
 
 Run the spec coherence scanner and present its report.
 
-The scanner script is `scan-spec-coherence.py` in the `uncle-dev-spec-annotations` skill.
+The scanner script is `scan-spec-coherence.py` in the `uncle-dev-spec-traceability` skill.
 
 1. Locate the script. Search in this order:
-   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-annotations/scan-spec-coherence.py`
-   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-annotations/scan-spec-coherence.py`
+   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-traceability/scan-spec-coherence.py`
+   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-traceability/scan-spec-coherence.py`
    - The agent-skills repo if cloned locally
 
 2. Run the scanner from the project root. Default mode (text output, fail on orphans only):
@@ -61,4 +61,4 @@ python3 <path-to-scan-spec-coherence.py> --root "$(pwd)" --no-tree-sitter
 
 If the script is not found, tell the user: "scan-spec-coherence.py not found. Run `install-claude.sh` from the agent-skills repo, or clone the repo locally."
 
-For the algorithm details, see `skills/uncle-dev-spec-annotations/resources/scanner-design.md`.
+For the algorithm details, see `skills/uncle-dev-spec-traceability/resources/scanner-design.md`.

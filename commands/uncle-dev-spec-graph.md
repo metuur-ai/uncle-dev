@@ -4,7 +4,7 @@ description: Build the spec graph from HLD + LLDs + EARS specs + @spec annotatio
 
 Generate the `@spec` graph artifacts and present the report.
 
-The generator script is `build-spec-graph.py` in the `uncle-dev-spec-annotations` skill. It fuses the canonical inputs into one queryable graph:
+The generator script is `build-spec-graph.py` in the `uncle-dev-spec-traceability` skill. It fuses the canonical inputs into one queryable graph:
 
 ```
 docs/high-level-design.md   ──┐
@@ -16,7 +16,7 @@ scan-spec-coherence.py JSON ──┘                            graphify-out/SP
 ```
 
 1. Locate the script. Search in this order:
-   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-annotations/build-spec-graph.py`
+   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-traceability/build-spec-graph.py`
    - The agent-skills repo if cloned locally
 
 2. Run it from the project root. Default writes all four artifacts into `graphify-out/`:
@@ -60,6 +60,6 @@ python3 <path-to-build-spec-graph.py> --root "$(pwd)" --out path/to/dir
 **When NOT to regenerate:**
 - Routine code edits with no spec impact (the scanner via the Edit/Write hook already validates IDs in real time)
 
-For algorithm details, see `skills/uncle-dev-spec-annotations/build-spec-graph.py` and the conceptual model in `skills/uncle-dev-spec-annotations/SKILL.md`.
+For algorithm details, see `skills/uncle-dev-spec-traceability/build-spec-graph.py` and the conceptual model in `skills/uncle-dev-spec-traceability/SKILL.md`.
 
 If the script is not found, tell the user: "build-spec-graph.py not found. Run `install-claude.sh` from the agent-skills repo, or clone the repo locally."

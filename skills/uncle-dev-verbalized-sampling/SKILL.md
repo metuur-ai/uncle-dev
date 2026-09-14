@@ -30,7 +30,7 @@ VS amplifies the diverge steps only. The iron rule:
 > **Tags drive divergence, then die at convergence. Nothing locked — EARS tables, PRDs,
 > task lists, glossaries — ever carries a probability or typicality label.**
 
-`uncle-dev-pre-mortem` is the existing proof this pattern works here: it already generates
+`uncle-dev-pre-mortem-analysis` is the existing proof this pattern works here: it already generates
 8–12 unfiltered failure causes and scores them — VS with domain framing.
 
 ## The Core Protocol
@@ -104,7 +104,7 @@ mode-collapsed default vs genuinely novel — and one rule: deliberately stress-
 least one `rare` direction instead of converging on the safest cluster. Keep the
 existing 5–8 cap; VS wants distinct, not many.
 
-### 5. `uncle-dev-pre-mortem` — enforce the diversity it already implies
+### 5. `uncle-dev-pre-mortem-analysis` — enforce the diversity it already implies
 
 Already VS-shaped (8–12 unfiltered causes + Likelihood/Impact scoring). The complement:
 require that the causes span the typicality range —
@@ -117,7 +117,7 @@ require that the causes span the typicality range —
 | Skill / moment | VS application |
 |---|---|
 | `uncle-dev-debug-error` — before committing to a root cause | Generate 4 distinct root-cause hypotheses spanning code, data, environment, and timing; tag by typicality; design the cheapest experiment that discriminates between the top two before fixing the obvious one. |
-| `uncle-dev-feature-map` / `uncle-dev-brownfield` — ambiguous behavior | When code supports multiple readings, report 2–3 distinct interpretations with typicality tags in Open Questions, instead of silently picking the modal reading. |
+| `uncle-dev-feature-discovery` / `uncle-dev-brownfield-reverse-engineering` — ambiguous behavior | When code supports multiple readings, report 2–3 distinct interpretations with typicality tags in Open Questions, instead of silently picking the modal reading. |
 | `uncle-senior` Challenge mode | Generate 3 distinct framings of the proposal (as stated, inverted, 10x-simpler) before issuing the verdict — guards the verdict itself against mode collapse. |
 | Test design (`uncle-dev-test`) | Enumerate N distinct ways the implementation could satisfy the test yet still be wrong; tag; add the rare ones as extra cases. |
 
@@ -149,7 +149,7 @@ require that the causes span the typicality range —
 - N options that are paraphrases of one idea rather than category-distinct
 - Converging on the `typical` option every time without interrogating any `rare` one
   (VS performed as ritual, ignored as signal)
-- Applying VS inside a documentarian pass (`uncle-dev-research`) as evaluation
+- Applying VS inside a documentarian pass (`uncle-dev-codebase-research`) as evaluation
 - Replacing a convergence mechanism with the tags ("highest typicality wins")
 
 ## Verification

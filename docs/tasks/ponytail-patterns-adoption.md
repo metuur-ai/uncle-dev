@@ -120,7 +120,7 @@ Source of truth: `docs/ears/ponytail-patterns-adoption.md`. Stories are grouped 
 
 - [x] 6.1 Define `@debt` grammar with mandatory ceiling+upgrade (est: ~25m)
   - acceptance: R-6.1 — `// @debt <ceiling>, <upgrade>` convention, both fields mandatory, distinct from `@spec`/`[D]`.
-  - verify: convention documented in `uncle-dev-spec-annotations`; grammar rejects a marker missing ceiling or upgrade.
+  - verify: convention documented in `uncle-dev-spec-traceability`; grammar rejects a marker missing ceiling or upgrade.
 
 - [x] 6.2 `/uncle-dev-debt` harvest into ledger (deps: 6.1, est: ~35m)
   - acceptance: R-6.2 — command lists every marker with location, ceiling, upgrade path.

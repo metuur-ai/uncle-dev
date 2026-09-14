@@ -4,13 +4,13 @@ description: Harvest all @debt markers into a ledger showing each shortcut's loc
 
 Run the `@debt` harvester and present its ledger.
 
-`@debt <ceiling>, <upgrade>` marks a consciously-kept shortcut with its limit and its escape hatch. It is distinct from `@spec` (forward traceability) and `[D]` (unbuilt-requirement status). See `skills/uncle-dev-spec-annotations/SKILL.md` for the grammar.
+`@debt <ceiling>, <upgrade>` marks a consciously-kept shortcut with its limit and its escape hatch. It is distinct from `@spec` (forward traceability) and `[D]` (unbuilt-requirement status). See `skills/uncle-dev-spec-traceability/SKILL.md` for the grammar.
 
-The harvester script is `harvest-debt.py` in the `uncle-dev-spec-annotations` skill.
+The harvester script is `harvest-debt.py` in the `uncle-dev-spec-traceability` skill.
 
 1. Locate the script. Search in this order:
-   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-annotations/harvest-debt.py`
-   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-annotations/harvest-debt.py`
+   - `${CLAUDE_PLUGIN_ROOT}/skills/uncle-dev-spec-traceability/harvest-debt.py`
+   - `$(ls -1d ~/.claude/plugins/cache/uncle-dev-agent-skills/uncle-dev/*/ 2>/dev/null | sort -V | tail -1)skills/uncle-dev-spec-traceability/harvest-debt.py`
    - The agent-skills repo if cloned locally
 
 2. Run the harvester from the project root:

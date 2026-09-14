@@ -48,7 +48,7 @@ DEFINE and PLAN use OpenSpec as the default shared workflow: `openspec/specs/` h
 
 ### Durable spec graph (optional)
 
-When a repo opts in to the spec graph, durable behavior IDs live in `docs/specs/<segment>-specs.md` (separate from transient OpenSpec changes), and code/tests carry `@spec` annotations that connect them to those IDs. The graph flows `HLD → LLD → EARS specs → tests → code`. Validate with `/uncle-dev-spec-scan`, visualize with `/uncle-dev-spec-graph` (output written to `graphify-out/`), and a `spec-coherence-guard.sh` PreToolUse hook blocks edits/commits that cite undefined IDs. The OpenSpec tracker (`/uncle-dev-openspec-sync`) reports per-change `spec_coverage` when each `proposal.md` declares an `## EARS Specs` block. See [`uncle-dev-spec-annotations`](skills/uncle-dev-spec-annotations/SKILL.md) and [`uncle-dev-design-architecture-docs`](skills/uncle-dev-design-architecture-docs/SKILL.md) for the full model.
+When a repo opts in to the spec graph, durable behavior IDs live in `docs/specs/<segment>-specs.md` (separate from transient OpenSpec changes), and code/tests carry `@spec` annotations that connect them to those IDs. The graph flows `HLD → LLD → EARS specs → tests → code`. Validate with `/uncle-dev-spec-scan`, visualize with `/uncle-dev-spec-graph` (output written to `graphify-out/`), and a `spec-coherence-guard.sh` PreToolUse hook blocks edits/commits that cite undefined IDs. The OpenSpec tracker (`/uncle-dev-openspec-sync`) reports per-change `spec_coverage` when each `proposal.md` declares an `## EARS Specs` block. See [`uncle-dev-spec-traceability`](skills/uncle-dev-spec-traceability/SKILL.md) and [`uncle-dev-design-architecture-docs`](skills/uncle-dev-design-architecture-docs/SKILL.md) for the full model.
 
 ---
 
@@ -164,28 +164,28 @@ The commands above are the entry points. Under the hood, they activate these 47 
 
 | Skill | What It Does | Use When |
 | ----- | ------------ | -------- |
-| [research](skills/uncle-dev-research/SKILL.md) | Parallel subagent exploration of the codebase as-is, synthesized to `.devlocal/research/` | Starting on an unfamiliar codebase or asking "how does X work?" |
+| [research](skills/uncle-dev-codebase-research/SKILL.md) | Parallel subagent exploration of the codebase as-is, synthesized to `.devlocal/research/` | Starting on an unfamiliar codebase or asking "how does X work?" |
 | [idea-refine](skills/uncle-dev-idea-refine/SKILL.md) | Structured divergent/convergent thinking to turn vague ideas into concrete proposals | You have a rough concept that needs exploration |
 | [verbalized-sampling](skills/uncle-dev-verbalized-sampling/SKILL.md) | Generate diverse candidate approaches before converging, to avoid anchoring on the first idea | You need a spread of options, not one default |
 | [grill](skills/uncle-dev-grill/SKILL.md) | Adversarial questioning of a proposal to surface gaps and unstated assumptions | Pressure-testing a plan before committing |
 | [ubiquitous-language](skills/uncle-dev-ubiquitous-language/SKILL.md) | Establish a shared domain vocabulary used consistently across specs, code, and docs | Domain terms are ambiguous or used inconsistently |
 | [spec-driven-development](skills/uncle-dev-spec-driven-development/SKILL.md) | Create tracked OpenSpec change artifacts (`proposal.md`, `design.md`, `tasks.md`, `execution.md`, `handoff.md`) before any code | Starting a new project, feature, or significant change |
 | [design-architecture-docs](skills/uncle-dev-design-architecture-docs/SKILL.md) | Author durable HLD and per-segment LLDs that partition product intent into segments and feed EARS specs | Starting a product, adding a behavior segment, or refactoring boundaries |
-| [acknowledge](skills/uncle-dev-acknowledge/SKILL.md) | Capture design-decision notes (OpenSpec `acknowledge/` or `docs/decisions/` ADRs by mode) | Recording a decision made during design |
+| [acknowledge](skills/uncle-dev-decision-acknowledgment/SKILL.md) | Capture design-decision notes (OpenSpec `acknowledge/` or `docs/decisions/` ADRs by mode) | Recording a decision made during design |
 
 ### Brownfield — Understand existing code
 
 | Skill | What It Does | Use When |
 | ----- | ------------ | -------- |
-| [feature-map](skills/uncle-dev-feature-map/SKILL.md) | Catalog product features by reading routes, controllers, services, and frontend pages — a user-facing inventory | You need a product-level inventory of an unfamiliar codebase |
-| [brownfield](skills/uncle-dev-brownfield/SKILL.md) | 5-agent swarm reverse-engineers LLD + EARS specs from a feature map and anchors `@spec` annotations | Bringing legacy code under the spec graph |
+| [feature-map](skills/uncle-dev-feature-discovery/SKILL.md) | Catalog product features by reading routes, controllers, services, and frontend pages — a user-facing inventory | You need a product-level inventory of an unfamiliar codebase |
+| [brownfield](skills/uncle-dev-brownfield-reverse-engineering/SKILL.md) | 5-agent swarm reverse-engineers LLD + EARS specs from a feature map and anchors `@spec` annotations | Bringing legacy code under the spec graph |
 
 ### Plan — Break it down
 
 | Skill | What It Does | Use When |
 | ----- | ------------ | -------- |
 | [planning-and-task-breakdown](skills/uncle-dev-planning-and-task-breakdown/SKILL.md) | Decompose an OpenSpec change into shared story-level tasks plus execution coordination | You have an approved change and need implementable shared stories |
-| [next-task](skills/uncle-dev-next-task/SKILL.md) | Pick the next ready task from `docs/tasks/` (lid-ears) or OpenSpec changes (openspec mode) | Choosing what to work on next |
+| [next-task](skills/uncle-dev-task-selection/SKILL.md) | Pick the next ready task from `docs/tasks/` (lid-ears) or OpenSpec changes (openspec mode) | Choosing what to work on next |
 
 ### Build — Write the code
 
@@ -193,7 +193,7 @@ The commands above are the entry points. Under the hood, they activate these 47 
 | ----- | ------------ | -------- |
 | [incremental-implementation](skills/uncle-dev-incremental-implementation/SKILL.md) | Thin vertical slices — implement, test, verify, commit. Feature flags, safe defaults, rollback-friendly changes | Any change touching more than one file |
 | [test-driven-development](skills/uncle-dev-test-driven-development/SKILL.md) | Red-Green-Refactor, test pyramid (80/15/5), test sizes, DAMP over DRY, Beyoncé Rule | Implementing logic, fixing bugs, or changing behavior |
-| [spec-annotations](skills/uncle-dev-spec-annotations/SKILL.md) | `@spec`/`@feature`/`@rule` annotations connect code/tests to durable EARS spec IDs. AST scanner + blocking hook + graph generator | Annotating behavior entry points; running coherence checks |
+| [spec-annotations](skills/uncle-dev-spec-traceability/SKILL.md) | `@spec`/`@feature`/`@rule` annotations connect code/tests to durable EARS spec IDs. AST scanner + blocking hook + graph generator | Annotating behavior entry points; running coherence checks |
 | [context-engineering](skills/uncle-dev-context-engineering/SKILL.md) | Feed agents the right information at the right time — rules files, context packing, MCP integrations | Starting a session, switching tasks, or when output quality drops |
 | [code-context](skills/uncle-dev-code-context/SKILL.md) | Per-directory `AGENTS.md` files that record architecture boundaries and conventions agents must read before editing | Editing in a directory; adding/moving/deleting source directories |
 | [source-driven-development](skills/uncle-dev-source-driven-development/SKILL.md) | Ground every framework decision in official documentation — verify, cite sources, flag what's unverified | You want authoritative, source-cited code for any framework |
@@ -226,7 +226,7 @@ The commands above are the entry points. Under the hood, they activate these 47 
 | [ci-cd-and-automation](skills/uncle-dev-ci-cd-and-automation/SKILL.md) | Shift Left, Faster is Safer, feature flags, quality-gate pipelines, failure feedback loops | Setting up or modifying build and deploy pipelines |
 | [deprecation-and-migration](skills/uncle-dev-deprecation-and-migration/SKILL.md) | Code-as-liability mindset, compulsory vs advisory deprecation, migration patterns, zombie-code removal | Removing old systems, migrating users, or sunsetting features |
 | [documentation-and-adrs](skills/uncle-dev-documentation-and-adrs/SKILL.md) | Architecture Decision Records, API docs, inline documentation standards — document the _why_ | Making architectural decisions, changing APIs, or shipping features |
-| [changelog](skills/uncle-dev-changelog/SKILL.md) | Generate user-facing changelog entries from merged changes | Preparing a release or summarizing what shipped |
+| [changelog](skills/uncle-dev-changelog-generation/SKILL.md) | Generate user-facing changelog entries from merged changes | Preparing a release or summarizing what shipped |
 | [speech](skills/uncle-dev-speech/SKILL.md) | Turn a shipped change into a clear spoken/written announcement for stakeholders | Communicating a launch or release |
 | [shipping-and-launch](skills/uncle-dev-shipping-and-launch/SKILL.md) | Pre-launch checklists, feature-flag lifecycle, staged rollouts, rollback procedures, monitoring setup | Preparing to deploy to production |
 
@@ -234,17 +234,17 @@ The commands above are the entry points. Under the hood, they activate these 47 
 
 | Skill | What It Does | Use When |
 | ----- | ------------ | -------- |
-| [knowledge-capture](skills/uncle-dev-knowledge-capture/SKILL.md) | Document a recently solved problem into `.uncle-dev/learns/` while context is fresh | Right after "it's fixed" / "that worked" |
-| [wrap](skills/uncle-dev-wrap/SKILL.md) | Compact the conversation into a handoff doc under `.devlocal/handoffs/` so a fresh agent can resume | Ending a session with work in progress |
-| [knowledge-maintenance](skills/uncle-dev-knowledge-maintenance/SKILL.md) | Keep captured learnings and docs current; prune stale knowledge | Periodic upkeep of the team knowledge base |
-| [custom-me](skills/uncle-dev-custom-me/SKILL.md) | Tailor uncle-dev behavior to personal/team preferences | Adapting the workflow to your team |
+| [knowledge-capture](skills/uncle-dev-learning-capture/SKILL.md) | Document a recently solved problem into `.uncle-dev/learns/` while context is fresh | Right after "it's fixed" / "that worked" |
+| [wrap](skills/uncle-dev-session-handoff/SKILL.md) | Compact the conversation into a handoff doc under `.devlocal/handoffs/` so a fresh agent can resume | Ending a session with work in progress |
+| [knowledge-maintenance](skills/uncle-dev-learning-maintenance/SKILL.md) | Keep captured learnings and docs current; prune stale knowledge | Periodic upkeep of the team knowledge base |
+| [custom-me](skills/uncle-dev-custom-skill-authoring/SKILL.md) | Tailor uncle-dev behavior to personal/team preferences | Adapting the workflow to your team |
 
 ### Evaluate, Pre-mortem & Meta
 
 | Skill | What It Does | Use When |
 | ----- | ------------ | -------- |
 | [duck](skills/uncle-dev-duck/SKILL.md) | Rubber duck conversation — one paraphrase, one question, no verdicts | You're stuck, or not sure yet what you want to build |
-| [pre-mortem](skills/uncle-dev-pre-mortem/SKILL.md) | Imagine the plan has failed, then work backward to surface hidden risks and preventions | Before launches, major decisions, or risky initiatives |
+| [pre-mortem](skills/uncle-dev-pre-mortem-analysis/SKILL.md) | Imagine the plan has failed, then work backward to surface hidden risks and preventions | Before launches, major decisions, or risky initiatives |
 | [graphify-aware-analysis](skills/uncle-dev-graphify-aware-analysis/SKILL.md) | Shared protocol for querying the graphify semantic graph (`explain`/`path`/`query`), confidence rules | Referenced automatically by research, spec, planning, debug, review when `graphify-out/graph.json` exists |
 | [setup](skills/uncle-dev-setup-local/SKILL.md) | Wire uncle-dev into a project across Claude Code, Codex, and OpenCode — hooks, dirs, config, rules | Setting up uncle-dev, or when hooks aren't firing |
 | [using-agent-skills](skills/uncle-dev-using-agent-skills/SKILL.md) | Meta-skill: how to discover and apply the skills in this pack | Learning the system |

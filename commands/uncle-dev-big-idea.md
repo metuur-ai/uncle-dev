@@ -24,7 +24,7 @@ Honor the `SKILL:` and `COMPANION:` lines emitted above per the skill-loading di
 If the user gave no objective, ask for it: a high-level requirement, design, major feature, greenfield/brownfield project, or any large initiative — plus which repos/platforms it spans (if multi-repo). Then follow `uncle-dev-initiative-map`:
 
 1. Frame the initiative and detect scope (greenfield vs brownfield, one repo vs many)
-2. Gather platform context (reuse `uncle-dev-feature-map` per repo; read arch docs; use graphify/spec-graph if present)
+2. Gather platform context (reuse `uncle-dev-feature-discovery` per repo; read arch docs; use graphify/spec-graph if present)
 3. Identify the BIG items — each with `id`, `tier`, and the four lenses: **why / what / what if / how** (one line each)
 4. Map dependencies & interactions, then derive tiers, critical paths, and milestones
 5. Flag which decisions need an ADR (one ADR per decision, phrased as a question — defer authoring to `uncle-dev-documentation-and-adrs`)
