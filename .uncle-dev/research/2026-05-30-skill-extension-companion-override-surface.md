@@ -1,7 +1,7 @@
 # Skill Extension: Override and Companion Surface Map
 
 **Date:** 2026-05-30
-**Author:** Claude (uncle-dev-research)
+**Author:** Claude (uncle-dev-codebase-research)
 **Status:** Documentation of current state. No recommendations.
 **Scope:** Map what exists today to support user-authored skill overrides and companion skills, identify
 gaps, and document the extension points a new skill would need to address.

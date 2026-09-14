@@ -25,7 +25,7 @@ Each planned page maps to a real coverage gap. Contributions are welcome.
 | Page | Source that exists today |
 |------|--------------------------|
 | Orchestration | Multi-agent / subagent patterns. |
-| Memory | `uncle-dev-knowledge-capture` and `uncle-dev-knowledge-maintenance`. |
+| Memory | `uncle-dev-learning-capture` and `uncle-dev-learning-maintenance`. |
 | Context management | `uncle-dev-context-engineering` skill. |
 
 ### Customization

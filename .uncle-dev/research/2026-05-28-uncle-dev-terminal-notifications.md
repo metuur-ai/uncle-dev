@@ -108,13 +108,13 @@ There are **8 wait points** across the uncle-dev skill set where the assistant e
 |---|---|---|---|---|
 | Define | `uncle-dev-spec` (lid-ears) | `.claude/commands/uncle-dev-spec.md:145` | `spec-lock` | "Do these specs look correct? Reply YES to lock them, or tell me what to change." |
 | Define | `uncle-dev-spec` (openspec) | `.claude/commands/uncle-dev-spec.md:184` | `spec-validate` | Confirmation after `openspec validate <id>` |
-| Define | `uncle-dev-knowledge-capture` | `.claude/commands/uncle-dev-knowledge-capture.md:16` | `mode-select` | Full vs Lightweight mode + session-history search choice |
+| Define | `uncle-dev-learning-capture` | `.claude/commands/uncle-dev-knowledge-capture.md:16` | `mode-select` | Full vs Lightweight mode + session-history search choice |
 | Plan | `uncle-dev-plan` (lid-ears) | `.claude/commands/uncle-dev-plan.md:78` | `plan-review` | "Present the plan for human review" |
 | Plan | `uncle-dev-plan` (openspec) | `.claude/commands/uncle-dev-plan.md:106` | `plan-review` | "Present the plan for human review" |
-| Build | `uncle-dev-next-task` | `.claude/commands/uncle-dev-next-task.md:120` | `ack-gate` | Halt with `BLOCKED:` block on pending acknowledgements |
+| Build | `uncle-dev-task-selection` | `.claude/commands/uncle-dev-next-task.md:120` | `ack-gate` | Halt with `BLOCKED:` block on pending acknowledgements |
 | Build | `uncle-dev-build` | `.claude/commands/uncle-dev-build.md:98` | `ack-gate-enforcement` | Print `BLOCKED:` verbatim, do not proceed |
 | Ship | `uncle-dev-ship` | `.claude/commands/uncle-dev-ship.md:62`, `:91` | `rollback-confirm` | "Define the rollback plan before proceeding" |
-| Research | `uncle-dev-research` | `skills/uncle-dev-research/SKILL.md:18` | `research-question` | "I'm ready to research the codebase. What would you like me to investigate?" |
+| Research | `uncle-dev-codebase-research` | `skills/uncle-dev-codebase-research/SKILL.md:18` | `research-question` | "I'm ready to research the codebase. What would you like me to investigate?" |
 
 All wait points use the "wait silently" instruction pattern — once the question is asked, the assistant does not re-prompt. There is currently no mechanism (built-in or hook-based) that signals the user that the assistant is parked at one of these gates.
 

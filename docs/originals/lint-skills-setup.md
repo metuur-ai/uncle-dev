@@ -13,7 +13,7 @@ Set up and run `scripts/lint-skills.sh`, the wrapper around [nori-lint](https://
 The integration is already wired into the repo. A fresh clone needs no installation — verify it works:
 
 ```bash
-bash scripts/lint-skills.sh skills/uncle-dev-wrap
+bash scripts/lint-skills.sh skills/uncle-dev-session-handoff
 ```
 
 You should see a list of violations (or none) followed by a summary line:
@@ -38,7 +38,7 @@ Prints every violation as `path:line [rule] message` and always exits 0. This is
 ### 2. Lint specific skills
 
 ```bash
-bash scripts/lint-skills.sh skills/uncle-dev-research skills/uncle-dev-wrap
+bash scripts/lint-skills.sh skills/uncle-dev-codebase-research skills/uncle-dev-session-handoff
 ```
 
 Accepts skill directories or direct paths to `SKILL.md` files.

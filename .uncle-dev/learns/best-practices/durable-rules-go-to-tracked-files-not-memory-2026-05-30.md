@@ -116,5 +116,5 @@ redundant with `docs/skill-anatomy.md`, and the boundary rule was missing from t
 
 - `CLAUDE.md` — root project conventions and boundaries
 - `docs/skill-anatomy.md` — the canonical SKILL.md authoring contract
-- `skills/uncle-dev-knowledge-capture/SKILL.md` — the skill that wrote this learning
+- `skills/uncle-dev-learning-capture/SKILL.md` — the skill that wrote this learning
 - `skills/uncle-dev-context-engineering/SKILL.md` — `AGENTS.md` hierarchy for directory-scoped rules

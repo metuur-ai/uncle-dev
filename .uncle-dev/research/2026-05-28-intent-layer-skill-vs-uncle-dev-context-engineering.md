@@ -84,7 +84,7 @@ Does NOT cover: criteria for when to create a new AGENTS.md, what to put in one,
 
 `capture-protocol.md` provides 12 questions across 5 categories (Purpose & Scope, Entry Points, Contracts & Invariants, Patterns, Anti-patterns + Pitfalls). Also defines leaf-first capture order and parent-node summarization rules.
 
-No equivalent exists in uncle-dev. `uncle-dev-knowledge-capture` exists but focuses on lessons-learned, not live documentation extraction.
+No equivalent exists in uncle-dev. `uncle-dev-learning-capture` exists but focuses on lessons-learned, not live documentation extraction.
 
 ### 6. Node quality checklist
 

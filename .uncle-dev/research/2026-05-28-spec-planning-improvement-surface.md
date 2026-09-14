@@ -14,7 +14,7 @@
 | ---------------------------------- | ---------------------------------------------------- | ------------------------------------------- | --------------------------- |
 | uncle-dev-spec-driven-development  | `skills/uncle-dev-spec-driven-development/SKILL.md`  | Entry point; routes to lid-ears or openspec | HLD/LLD/EARS docs           |
 | uncle-dev-design-architecture-docs | `skills/uncle-dev-design-architecture-docs/SKILL.md` | Authors HLD/LLD; manages segments           | HLD, LLDs, segment registry |
-| uncle-dev-spec-annotations         | `skills/uncle-dev-spec-annotations/SKILL.md`         | `@spec` traceability; scanner/graph scripts | Code/test annotations       |
+| uncle-dev-spec-traceability         | `skills/uncle-dev-spec-traceability/SKILL.md`         | `@spec` traceability; scanner/graph scripts | Code/test annotations       |
 | uncle-dev-spec-scan                | `.claude/commands/uncle-dev-spec-scan.md`            | Validates `@spec` coherence                 | Orphan/missing report       |
 | uncle-dev-spec-graph               | `.claude/commands/uncle-dev-spec-graph.md`           | Builds graph artifacts                      | JSON/Mermaid/HTML/report    |
 | uncle-dev-design-docs              | `.claude/commands/uncle-dev-design-docs.md`          | Scaffolds HLD/LLD/arrows                    | Template files              |
@@ -49,8 +49,8 @@ User must explicitly say YES before downstream work proceeds. No bypass.
 | Artifact                              | Path                                                    | SDD Modes                   | Primary Output                    |
 | ------------------------------------- | ------------------------------------------------------- | --------------------------- | --------------------------------- |
 | uncle-dev-planning-and-task-breakdown | `skills/uncle-dev-planning-and-task-breakdown/SKILL.md` | openspec (lid-ears via cmd) | `tasks.md`, `execution.md`        |
-| uncle-dev-acknowledge                 | `skills/uncle-dev-acknowledge/SKILL.md`                 | openspec (lid-ears → ADR)   | `openspec/acknowledge/<scope>.md` |
-| uncle-dev-next-task                   | `skills/uncle-dev-next-task/SKILL.md`                   | openspec (lid-ears via cmd) | Handoff to build/test/review/ship |
+| uncle-dev-decision-acknowledgment                 | `skills/uncle-dev-decision-acknowledgment/SKILL.md`                 | openspec (lid-ears → ADR)   | `openspec/acknowledge/<scope>.md` |
+| uncle-dev-task-selection                   | `skills/uncle-dev-task-selection/SKILL.md`                   | openspec (lid-ears via cmd) | Handoff to build/test/review/ship |
 | uncle-dev-incremental-implementation  | `skills/uncle-dev-incremental-implementation/SKILL.md`  | both                        | Series of commits                 |
 
 ### Planning Workflow Flow
@@ -61,9 +61,9 @@ spec → /uncle-dev-plan → /uncle-dev-acknowledge (gate) → /uncle-dev-next-t
 
 ### Gates in Planning
 
-**Acknowledge gate (uncle-dev-next-task SKILL.md:291–301):** Non-bypassable. If any `<scope>.md` has `### D<N>` with `status: pending`, the story is blocked. No `--ignore-acknowledgements` flag exists.
+**Acknowledge gate (uncle-dev-task-selection SKILL.md:291–301):** Non-bypassable. If any `<scope>.md` has `### D<N>` with `status: pending`, the story is blocked. No `--ignore-acknowledgements` flag exists.
 
-**Conflict-resolution gate (uncle-dev-next-task SKILL.md:271–278):** Fires when scratchpad and `tasks.md` disagree. Halts resolution; must follow `conflict-resolution.md`.
+**Conflict-resolution gate (uncle-dev-task-selection SKILL.md:271–278):** Fires when scratchpad and `tasks.md` disagree. Halts resolution; must follow `conflict-resolution.md`.
 
 **Parallel-safe ready set:** Only stories with satisfied deps, uncontended mutex, no active lock enter the ready set.
 
@@ -83,13 +83,13 @@ spec → /uncle-dev-plan → /uncle-dev-acknowledge (gate) → /uncle-dev-next-t
 
 | Skill                 | Path                                    | Role                                                           |
 | --------------------- | --------------------------------------- | -------------------------------------------------------------- |
-| uncle-dev-research    | `skills/uncle-dev-research/SKILL.md`    | Documentarian scout; writes research to `.uncle-dev/research/` |
+| uncle-dev-codebase-research    | `skills/uncle-dev-codebase-research/SKILL.md`    | Documentarian scout; writes research to `.uncle-dev/research/` |
 | uncle-dev-idea-refine | `skills/uncle-dev-idea-refine/SKILL.md` | Idea exploration before spec                                   |
-| uncle-dev-feature-map | `skills/uncle-dev-feature-map/SKILL.md` | Feature surface mapping                                        |
+| uncle-dev-feature-discovery | `skills/uncle-dev-feature-discovery/SKILL.md` | Feature surface mapping                                        |
 
 From research `2026-05-17-uncle-domain-companion-exploration.md:§3`:
 
-> "Product/domain reasoning currently lives only in `uncle-dev-idea-refine`, `uncle-dev-feature-map`, `uncle-dev-research`"
+> "Product/domain reasoning currently lives only in `uncle-dev-idea-refine`, `uncle-dev-feature-discovery`, `uncle-dev-codebase-research`"
 
 **No skill exists today that explicitly:**
 
@@ -224,5 +224,5 @@ The only current risk-adjacent artifact is the LLD "Constraints" and "Key Decisi
 - Current spec hard gate: `skills/uncle-dev-spec-driven-development/SKILL.md:132–138`
 - Current plan output: `skills/uncle-dev-planning-and-task-breakdown/SKILL.md:192–213`
 - Premortem candidate: `tmp/premortem-SKILL.md:1–67`
-- Acknowledge gate: `skills/uncle-dev-next-task/SKILL.md:291–301`
+- Acknowledge gate: `skills/uncle-dev-task-selection/SKILL.md:291–301`
 - Workflow rules: `CLAUDE.md:91–94`

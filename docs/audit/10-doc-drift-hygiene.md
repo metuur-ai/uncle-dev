@@ -57,7 +57,7 @@ a *different* skill):
 
 Root cause 2 — docs moved under `docs/originals/`:
 
-- `skills/uncle-dev-custom-me/SKILL.md:26,115` → `docs/skill-anatomy.md`
+- `skills/uncle-dev-custom-skill-authoring/SKILL.md:26,115` → `docs/skill-anatomy.md`
   (actual: `docs/originals/skill-anatomy.md`)
 - `skills/uncle-dev-setup/SKILL.md:15` → `docs/cursor-setup.md`,
   `docs/windsurf-setup.md`, `docs/copilot-setup.md` (all under
@@ -81,7 +81,7 @@ Root cause 2 — docs moved under `docs/originals/`:
 
 - `skills/uncle-dev-initiative-map/README.md` — referenced nowhere (only
   skill dir with a README).
-- `skills/uncle-dev-spec-annotations/requirements.txt` — referenced nowhere.
+- `skills/uncle-dev-spec-traceability/requirements.txt` — referenced nowhere.
 - `.claude/settings.json` — a single newline byte; invalid JSON.
 - Legacy `.uncle-dev/research/` (8 tracked files) alongside the current
   convention `.devlocal/research/` — never migrated.
@@ -125,7 +125,7 @@ No hook checks "is this an uncle-dev project" (e.g. presence of
 - `skills/uncle-dev-code-context/SKILL.md` is a 27-line tombstone
   ("CONVERTED TO RULE") — delete the skill (and update marketplace.json +
   installers) or exempt it explicitly.
-- `skills/uncle-dev-pre-mortem/SKILL.md` — missing all 6 sections (65
+- `skills/uncle-dev-pre-mortem-analysis/SKILL.md` — missing all 6 sections (65
   lines); bring to standard, especially since audit file 07 promotes it to a
   command.
 - 18 supporting files under the 100-line threshold (worst:

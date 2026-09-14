@@ -64,7 +64,7 @@ Phase-tagged commands and skills map to the development lifecycle, each command 
 
 ### USP 6 — Architecture intent flow: HLD → LLD → EARS specs → tests → code
 
-_"HLD (product intent — written first) → segment selection → LLD per segment → EARS prefix → EARS specs → Tests with @spec → Code with @spec."_ — `skills/uncle-dev-design-architecture-docs/SKILL.md:34-54`. `@spec` is _"one edge in a graph that connects durable product intent to the code that implements it."_ — `skills/uncle-dev-spec-annotations/SKILL.md:9-12`
+_"HLD (product intent — written first) → segment selection → LLD per segment → EARS prefix → EARS specs → Tests with @spec → Code with @spec."_ — `skills/uncle-dev-design-architecture-docs/SKILL.md:34-54`. `@spec` is _"one edge in a graph that connects durable product intent to the code that implements it."_ — `skills/uncle-dev-spec-traceability/SKILL.md:9-12`
 
 ### USP 7 — Mechanical enforcement via hooks
 

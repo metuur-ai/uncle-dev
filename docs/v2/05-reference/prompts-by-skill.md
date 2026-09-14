@@ -36,9 +36,9 @@ In the Uncle Dev plugin pack, you can invoke skills explicitly when you hit a sp
 > `Run the uncle-dev-security-and-hardening skill.`
 > Review the new [File: user-session.ts] API route we just created. Audit it for OWASP Top 10 vulnerabilities, ensure database interactions are parameterized against SQL injection, and review boundary validation logic.
 
-## Knowledge Capture (`uncle-dev-knowledge-capture`)
+## Knowledge Capture (`uncle-dev-learning-capture`)
 **Use after a difficult debugging session to capture the solution.**
-> `We fixed the bug. Trigger uncle-dev-knowledge-capture.`
+> `We fixed the bug. Trigger uncle-dev-learning-capture.`
 > Document the exact root cause of the [Bug description: caching race-condition we faced in Redis] and lay out the solution as a formal learning in `.uncle-dev/learns/`.
 
 ## Performance Optimization (`uncle-dev-performance-optimization`)

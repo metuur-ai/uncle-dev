@@ -1,4 +1,4 @@
-# uncle-dev-acknowledge — Summary
+# uncle-dev-decision-acknowledgment — Summary
 
 A new skill that fills the gap between *thinking about* a design decision and *being allowed to build* it. It captures design-decision notes as package-scoped acknowledgements under `openspec/acknowledge/`, marks them `pending` by default, and **blocks `/uncle-dev-build` from claiming any story in their scope** until a human has explicitly said yes, no, or "superseded by something else."
 
@@ -19,7 +19,7 @@ Neither was the right home for a message like this:
 
 These are *not* solved bugs. They are *deliberate design choices that the human has not green-lit yet*. They belong to the `api` package, the `share` package, the `web` package — depending on the note. And they should *stop the agent from writing code* until a real human reads them and says "yes, proceed."
 
-`uncle-dev-acknowledge` is the answer. The gap it fills:
+`uncle-dev-decision-acknowledgment` is the answer. The gap it fills:
 
 ```
 /uncle-dev-spec          ← designs the change
@@ -99,7 +99,7 @@ After capture, `_meta.yaml` records `next_decision_id: 13` and `scopes: [general
 
 ## How the Gate Works
 
-The gate is Step 4b in the `uncle-dev-next-task` resolution process, between "compute ready set" and "rank and recommend."
+The gate is Step 4b in the `uncle-dev-task-selection` resolution process, between "compute ready set" and "rank and recommend."
 
 For each story still in the ready set:
 
@@ -170,7 +170,7 @@ The user picks, and the decision is captured in the right place without them nee
 
 ### 4. Hand-edit (no command)
 
-The `openspec/acknowledge/<scope>.md` files are just Markdown with a specific section format. A human (or another agent) can write a `### D<N>` section directly, as long as it follows the schema in `skills/uncle-dev-acknowledge/note-schema.yaml`. The gate reads the files at runtime — no index to update manually, except `_meta.yaml`'s `next_decision_id` counter (which prevents D-id collisions; increment it if you write sections by hand).
+The `openspec/acknowledge/<scope>.md` files are just Markdown with a specific section format. A human (or another agent) can write a `### D<N>` section directly, as long as it follows the schema in `skills/uncle-dev-decision-acknowledgment/note-schema.yaml`. The gate reads the files at runtime — no index to update manually, except `_meta.yaml`'s `next_decision_id` counter (which prevents D-id collisions; increment it if you write sections by hand).
 
 ## Workflow Commands
 
@@ -226,16 +226,16 @@ Acknowledge notes and ADRs serve different needs. Use both when a decision deser
 ## Files Created by This Feature
 
 ```
-skills/uncle-dev-acknowledge/
+skills/uncle-dev-decision-acknowledgment/
   SKILL.md                      ← main skill (Overview, Process, Inference Rules, Verification)
   inference-rules.md            ← the full routing table (edit here to tune routing)
   note-schema.yaml              ← file-level frontmatter + per-section metadata contract
   acknowledge-workflow.md       ← ack/reject/supersede mechanics, propagation, lock protocol
 
 commands/
-  uncle-dev-acknowledge.md      ← slash command (paste | extract | ack | reject | supersede | list)
+  uncle-dev-decision-acknowledgment.md      ← slash command (paste | extract | ack | reject | supersede | list)
 
-skills/uncle-dev-next-task/
+skills/uncle-dev-task-selection/
   acknowledge-gate.md           ← Step 4b algorithm, touched-scope derivation, BLOCKED output
 
 openspec/acknowledge/           ← created lazily by the first /uncle-dev-acknowledge run
@@ -248,14 +248,14 @@ Plus integration edits to five existing files:
 
 | File | What changed |
 |---|---|
-| `skills/uncle-dev-next-task/SKILL.md` | Step 4b in the resolution diagram; BLOCKED output added to output contract |
-| `skills/uncle-dev-next-task/parsing-and-annotations.md` | `scope` annotation key added to the recognized-keys table |
+| `skills/uncle-dev-task-selection/SKILL.md` | Step 4b in the resolution diagram; BLOCKED output added to output contract |
+| `skills/uncle-dev-task-selection/parsing-and-annotations.md` | `scope` annotation key added to the recognized-keys table |
 | `commands/uncle-dev-next-task.md` | Pending-ack added to Failure Modes |
 | `commands/uncle-dev-build.md` | Non-bypassable BLOCKED handling added to Step 0 |
-| `skills/uncle-dev-knowledge-capture/SKILL.md` | Step 0 routes design decisions to uncle-dev-acknowledge before entering capture modes |
+| `skills/uncle-dev-learning-capture/SKILL.md` | Step 0 routes design decisions to uncle-dev-decision-acknowledgment before entering capture modes |
 | `skills/uncle-dev-spec-driven-development/SKILL.md` | Phase 3 "Flagging Decisions for Acknowledgement" subsection + `→ ack` row syntax |
 | `skills/uncle-dev-documentation-and-adrs/SKILL.md` | ADR vs acknowledge-note comparison table |
-| `CLAUDE.md` | `uncle-dev-acknowledge` registered under Define phase |
+| `CLAUDE.md` | `uncle-dev-decision-acknowledgment` registered under Define phase |
 
 ## What's Intentionally Not Done
 

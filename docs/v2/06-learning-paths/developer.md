@@ -14,7 +14,7 @@ You run **commands** and **agents**. They orchestrate the underlying **skills** 
 
 | Stage | You run | Skills and agents it orchestrates |
 |-------|---------|-----------------------------------|
-| 1. Understand the codebase | `/uncle-dev-research` | `uncle-dev-research`, which spawns the `repo-research-analyst` and `graph-analyst` subagents. |
+| 1. Understand the codebase | `/uncle-dev-research` | `uncle-dev-codebase-research`, which spawns the `repo-research-analyst` and `graph-analyst` subagents. |
 | 2. Settle the architecture | Agent `@uncle-lead` | Architecture decisions, API contracts, boundary and migration calls. |
 | 3. Define the change | `/uncle-dev-spec` | `spec-driven-development`, runs a `pre-mortem`, chains into `/uncle-dev-plan`. |
 | 4. Break it down | `/uncle-dev-plan` | `planning-and-task-breakdown`. |

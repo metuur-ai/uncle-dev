@@ -143,8 +143,8 @@ Exit code 0 = clean. Exit code 1 = broken links.
 
 | File                                                                                                                                     | Purpose                               |
 | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| [skills/uncle-dev-spec-annotations/SKILL.md](skills/uncle-dev-spec-annotations/SKILL.md)                                                 | Full @spec annotation reference       |
-| [skills/uncle-dev-spec-annotations/resources/annotation-examples.md](skills/uncle-dev-spec-annotations/resources/annotation-examples.md) | Per-language syntax examples          |
+| [skills/uncle-dev-spec-traceability/SKILL.md](skills/uncle-dev-spec-traceability/SKILL.md)                                                 | Full @spec annotation reference       |
+| [skills/uncle-dev-spec-traceability/resources/annotation-examples.md](skills/uncle-dev-spec-traceability/resources/annotation-examples.md) | Per-language syntax examples          |
 | [skills/uncle-dev-spec-driven-development/SKILL.md](skills/uncle-dev-spec-driven-development/SKILL.md)                                   | Full spec-driven development workflow |
 | [docs/lid-spec-annotation-simple-explanation.md](docs/lid-spec-annotation-simple-explanation.md)                                         | Simplified LID explanation            |
 | [docs/2026-05-09-implementing-spec-annotations-guide.md](docs/2026-05-09-implementing-spec-annotations-guide.md)                         | Step-by-step implementation guide     |
@@ -319,5 +319,5 @@ After all five return, review their outputs and run `/uncle-dev-spec-scan` to va
 No code changes needed — this is a knowledge/workflow task. To verify understanding:
 
 1. Run `/uncle-dev-spec-scan` on any project with `docs/specs/` to see the scanner in action
-2. Open [skills/uncle-dev-spec-annotations/SKILL.md](skills/uncle-dev-spec-annotations/SKILL.md) for the canonical reference
+2. Open [skills/uncle-dev-spec-traceability/SKILL.md](skills/uncle-dev-spec-traceability/SKILL.md) for the canonical reference
 3. Check [docs/lid-spec-annotation-simple-explanation.md](docs/lid-spec-annotation-simple-explanation.md) for a beginner-friendly walkthrough

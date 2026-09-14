@@ -4,7 +4,7 @@
 **Question:** Map the 6 fundamental principles ("software fundamentals matter now more than ever" in the AI era) against the uncle-dev skill collection. Document where each principle is embodied, with file:line evidence, and where gaps exist.
 **Scope:** `skills/`, `agents/`, `.claude/commands/` in this repo.
 
-> **Note on mindset:** The uncle-dev-research skill is normally a pure documentarian. The user's question is explicitly evaluative ("is uncle dev following these principles?"), so this document maps principles → evidence and renders a verdict per principle. Verdicts are grounded in cited file:line evidence, not opinion.
+> **Note on mindset:** The uncle-dev-codebase-research skill is normally a pure documentarian. The user's question is explicitly evaluative ("is uncle dev following these principles?"), so this document maps principles → evidence and renders a verdict per principle. Verdicts are grounded in cited file:line evidence, not opinion.
 
 ---
 
@@ -50,7 +50,7 @@
 - `skills/uncle-dev-idea-refine/SKILL.md:48` — "Challenge every assumption. 'How it's usually done' is not a reason."
 - `skills/uncle-dev-idea-refine/SKILL.md:106` — "Be honest, not supportive… A good ideation partner is not a yes-machine. Push back… point out when the emperor has no clothes." (adversarial posture is present)
 - `skills/uncle-dev-idea-refine/examples.md:140` — example shows the AI scanning the codebase, then asking targeted questions before proposing — the "resolve dependencies one by one" behavior in miniature.
-- `skills/uncle-dev-spec-driven-development/SKILL.md` (LID+EARS) and `uncle-dev-acknowledge` carry the "reach shared understanding before code" intent.
+- `skills/uncle-dev-spec-driven-development/SKILL.md` (LID+EARS) and `uncle-dev-decision-acknowledgment` carry the "reach shared understanding before code" intent.
 - `skills/uncle-dev-dev-code-simplification/reference/request-refactor-plan-SKILL.md:3` — "Create a detailed refactor plan… via **user interview**" — the interview pattern exists, scoped to refactors.
 
 **Gap / nuance:**

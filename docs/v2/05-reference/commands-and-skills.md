@@ -21,15 +21,15 @@ Some skills are also wired to a slash command (shown in the Command column below
 
 | Skill | Purpose | Command |
 |-------|---------|---------|
-| `uncle-dev-research` | Documents the codebase as it exists today; spawns parallel subagents and writes a research map to `.uncle-dev/research/`. | `/uncle-dev-research` |
+| `uncle-dev-codebase-research` | Documents the codebase as it exists today; spawns parallel subagents and writes a research map to `.uncle-dev/research/`. | `/uncle-dev-research` |
 | `uncle-dev-idea-refine` | Refines a rough idea through divergent and convergent thinking. | — |
 | `uncle-dev-grill` | Interviews you to pin down requirements, then synthesizes a PRD that feeds `/uncle-dev-spec`. | — |
 | `uncle-dev-ubiquitous-language` | Builds and maintains a DDD-style glossary of canonical domain terms in `docs/ubiquitous-language.md`. | — |
-| `uncle-dev-feature-map` | Catalogs product features by reading backend routes, controllers, services, and frontend pages; outputs a user-facing feature map. | — |
+| `uncle-dev-feature-discovery` | Catalogs product features by reading backend routes, controllers, services, and frontend pages; outputs a user-facing feature map. | — |
 | `uncle-dev-spec-driven-development` | Defines requirements before coding; routes to LID+EARS mode or OpenSpec mode. | `/uncle-dev-spec` |
 | `uncle-dev-design-architecture-docs` | Authors durable HLD and LLD documents that partition product intent into segments and feed EARS specs. | `/uncle-dev-design-docs` |
-| `uncle-dev-acknowledge` | Captures design-decision notes — as gating notes in OpenSpec mode, or as ADRs in LID+EARS mode. | `/uncle-dev-acknowledge` |
-| `uncle-dev-pre-mortem` | Imagines a plan has failed, then works backward to surface causes and preventions before a launch or risky decision. | — |
+| `uncle-dev-decision-acknowledgment` | Captures design-decision notes — as gating notes in OpenSpec mode, or as ADRs in LID+EARS mode. | `/uncle-dev-acknowledge` |
+| `uncle-dev-pre-mortem-analysis` | Imagines a plan has failed, then works backward to surface causes and preventions before a launch or risky decision. | — |
 
 ### Plan
 
@@ -43,7 +43,7 @@ Some skills are also wired to a slash command (shown in the Command column below
 |-------|---------|---------|
 | `uncle-dev-incremental-implementation` | Delivers changes one verifiable slice at a time. | `/uncle-dev-build` |
 | `uncle-dev-test-driven-development` | Drives development with tests written before implementation. | `/uncle-dev-test` |
-| `uncle-dev-spec-annotations` | Connects durable product behavior to specs, tests, and code via `@spec` annotations. | `/uncle-dev-spec-annotations` |
+| `uncle-dev-spec-traceability` | Connects durable product behavior to specs, tests, and code via `@spec` annotations. | `/uncle-dev-spec-annotations` |
 | `uncle-dev-context-engineering` | Optimizes the agent's context setup — rules files, context hierarchy, and confusion recovery. | — |
 | `uncle-dev-source-driven-development` | Grounds every implementation decision in official, source-cited documentation. | — |
 | `uncle-dev-frontend-ui-engineering` | Builds production-quality UIs — components, layouts, state, and accessibility. | — |
@@ -80,20 +80,20 @@ Some skills are also wired to a slash command (shown in the Command column below
 
 | Skill | Purpose | Command |
 |-------|---------|---------|
-| `uncle-dev-knowledge-capture` | Documents a recently solved problem into `.uncle-dev/learns/` while context is fresh. | `/uncle-dev-knowledge-capture` |
+| `uncle-dev-learning-capture` | Documents a recently solved problem into `.uncle-dev/learns/` while context is fresh. | `/uncle-dev-knowledge-capture` |
 
 ### Handoff
 
 | Skill | Purpose | Command |
 |-------|---------|---------|
-| `uncle-dev-wrap` | Compacts the conversation into a handoff document under `.devlocal/handoffs/` so a fresh session can continue. | `/uncle-dev-wrap` |
+| `uncle-dev-session-handoff` | Compacts the conversation into a handoff document under `.devlocal/handoffs/` so a fresh session can continue. | `/uncle-dev-wrap` |
 
 ### Maintain
 
 | Skill | Purpose | Command |
 |-------|---------|---------|
-| `uncle-dev-knowledge-maintenance` | Reviews and refreshes `.uncle-dev/learns/` — update stale references, consolidate overlap, delete obsolete docs. | `/uncle-dev-knowledge-maintenance` |
-| `uncle-dev-custom-me` | Authors and registers a user-defined override or companion skill without duplicating the bundled skill's content. | `/uncle-dev-custom-me` |
+| `uncle-dev-learning-maintenance` | Reviews and refreshes `.uncle-dev/learns/` — update stale references, consolidate overlap, delete obsolete docs. | `/uncle-dev-knowledge-maintenance` |
+| `uncle-dev-custom-skill-authoring` | Authors and registers a user-defined override or companion skill without duplicating the bundled skill's content. | `/uncle-dev-custom-me` |
 
 ### Meta and tooling
 
@@ -101,7 +101,7 @@ Some skills are also wired to a slash command (shown in the Command column below
 |-------|---------|---------|
 | `uncle-dev-setup` | Wires Uncle Dev into a project for Claude Code, Codex, or OpenCode — plugin install, directories, config, hooks, rules. | `/uncle-dev-setup` |
 | `uncle-dev-using-agent-skills` | The meta-skill that governs how all other skills are discovered and invoked. | — |
-| `uncle-dev-next-task` | Picks the next actionable task — from `docs/tasks/` in LID+EARS mode, or from OpenSpec changes in OpenSpec mode. | `/uncle-dev-next-task` |
+| `uncle-dev-task-selection` | Picks the next actionable task — from `docs/tasks/` in LID+EARS mode, or from OpenSpec changes in OpenSpec mode. | `/uncle-dev-next-task` |
 | `uncle-dev-graphify-aware-analysis` | Shared protocol for querying the graphify semantic knowledge graph inside other skills. | — |
 | `uncle-dev-code-context` | Converted to the "Code Context" rule in CLAUDE.md. See `uncle-dev-context-engineering` for the context hierarchy strategy. | — |
 

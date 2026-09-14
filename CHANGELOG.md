@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-09-13
+
+### Changed
+
+**BREAKING — 12 skills renamed to remove command/skill name collisions.**
+
+A plugin command and a plugin skill sharing a name both register under the same
+`/` namespace, so each of these appeared twice in the command picker. The
+`/uncle-dev-*` command names are unchanged; only the underlying skill names moved,
+following the existing descriptive convention (`/uncle-dev-spec` →
+`uncle-dev-spec-driven-development`).
+
+| Command (unchanged) | Old skill name | New skill name |
+|---|---|---|
+| `/uncle-dev-acknowledge` | `uncle-dev-acknowledge` | `uncle-dev-decision-acknowledgment` |
+| `/uncle-dev-brownfield` | `uncle-dev-brownfield` | `uncle-dev-brownfield-reverse-engineering` |
+| `/uncle-dev-changelog` | `uncle-dev-changelog` | `uncle-dev-changelog-generation` |
+| `/uncle-dev-custom-me` | `uncle-dev-custom-me` | `uncle-dev-custom-skill-authoring` |
+| `/uncle-dev-feature-map` | `uncle-dev-feature-map` | `uncle-dev-feature-discovery` |
+| `/uncle-dev-knowledge-capture` | `uncle-dev-knowledge-capture` | `uncle-dev-learning-capture` |
+| `/uncle-dev-knowledge-maintenance` | `uncle-dev-knowledge-maintenance` | `uncle-dev-learning-maintenance` |
+| `/uncle-dev-next-task` | `uncle-dev-next-task` | `uncle-dev-task-selection` |
+| `/uncle-dev-pre-mortem` | `uncle-dev-pre-mortem` | `uncle-dev-pre-mortem-analysis` |
+| `/uncle-dev-research` | `uncle-dev-research` | `uncle-dev-codebase-research` |
+| `/uncle-dev-spec-annotations` `/uncle-dev-spec-graph` `/uncle-dev-spec-scan` | `uncle-dev-spec-annotations` | `uncle-dev-spec-traceability` |
+| `/uncle-dev-wrap` | `uncle-dev-wrap` | `uncle-dev-session-handoff` |
+
+**Migration.** `skills.overrides` and `skills.companions` in
+`.agents/uncle-dev-setup.yaml` are keyed by skill name. If you override or extend
+any skill in the table above, rename the key to the new name — an override on a
+stale key is silently ignored. Anything referring to skills only through
+`/uncle-dev-*` commands needs no change.
+
+### Fixed
+
+- `.agents/plugins/marketplace.json` listed a nonexistent `uncle-dev-setup` skill;
+  corrected to `uncle-dev-setup-local`.
+
 ## [1.6.2] - 2026-08-31
 
 ## [1.6.1] - 2026-08-30

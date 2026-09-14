@@ -47,8 +47,8 @@ Recommended order: **C → A → B → D** (smallest/safest first; B touches the
 
 **Problem today:** `idea-refine/SKILL.md:62` caps questioning at "3-5 sharpening questions — no more." That's the opposite of "Grill Me" (walk every branch of the design tree, 40–100 questions, resolve dependencies one at a time → PRD). The adversarial *posture* exists (`idea-refine:106`), the *exhaustive interrogation mechanic* does not. No named "Grill → PRD" pipeline.
 
-### Option B1 (recommended): a "grill" mode on `uncle-dev-acknowledge`
-`uncle-dev-acknowledge` already owns "reach shared understanding before code" — the natural home.
+### Option B1 (recommended): a "grill" mode on `uncle-dev-decision-acknowledgment`
+`uncle-dev-decision-acknowledgment` already owns "reach shared understanding before code" — the natural home.
 1. Add an explicit **Grill phase**: a depth-first interrogation that traverses the design tree branch by branch (data model → states → edge cases → failure modes → non-functionals), resolving one dependency before opening the next.
 2. **Lift the question cap** in grill mode — continue until each branch bottoms out (the "helpful adversary" stops when no unresolved dependency remains, not at a fixed count). Add a stop condition: "ask the user to confirm the synthesized understanding; only stop when they accept it."
 3. **Emit a PRD** at the end by invoking the promoted `to-prd` flow (see below) → feeds directly into `uncle-dev-spec` (HLD/EARS).

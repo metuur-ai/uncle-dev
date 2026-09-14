@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# uncle-dev-next-task — Summary
+# uncle-dev-task-selection — Summary
 
 A new skill that answers one question every "continue working" command needs to ask: **what should I work on right now?** It picks the next ready task from OpenSpec changes and `.devlocal/` scratchpads, with parallelism, locks, and conflict prompts built in.
 
@@ -152,14 +152,14 @@ In Conductor / multi-worktree setups, `.devlocal/_locks/` should be shared acros
 ## Files Created
 
 ```
-skills/uncle-dev-next-task/
+skills/uncle-dev-task-selection/
   SKILL.md                       # main skill — process, output contract, rationalizations
   parsing-and-annotations.md     # tasks.md grammar, annotation keys, parser robustness
   parallelism-and-locks.md       # ready-set algorithm, lock format, atomic acquisition
   conflict-resolution.md         # the 4-option prompt, multi-conflict sessions
 
 commands/
-  uncle-dev-next-task.md         # slash command wrapper, supports --story / --ready / --release / --claim
+  uncle-dev-task-selection.md         # slash command wrapper, supports --story / --ready / --release / --claim
 
 docs/
   uncle-dev-next-task-summary.md # this file
@@ -181,7 +181,7 @@ docs/
 **After:**
 
 ```
-1. Invoke uncle-dev-next-task --claim
+1. Invoke uncle-dev-task-selection --claim
 2. Use the recommendation (or follow conflict prompt if surfaced)
 3. Start coding
 ```
@@ -192,10 +192,10 @@ The CLI quirks, parser logic, dep resolution, mutex checks, lock acquisition, an
 
 | Command | Adoption |
 |---|---|
-| `/uncle-dev-build` | ✅ updated — calls `uncle-dev-next-task --claim` first |
-| `/uncle-dev-test` | Should call `uncle-dev-next-task` (no claim) to find a story to write tests for |
-| `/uncle-dev-ship` | Should call `uncle-dev-next-task --ready` to verify nothing is unchecked before shipping |
-| `/uncle-dev-review` | Should call `uncle-dev-next-task --story <id>` to scope the review to a specific story's diff |
+| `/uncle-dev-build` | ✅ updated — calls `uncle-dev-task-selection --claim` first |
+| `/uncle-dev-test` | Should call `uncle-dev-task-selection` (no claim) to find a story to write tests for |
+| `/uncle-dev-ship` | Should call `uncle-dev-task-selection --ready` to verify nothing is unchecked before shipping |
+| `/uncle-dev-review` | Should call `uncle-dev-task-selection --story <id>` to scope the review to a specific story's diff |
 | `/uncle-dev-spec` | Should emit `(deps: ...)` and `(mutex: ...)` annotations when generating new `tasks.md` |
 
 These edits aren't done yet — only `/uncle-dev-build` was updated as part of this change. Adopting from the others is mechanical and additive.

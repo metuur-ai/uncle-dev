@@ -1,7 +1,7 @@
 # Uncle Domain / Product Behavioral OS — Existing Surface Map
 
 **Date:** 2026-05-17
-**Author:** Claude (uncle-dev-research)
+**Author:** Claude (uncle-dev-codebase-research)
 **Status:** Documentation of current state. No recommendations.
 **Scope:** Map what already exists in this repo that is relevant to the user's proposed "Uncle Domain" companion and the broader vision of evolving uncle-dev into a Product Behavioral Operating System.
 
@@ -52,8 +52,8 @@ The user's vision asks for a layer that sits _before_ specs and reasons in produ
 | Skill                                     | What it does                                                                                                                                                             | Domain coverage today                                                                                                                               |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `uncle-dev-idea-refine` (`SKILL.md:1-50`) | Divergent → convergent refinement of a raw idea into a one-pager (`docs/ideas/<name>.md`) with Problem / Recommended Direction / Key Assumptions / MVP Scope / Not Doing | Ideation mechanics. **No** explicit business-rule or behavior-map outputs. Domain lens mentioned only as a brainstorming prompt (`SKILL.md:70-78`). |
-| `uncle-dev-feature-map` (`SKILL.md:1-84`) | Reverse-engineers a product feature catalog from code (routes + pages); groups features by domain (`auth, billing, dashboard, settings, admin, etc.`)                    | Discovers **existing** product capability from code. **Does not** validate intent or business rules.                                                |
-| `uncle-dev-research` (`SKILL.md`)         | Documents WHAT IS in the codebase via parallel scouts                                                                                                                    | Architectural map. Product framing only when user asks.                                                                                             |
+| `uncle-dev-feature-discovery` (`SKILL.md:1-84`) | Reverse-engineers a product feature catalog from code (routes + pages); groups features by domain (`auth, billing, dashboard, settings, admin, etc.`)                    | Discovers **existing** product capability from code. **Does not** validate intent or business rules.                                                |
+| `uncle-dev-codebase-research` (`SKILL.md`)         | Documents WHAT IS in the codebase via parallel scouts                                                                                                                    | Architectural map. Product framing only when user asks.                                                                                             |
 
 ### 3.2 What sits between idea-refine and spec
 
@@ -135,13 +135,13 @@ This is a flat path-registry, not a domain pack. There is no notion of:
 | **Acknowledge / LID-style decisions**                                | Implemented | `openspec/acknowledge/<scope>.md`                                    |
 | **SpecKit**                                                          | Not present | —                                                                    |
 
-Skills involved: `uncle-dev-design-architecture-docs` (HLD/LLD/arrows/EARS scaffolding), `uncle-dev-spec-driven-development` (OpenSpec change flow, 5-phase gated), `uncle-dev-acknowledge` (decision gating).
+Skills involved: `uncle-dev-design-architecture-docs` (HLD/LLD/arrows/EARS scaffolding), `uncle-dev-spec-driven-development` (OpenSpec change flow, 5-phase gated), `uncle-dev-decision-acknowledgment` (decision gating).
 
 ### 5.2 Annotations: what exists today
 
 Implemented (single tag): **`@spec`** only.
 
-`skills/uncle-dev-spec-annotations/SKILL.md` and `resources/annotation-examples.md` define the surface:
+`skills/uncle-dev-spec-traceability/SKILL.md` and `resources/annotation-examples.md` define the surface:
 
 ```
 // @spec AUTH-UI-001
@@ -158,18 +158,18 @@ Placement rules (`SKILL.md:97-137`): on behavior entry points only — functions
 | ---------- | ------------------ | --------------------------------- | ---------------------------------------------------------------------------- |
 | `@spec`    | ✅ Implemented     | Links code/test to EARS ID        |
 | `@feature` | ❌ Not implemented | No catalog, no scanner support    |
-| `@rule`    | ❌ Not implemented | No business-rules registry exists | (referenced by `uncle-dev-acknowledge/SKILL.md:25`), not as inline code tags |
+| `@rule`    | ❌ Not implemented | No business-rules registry exists | (referenced by `uncle-dev-decision-acknowledgment/SKILL.md:25`), not as inline code tags |
 
 ### 5.4 Scanner + tracker (what reads the annotations today)
 
-- **`skills/uncle-dev-spec-annotations/scan-spec-coherence.py`** — tree-sitter per language (ts/tsx/js/jsx/py/go/rs/java/html) with regex fallback. Extracts `@spec` from comments, classifies `owner_kind` (function|class|method|route|component|module|test|none), reports ORPHAN (code cites unknown ID → BLOCKING), MISSING TEST, MISSING CODE, HELPER ANNOTATION, MALFORMED ID. Exit 0/1/2 (`scanner-design.md:1-22`).
+- **`skills/uncle-dev-spec-traceability/scan-spec-coherence.py`** — tree-sitter per language (ts/tsx/js/jsx/py/go/rs/java/html) with regex fallback. Extracts `@spec` from comments, classifies `owner_kind` (function|class|method|route|component|module|test|none), reports ORPHAN (code cites unknown ID → BLOCKING), MISSING TEST, MISSING CODE, HELPER ANNOTATION, MALFORMED ID. Exit 0/1/2 (`scanner-design.md:1-22`).
 - **`generate-tracker.py`** — fuses `proposal.md` (declared EARS IDs) + `tasks.md` (checkbox state) + `handoff.md` (shipped) + scanner output into `openspec/tracker/changes.yaml` with per-change `spec_coverage: {declared, with_code, with_test, coverage_pct, missing}`.
 - **`/uncle-dev-spec-scan`** (`.claude/commands/uncle-dev-spec-scan.md`) — read-only audit entry point.
 - **`/uncle-dev-openspec-sync`** — regenerates the global tracker.
 
 ### 5.5 Spec graph builder (`build-spec-graph.py`)
 
-`skills/uncle-dev-spec-annotations/build-spec-graph.py` (21.5KB) fuses five inputs into three outputs:
+`skills/uncle-dev-spec-traceability/build-spec-graph.py` (21.5KB) fuses five inputs into three outputs:
 
 ```
 Inputs                                       Outputs
@@ -185,7 +185,7 @@ Node types: `hld`, `lld`, `spec`, `test`, `code`. Edge types: `decomposes_to` (H
 
 ### 5.6 Acknowledge mechanism (deterministic LID-style routing)
 
-`skills/uncle-dev-acknowledge/SKILL.md` + `inference-rules.md` (`:11-25`):
+`skills/uncle-dev-decision-acknowledgment/SKILL.md` + `inference-rules.md` (`:11-25`):
 
 - Captures design decisions as `openspec/acknowledge/<scope>.md` notes with status `pending` → `acknowledged` / `rejected` / `superseded`.
 - Routes a decision to one or more scopes via **deterministic regex on signals** (HTTP paths, schema keywords, React keywords, type names, cross-cutting tags) — NOT via LLM call.
@@ -298,7 +298,7 @@ There is **no persona for product / domain reasoning** (e.g., "product analyst",
 
 ### Pillar A — "Domain & product companion sitting before specs"
 
-- **Exists:** `uncle-dev-idea-refine` (ideation), `uncle-dev-feature-map` (reverse-engineered feature catalog).
+- **Exists:** `uncle-dev-idea-refine` (ideation), `uncle-dev-feature-discovery` (reverse-engineered feature catalog).
 - **Missing:** dedicated product-framing entry point; business-rules registry; behavior-map artifact; drift detector between expected vs. implemented behavior.
 
 ### Pillar B — "Configurable per-domain flavors"
@@ -328,13 +328,13 @@ There is **no persona for product / domain reasoning** (e.g., "product analyst",
 - Configuration template: `skills/uncle-dev-setup/uncle-dev-setup.template.yaml:36-65`
 - Skill anatomy convention: `CLAUDE.md:29-35`, `AGENT_RULES.md`
 - Phase model: `CLAUDE.md:18-25`, `README.md:8-14`
-- Pre-spec skills: `skills/uncle-dev-idea-refine/SKILL.md:1-50`, `skills/uncle-dev-feature-map/SKILL.md:1-84`
-- Annotation surface: `skills/uncle-dev-spec-annotations/SKILL.md:1-315`, `resources/annotation-examples.md`, `resources/scanner-design.md`
-- Scanner: `skills/uncle-dev-spec-annotations/scan-spec-coherence.py`
-- Spec-graph builder: `skills/uncle-dev-spec-annotations/build-spec-graph.py` (esp. lines 5-11, 19-20, 47-71, 59-315, 330)
+- Pre-spec skills: `skills/uncle-dev-idea-refine/SKILL.md:1-50`, `skills/uncle-dev-feature-discovery/SKILL.md:1-84`
+- Annotation surface: `skills/uncle-dev-spec-traceability/SKILL.md:1-315`, `resources/annotation-examples.md`, `resources/scanner-design.md`
+- Scanner: `skills/uncle-dev-spec-traceability/scan-spec-coherence.py`
+- Spec-graph builder: `skills/uncle-dev-spec-traceability/build-spec-graph.py` (esp. lines 5-11, 19-20, 47-71, 59-315, 330)
 - Spec-graph command: `.claude/commands/uncle-dev-spec-graph.md`
 - Design-architecture-docs: `skills/uncle-dev-design-architecture-docs/SKILL.md:56-76, 100-127, 154-192`
-- Acknowledge mechanism: `skills/uncle-dev-acknowledge/SKILL.md:1-111`, `acknowledge-workflow.md`, `inference-rules.md:1-95`
+- Acknowledge mechanism: `skills/uncle-dev-decision-acknowledgment/SKILL.md:1-111`, `acknowledge-workflow.md`, `inference-rules.md:1-95`
 - Graphify protocol: `skills/uncle-dev-graphify-aware-analysis/SKILL.md` (esp. lines 14-27, 91-101, 114-150, 167-173)
 - Graphify mandatory rules: `CLAUDE.md:48-64`, `AGENTS.md:48-67`
 - Graph analyst: `agents/uncle-dev-ag-graph-analyst.md` (lines 21-61)

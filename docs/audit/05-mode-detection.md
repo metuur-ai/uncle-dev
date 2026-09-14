@@ -10,8 +10,8 @@ prose/code contradiction, and two commands are entirely mode-blind.
 
 Identical block (including the same 4-line comment) in:
 `commands/uncle-dev-spec.md`, `uncle-dev-plan.md`, `uncle-dev-build.md`,
-`uncle-dev-next-task.md`, `uncle-dev-review.md`, `uncle-dev-ship.md`,
-`uncle-dev-acknowledge.md`, `uncle-dev-openspec-sync.md`. Any semantic change
+`uncle-dev-task-selection.md`, `uncle-dev-review.md`, `uncle-dev-ship.md`,
+`uncle-dev-decision-acknowledgment.md`, `uncle-dev-openspec-sync.md`. Any semantic change
 requires 8 synchronized edits — 16 counting the plugin fork (audit file 03).
 
 ### Finding B — autodetect blindspot: plural `docs/llds` tree
@@ -21,7 +21,7 @@ Two lid-ears doc trees exist in the ecosystem:
 - **Singular per-slug**: `docs/hld/ lld/ ears/ tasks/` — used by spec, plan,
   build, review, ship, acknowledge.
 - **Plural per-segment**: `docs/llds/ specs/ arrows/` — used by
-  `uncle-dev-brownfield.md` (3 refs), `uncle-dev-design-docs.md`,
+  `uncle-dev-brownfield-reverse-engineering.md` (3 refs), `uncle-dev-design-docs.md`,
   `uncle-dev-spec-graph.md`.
 
 Step-0 autodetect checks only `docs/{ears,hld,lld}`. A repo that adopted only
@@ -39,7 +39,7 @@ step follows the prose and lands in openspec mode.
 
 ### Finding D — next-task SKILL Phase 0 has no fallback
 
-`skills/uncle-dev-next-task/SKILL.md:76-86` reads sdd_mode with default `""`
+`skills/uncle-dev-task-selection/SKILL.md:76-86` reads sdd_mode with default `""`
 and the routing table has no row for empty — undefined behavior when the
 skill is invoked directly rather than via the command wrapper.
 
@@ -53,7 +53,7 @@ skill is invoked directly rather than via the command wrapper.
 ### Finding F — acknowledge gate is openspec-only
 
 The non-bypassable gate lives in `openspec/acknowledge/`
-(`skills/uncle-dev-next-task/acknowledge-gate.md`,
+(`skills/uncle-dev-task-selection/acknowledge-gate.md`,
 `commands/uncle-dev-build.md:134`). lid-ears mode gets ADRs with no gating
 (`commands/uncle-dev-acknowledge.md:31-33`); lid-ears next-task Path A has no
 ack step — pending design decisions never block work in lid-ears.
@@ -90,14 +90,14 @@ phases.
    "If you could not run Step 0, treat the mode as `lid-ears`." (matches the
    code default).
 4. **Fix next-task SKILL Phase 0**
-   (`skills/uncle-dev-next-task/SKILL.md:76-86`): route empty →
+   (`skills/uncle-dev-task-selection/SKILL.md:76-86`): route empty →
    `lid-ears` (or call the new script), so direct skill invocation is
    defined.
 5. **Add mode awareness to test and wrap**:
    - `uncle-dev-test.md`: after mode detection, in lid-ears point test
      mapping at `docs/ears/<slug>.md` requirement IDs; in openspec at the
      change's acceptance criteria/tasks.
-   - `uncle-dev-wrap.md`: record resolved mode in the handoff and link the
+   - `uncle-dev-session-handoff.md`: record resolved mode in the handoff and link the
      mode's artifacts (docs/tasks vs openspec/changes/<id>/).
 6. **Decide the lid-ears acknowledge gap** (scope decision — smallest viable
    fix): add a lid-ears equivalent check to next-task Path A ("if

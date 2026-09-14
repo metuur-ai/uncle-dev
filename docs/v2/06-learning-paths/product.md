@@ -21,7 +21,7 @@ These conversational skills help you shape the work. There is no command for the
 | "ideate" | `uncle-dev-idea-refine` | A sharper concept with the riskiest assumptions surfaced. |
 | "grill me" | `uncle-dev-grill` | A PRD built from a structured interview. |
 | "define our terms" | `uncle-dev-ubiquitous-language` | A glossary of canonical domain terms. |
-| "map the features" | `uncle-dev-feature-map` | An inventory of what the product already does. |
+| "map the features" | `uncle-dev-feature-discovery` | An inventory of what the product already does. |
 
 ## Your journey
 
@@ -41,7 +41,7 @@ You want users to control which notifications they receive.
 
 1. **Shape it.** Trigger the `uncle-dev-idea-refine` skill (say "ideate"). You and the agent settle on a minimal first version.
 2. **Pin requirements.** Trigger the `uncle-dev-grill` skill (say "grill me"). It interviews you one decision at a time and writes a PRD.
-3. **Check existing behavior.** Trigger the `uncle-dev-feature-map` skill to confirm how notifications work today.
+3. **Check existing behavior.** Trigger the `uncle-dev-feature-discovery` skill to confirm how notifications work today.
 4. **Frame acceptance criteria.** Ask `@uncle-po` for criteria such as "a user can mute a category and stop its emails within one minute."
 5. **Write the spec.** Run `/uncle-dev-spec`. It runs `spec-driven-development`, performs a `pre-mortem`, and writes `proposal.md` and `design.md` in `openspec/changes/`. You review and approve before any code.
 6. **Record a decision.** Run `/uncle-dev-acknowledge` to capture "security alerts are never mutable," so the build phase enforces it.

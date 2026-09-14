@@ -1,7 +1,7 @@
 # Companion Modes Extended Exploration — Uncle Domain / Uncle Framework / Product Mode Agent
 
 **Date:** 2026-05-17
-**Author:** Claude (uncle-dev-research)
+**Author:** Claude (uncle-dev-codebase-research)
 **Status:** Documentation of current state. No recommendations.
 **Scope:** Extends `.uncle-dev/research/2026-05-17-uncle-domain-companion-exploration.md` to cover three companion-mode pillars now under exploration: **Uncle Domain**, **Uncle Framework**, and **Product Mode Agent** — plus the user's stated **reactive-invocation** constraint and the **three-context-layer** routing requirement.
 
@@ -38,7 +38,7 @@ For full topology see prior doc, Section 2. Key facts that recur in this extensi
 
 The prior doc (`2026-05-17-uncle-domain-companion-exploration.md`) already mapped this pillar in detail. Specifically:
 
-- **§3 (Where Product / Domain Reasoning Currently Lives)** — `uncle-dev-idea-refine`, `uncle-dev-feature-map`, `uncle-dev-research` are the only pre-spec product-touching skills; no business-rules catalog, no behavior-map artifact, no drift detector between expected vs. implemented behavior.
+- **§3 (Where Product / Domain Reasoning Currently Lives)** — `uncle-dev-idea-refine`, `uncle-dev-feature-discovery`, `uncle-dev-codebase-research` are the only pre-spec product-touching skills; no business-rules catalog, no behavior-map artifact, no drift detector between expected vs. implemented behavior.
 - **§4 (Skill Anatomy and the Configuration / "Flavor" Surface)** — `.agents/uncle-dev-setup.yaml` schema today (overrides, companions, preferences, hooks); template header at `:36-37` is explicit: "All uncle-dev skills are always available — there is no opt-in/opt-out list." There is no flavor/profile/domain-pack system; the closest mechanism is path-registered companion skills (`uncle-dev-setup.template.yaml:47-65`).
 - **§5 (Spec System: Methodologies, Artifacts, Annotations)** — HLD / LLD / EARS / arrows / OpenSpec / acknowledge all implemented; SpecKit not present; annotation vocabulary is only `@spec` today.
 - **§6 (Graphify Integration: What's Built, What's Hardcoded)** — graphify-aware protocol exists; mandatory subagent gate; graph-analyst persona; one-way spec-edges.json bridge. Every consumer assumes **fixed paths**: `graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, `docs/arrows/spec-graph.{json,mmd}`, `docs/arrows/SPEC_GRAPH_REPORT.md`, `docs/high-level-design.md`, `docs/llds/`, `docs/specs/`, `docs/arrows/index.yaml`. There is no project-level config that points uncle-dev at alternative graphify JSON paths, multiple graphify graphs, alternative spec roots, or a registry mapping graph names → file paths.
@@ -54,9 +54,9 @@ This Part I treats those findings as carried forward. The remainder of this docu
 | --- | --- | --- |
 | HLD | Implemented | `docs/high-level-design.md` (per `skills/uncle-dev-design-architecture-docs/SKILL.md:233`) |
 | LLD | Implemented | `docs/llds/<segment>.md` (per `SKILL.md:234`) |
-| EARS (durable behavior IDs) | Implemented | `docs/specs/<segment>-specs.md`; regex at `skills/uncle-dev-spec-annotations/scan-spec-coherence.py:39-41` |
+| EARS (durable behavior IDs) | Implemented | `docs/specs/<segment>-specs.md`; regex at `skills/uncle-dev-spec-traceability/scan-spec-coherence.py:39-41` |
 | OpenSpec (transient changes) | Implemented | `openspec/changes/<id>/{proposal,design,tasks,execution,handoff}.md` (per `skills/uncle-dev-spec-driven-development/SKILL.md:213-217`) |
-| Acknowledge (LID-style decisions) | Implemented | `openspec/acknowledge/<scope>.md` (per `skills/uncle-dev-acknowledge/SKILL.md:10-11`) |
+| Acknowledge (LID-style decisions) | Implemented | `openspec/acknowledge/<scope>.md` (per `skills/uncle-dev-decision-acknowledgment/SKILL.md:10-11`) |
 | Idea one-pager | Implemented | `docs/ideas/[idea-name].md` (per `skills/uncle-dev-idea-refine/SKILL.md:32-38`) |
 | SpecKit | Not present | — |
 
@@ -142,7 +142,7 @@ Scope: per-directory. Trigger: Edit|Write with a file path in that directory. Co
 
 #### 3.3.2 Acknowledge scope inference (regex routing table)
 
-`skills/uncle-dev-acknowledge/inference-rules.md:13-24` defines the **only** mechanism in the codebase that maps **path tokens → named scopes → behavior**. Direct quotes:
+`skills/uncle-dev-decision-acknowledgment/inference-rules.md:13-24` defines the **only** mechanism in the codebase that maps **path tokens → named scopes → behavior**. Direct quotes:
 
 | Signal | Scopes |
 | --- | --- |
@@ -154,7 +154,7 @@ Scope: per-directory. Trigger: Edit|Write with a file path in that directory. Co
 
 Anti-pattern from `:90-94`: *"LLM-based routing. Don't. Two agents must agree byte-for-byte on the scope set. A regex table is auditable; an LLM call isn't."*
 
-`skills/uncle-dev-next-task/acknowledge-gate.md:14` and `skills/uncle-dev-next-task/SKILL.md:200` show the same path-glob extraction is applied to story prose to derive a story's touched scopes.
+`skills/uncle-dev-task-selection/acknowledge-gate.md:14` and `skills/uncle-dev-task-selection/SKILL.md:200` show the same path-glob extraction is applied to story prose to derive a story's touched scopes.
 
 **This is THE precedent for path → scope routing.** Today it powers the acknowledge gate, not framework-rule activation.
 
@@ -209,8 +209,8 @@ All six personas in `agents/` are engineering-audience. Per scout verification:
 
 Only one skill enforces non-engineering output formatting:
 
-- **`uncle-dev-feature-map`** is the only skill that **declares a PM audience explicitly**.
-  - `skills/uncle-dev-feature-map/SKILL.md:33` — differentiator table lists audience as "Engineers + PMs" vs `uncle-dev-research` which is "Engineers".
+- **`uncle-dev-feature-discovery`** is the only skill that **declares a PM audience explicitly**.
+  - `skills/uncle-dev-feature-discovery/SKILL.md:33` — differentiator table lists audience as "Engineers + PMs" vs `uncle-dev-codebase-research` which is "Engineers".
   - `:55` — instructs subagents: *"Name each feature as a product manager would. For each feature include: feature name (user-facing), what the user can do, entry point (route path or handler), and any visible business rules or constraints."*
   - `:90-121` — output structure: domain-grouped tables with columns `Feature | User Action | Backend Entry | Frontend Entry | Notes`; sections for "API-Only Capabilities", "Orphaned UI", "Open Questions".
   - `:143` — red flag: *"Features named after code constructs (`UserController.store`) instead of user actions (`Create user account`)."*
@@ -220,7 +220,7 @@ Adjacent surfaces that do **not** produce stakeholder output:
 
 - **`uncle-dev-shipping-and-launch/SKILL.md`** — engineering checklist. Mentions "Changelog updated" (`:84`) and "User-facing documentation updated (if applicable)" (`:86`); does not template a release-notes or launch-announcement format. Rollback plan (`:253-276`) is engineering-only.
 - **`uncle-dev-documentation-and-adrs/SKILL.md:10`** — *"Target audience is future humans and agents working in the codebase."* ADR template (`:55-96`) and changelog template (`:240-253`) are both engineer-audience. The "Documentation for Agents" section (`:255-263`) names agents as an audience; PMs/designers appear nowhere.
-- **`uncle-dev-knowledge-capture/SKILL.md`** — outputs to `.uncle-dev/learns/<category>/`. YAML frontmatter requires `problem_type`, `component`, `root_cause`, `resolution_type`, `severity`, `tags` — engineering taxonomy throughout.
+- **`uncle-dev-learning-capture/SKILL.md`** — outputs to `.uncle-dev/learns/<category>/`. YAML frontmatter requires `problem_type`, `component`, `root_cause`, `resolution_type`, `severity`, `tags` — engineering taxonomy throughout.
 - **`uncle-dev-idea-refine/SKILL.md:112-136`** — the one-pager template is the **most PM-aligned format in the repo**: Problem Statement (HMW framing), Recommended Direction, Key Assumptions to Validate, MVP Scope, Not Doing list, Open Questions. Phase 1 sharpening questions at `:62-69` are PM/founder-style ("Who is this for, specifically? / What does success look like? / Why now?"). But framed as ideation, not current-state reporting.
 
 ## 6. Alignment / Drift Detection Artifacts
@@ -229,7 +229,7 @@ The pipeline that produces drift signals today is engineering-coded.
 
 ### 6.1 Scanner output classes (`scan-spec-coherence.py`)
 
-Per `skills/uncle-dev-spec-annotations/SKILL.md:210-217`:
+Per `skills/uncle-dev-spec-traceability/SKILL.md:210-217`:
 
 - `✓` specs with both code + test annotations
 - `✗ ORPHAN` — code/test cites a spec ID that doesn't exist (BLOCKING)
@@ -270,7 +270,7 @@ created_at, updated_at, spec_coverage { declared, with_code, with_test, coverage
 
 ### 6.4 Drift field in arrow registry
 
-`skills/uncle-dev-spec-annotations/resources/templates/arrows/index.yaml:10, :27` — status value `DRIFT — coherence audit failed; see drift field for details`; per-segment `drift: null` field.
+`skills/uncle-dev-spec-traceability/resources/templates/arrows/index.yaml:10, :27` — status value `DRIFT — coherence audit failed; see drift field for details`; per-segment `drift: null` field.
 
 ### 6.5 Hooks that block on drift
 
@@ -288,12 +288,12 @@ Emits `graph TD` to `docs/arrows/spec-graph.mmd` (`:518-521`). Node types styled
 
 - HLD Segments table (`skills/uncle-dev-design-architecture-docs/resources/hld-template.md:23-27`).
 - LLD Key Flows ASCII blocks terminating in `→ EARS specs: SEG-001, SEG-002` (`resources/lld-template.md:41-46, 52-56`).
-- Feature-map per-domain tables (`skills/uncle-dev-feature-map/SKILL.md:106-111`).
+- Feature-map per-domain tables (`skills/uncle-dev-feature-discovery/SKILL.md:106-111`).
 - **Shipping rollout-decision traffic-light table** (`skills/uncle-dev-shipping-and-launch/SKILL.md:158-163`) — Metric / Advance (green) / Hold (yellow) / Roll back (red). The **only existing traffic-light visualization in the repo**.
 
 ### 7.3 ASCII / box diagrams
 
-In SKILL.md prose (`skills/uncle-dev-spec-annotations/SKILL.md:31-66`, `skills/uncle-dev-design-architecture-docs/SKILL.md:32-52`, `skills/uncle-dev-shipping-and-launch/SKILL.md:108-114, 125-152`). Static, not generated.
+In SKILL.md prose (`skills/uncle-dev-spec-traceability/SKILL.md:31-66`, `skills/uncle-dev-design-architecture-docs/SKILL.md:32-52`, `skills/uncle-dev-shipping-and-launch/SKILL.md:108-114, 125-152`). Static, not generated.
 
 **No mechanism today renders graphs as PM-friendly visualizations** (high-level dashboards, status cards keyed to product behaviors).
 
@@ -304,8 +304,8 @@ The string-level audit returned very few hits — all in the sense of "naming he
 - `skills/uncle-dev-design-architecture-docs/resources/segment-examples.md:9` — segment-naming test: *"can a stakeholder who doesn't know the codebase tell you what behavior is in the segment from its name alone?"*
 - Same file `:36` — *"Each segment is a product-behavior area a non-engineer can describe."*
 - Same file `:155` — table row: *"Stakeholder test | Non-engineer can describe it | Only an engineer knows what's in it"*.
-- `skills/uncle-dev-spec-annotations/resources/annotation-examples.md:244` — *"Does this code implement a behavior a user, customer, or stakeholder would care about? If no, no annotation."*
-- `skills/uncle-dev-feature-map/SKILL.md:55` — "Name each feature as a product manager would" (cited in §5).
+- `skills/uncle-dev-spec-traceability/resources/annotation-examples.md:244` — *"Does this code implement a behavior a user, customer, or stakeholder would care about? If no, no annotation."*
+- `skills/uncle-dev-feature-discovery/SKILL.md:55` — "Name each feature as a product manager would" (cited in §5).
 - `skills/uncle-dev-spec-driven-development/SKILL.md:75` — graphify hint uses "plain language": *`graphify query "<describe the change area in plain language>" --budget 1500`*.
 
 **"Product manager", "designer", "non-technical", "business analyst" appear nowhere else in `skills/` or `agents/`.** Stakeholders are invoked only as a *naming heuristic* (a test for whether a segment name is good), not as a target audience.
@@ -360,22 +360,22 @@ Every skill-to-skill jump is a recommendation written into prose, executed only 
 ### 11.1 Spec-coherence chain
 - `uncle-dev-design-architecture-docs` → `/uncle-dev-spec-scan`, `/uncle-dev-spec-graph` after HLD/LLD changes (`SKILL.md:163-164`; `resources/lld-template.md:85`).
 - `.claude/commands/uncle-dev-design-docs.md:49, :67-71` — chains to `/uncle-dev-spec-scan` + `/uncle-dev-spec-graph` after segment scaffold.
-- Spec-template footer: `skills/uncle-dev-spec-annotations/resources/templates/specs/SEGMENT-specs.md:24`, `resources/templates/arrows/SEGMENT.md:46` — point to `/uncle-dev-spec-scan`.
-- Scanner-clean as DoD checkpoint: `skills/uncle-dev-spec-annotations/SKILL.md:299`; `skills/uncle-dev-code-review-and-quality/SKILL.md:497`.
+- Spec-template footer: `skills/uncle-dev-spec-traceability/resources/templates/specs/SEGMENT-specs.md:24`, `resources/templates/arrows/SEGMENT.md:46` — point to `/uncle-dev-spec-scan`.
+- Scanner-clean as DoD checkpoint: `skills/uncle-dev-spec-traceability/SKILL.md:299`; `skills/uncle-dev-code-review-and-quality/SKILL.md:497`.
 
 ### 11.2 Knowledge / Acknowledge router
-- `uncle-dev-knowledge-capture/SKILL.md:32-46` — Step 0 routes input to either `.uncle-dev/learns/` or `uncle-dev-acknowledge`.
-- `uncle-dev-knowledge-capture/SKILL.md:43` → `uncle-dev-acknowledge` for design decisions; `:172-177, :343` → `uncle-dev-knowledge-maintenance` when context tight.
-- `uncle-dev-acknowledge/SKILL.md:18, :23-24` — wrong-tool detection: bug → learns; ADR → `docs/decisions/`.
-- `uncle-dev-documentation-and-adrs/SKILL.md:27, :33, :36` — recommends `uncle-dev-acknowledge` for per-package gating decisions instead of repo-wide ADR.
-- `uncle-dev-knowledge-maintenance/SKILL.md:30, :177` → `uncle-dev-knowledge-capture` after next user encounter.
+- `uncle-dev-learning-capture/SKILL.md:32-46` — Step 0 routes input to either `.uncle-dev/learns/` or `uncle-dev-decision-acknowledgment`.
+- `uncle-dev-learning-capture/SKILL.md:43` → `uncle-dev-decision-acknowledgment` for design decisions; `:172-177, :343` → `uncle-dev-learning-maintenance` when context tight.
+- `uncle-dev-decision-acknowledgment/SKILL.md:18, :23-24` — wrong-tool detection: bug → learns; ADR → `docs/decisions/`.
+- `uncle-dev-documentation-and-adrs/SKILL.md:27, :33, :36` — recommends `uncle-dev-decision-acknowledgment` for per-package gating decisions instead of repo-wide ADR.
+- `uncle-dev-learning-maintenance/SKILL.md:30, :177` → `uncle-dev-learning-capture` after next user encounter.
 
 ### 11.3 Next-task / build chain
-- `uncle-dev-next-task/SKILL.md:19-20, :162, :279-281` → `/uncle-dev-spec`, `/uncle-dev-knowledge-capture`, `uncle-dev-spec-driven-development`, `uncle-dev-planning-and-task-breakdown`, `uncle-dev-incremental-implementation`.
-- `uncle-dev-next-task/acknowledge-gate.md:50` — re-run after unblocking.
+- `uncle-dev-task-selection/SKILL.md:19-20, :162, :279-281` → `/uncle-dev-spec`, `/uncle-dev-knowledge-capture`, `uncle-dev-spec-driven-development`, `uncle-dev-planning-and-task-breakdown`, `uncle-dev-incremental-implementation`.
+- `uncle-dev-task-selection/acknowledge-gate.md:50` — re-run after unblocking.
 
 ### 11.4 Research / review subagent spawns
-- `uncle-dev-research/SKILL.md:89` — *"For full repository or unfamiliar codebase: Spawn `uncle-dev-ag-repo-research-analyst` to produce a structured repo handoff document first, then spawn targeted scouts… If the graph is ON, you may also spawn `uncle-dev-ag-graph-analyst` in background…"*
+- `uncle-dev-codebase-research/SKILL.md:89` — *"For full repository or unfamiliar codebase: Spawn `uncle-dev-ag-repo-research-analyst` to produce a structured repo handoff document first, then spawn targeted scouts… If the graph is ON, you may also spawn `uncle-dev-ag-graph-analyst` in background…"*
 - `uncle-dev-code-review-and-quality/SKILL.md:286-288` — *"**When to spawn `uncle-dev-ag-graph-analyst`:** Only when graphify is ON AND the change exceeds ~300 lines OR touches a god node identified in GRAPH_REPORT.md."*
 - Same file `:290` — *"For `--security` mode, add `uncle-dev-ag-security-auditor` to the parallel phase."*
 - `uncle-dev-graphify-aware-analysis/SKILL.md:175-179` — *"For multi-hop traversal needs (more than 2–3 queries, cross-community analysis, or impact scoping across many modules), spawn the `uncle-dev-ag-graph-analyst` subagent rather than running queries inline."*
@@ -386,13 +386,13 @@ Every skill-to-skill jump is a recommendation written into prose, executed only 
 
 ### 11.6 Workflow-chaining hints
 - `AGENT_RULES.md:82-86` — *"After /explore → Ready for /build brownfield?"* pattern; suggested, not enforced.
-- `uncle-dev-feature-map/SKILL.md:22-24` — "When NOT to use" router pointing to `uncle-dev-research` / `uncle-dev-source-driven-development` / `uncle-dev-spec-driven-development`.
+- `uncle-dev-feature-discovery/SKILL.md:22-24` — "When NOT to use" router pointing to `uncle-dev-codebase-research` / `uncle-dev-source-driven-development` / `uncle-dev-spec-driven-development`.
 
 ## 12. Gating Mechanisms (Skill-to-Skill Blocks)
 
 | Gate | Defined | Blocks | Bypassable |
 | --- | --- | --- | --- |
-| **Acknowledge gate** | `skills/uncle-dev-next-task/acknowledge-gate.md:1-81` (mirror `SKILL.md:79`); reflected in `.claude/commands/uncle-dev-build.md:26` and `uncle-dev-next-task.md:38` | `/uncle-dev-build` (via `/uncle-dev-next-task` Step 4b) cannot claim any story whose touched scopes intersect with `status: pending` decisions in `openspec/acknowledge/<scope>.md` | **Non-bypassable** (`acknowledge-gate.md:3, :50`: *"There is no flag to skip the gate"*) |
+| **Acknowledge gate** | `skills/uncle-dev-task-selection/acknowledge-gate.md:1-81` (mirror `SKILL.md:79`); reflected in `.claude/commands/uncle-dev-build.md:26` and `uncle-dev-task-selection.md:38` | `/uncle-dev-build` (via `/uncle-dev-next-task` Step 4b) cannot claim any story whose touched scopes intersect with `status: pending` decisions in `openspec/acknowledge/<scope>.md` | **Non-bypassable** (`acknowledge-gate.md:3, :50`: *"There is no flag to skip the gate"*) |
 | Spec-coherence (Edit/Write) | `hooks/spec-coherence-guard.sh:56-105` | Edit/Write citing unknown @spec ID | Only by fixing the ID |
 | Spec-coherence (commit) | `hooks/spec-coherence-guard.sh:111-148` | `git commit` while scanner returns non-zero | Only by clearing orphans |
 | Destructive-command | `hooks/destructive-command-guard.sh:38-105` | rm -rf / git reset --hard / DROP TABLE / etc. | User explicit confirmation |
@@ -401,7 +401,7 @@ Every skill-to-skill jump is a recommendation written into prose, executed only 
 | CI quality gates | `skills/uncle-dev-ci-cd-and-automation/SKILL.md:26-54, :384-386` | Lint/types/tests/build/audit on every PR | External-system gate |
 | Code review verdict | `agents/uncle-dev-ag-review-synthesizer.md:39-45` | `REQUEST_CHANGES` = blocking | Soft; enforcement is human/CI |
 
-**Only the acknowledge gate is a skill-to-skill block** (`uncle-dev-next-task` against `/uncle-dev-build`'s `--claim`).
+**Only the acknowledge gate is a skill-to-skill block** (`uncle-dev-task-selection` against `/uncle-dev-build`'s `--claim`).
 
 ## 13. "Recommend Invoking This Agent" Pattern — Existing Precedent
 
@@ -412,7 +412,7 @@ Quoted instances (from scout):
 - `uncle-dev-code-review-and-quality/SKILL.md:286-288` — graph-analyst conditional on graphify ON + diff size + god-node touch.
 - `uncle-dev-code-review-and-quality/SKILL.md:290` — security-auditor conditional on `--security` flag.
 - `uncle-dev-graphify-aware-analysis/SKILL.md:175-179` — graph-analyst conditional on multi-hop traversal need.
-- `uncle-dev-research/SKILL.md:89` — repo-research-analyst conditional on "full repository / unfamiliar codebase".
+- `uncle-dev-codebase-research/SKILL.md:89` — repo-research-analyst conditional on "full repository / unfamiliar codebase".
 - `uncle-dev-test-driven-development/SKILL.md:331` — subagent conditional on "complex bug fixes".
 - `agents/uncle-dev-ag-repo-research-analyst.md:3` and `agents/uncle-dev-ag-review-synthesizer.md:3` — explicitly mark agents as "Not for direct user invocation"; only parent skills spawn them.
 
@@ -423,7 +423,7 @@ Quoted instances (from scout):
 Concrete spawn sites (verified):
 
 - `uncle-dev-code-review-and-quality/SKILL.md:292-326` — `/uncle-dev-review` spawns three parallel Task calls + one final synthesizer.
-- `uncle-dev-research/SKILL.md:89, :176` — research command spawns repo-research-analyst (and optionally graph-analyst) with `run_in_background: true`.
+- `uncle-dev-codebase-research/SKILL.md:89, :176` — research command spawns repo-research-analyst (and optionally graph-analyst) with `run_in_background: true`.
 - `uncle-dev-graphify-aware-analysis/SKILL.md:175-179`.
 - `uncle-dev-test-driven-development/SKILL.md:331`.
 
@@ -445,20 +445,20 @@ Densest layer. Multiple overlapping artifact classes feed it; all paths are hard
 | --- | --- | --- |
 | HLD | `docs/high-level-design.md` | `uncle-dev-design-architecture-docs` (`SKILL.md:10-15, :130-139, :233`) |
 | LLD | `docs/llds/<segment>.md` | same (`SKILL.md:142-152, :234`) |
-| EARS specs | `docs/specs/<segment>-specs.md` | `uncle-dev-spec-annotations` (`SKILL.md:69-80`); regex at `scan-spec-coherence.py:39-41` |
+| EARS specs | `docs/specs/<segment>-specs.md` | `uncle-dev-spec-traceability` (`SKILL.md:69-80`); regex at `scan-spec-coherence.py:39-41` |
 | Arrows / segment registry | `docs/arrows/index.yaml`, `docs/arrows/<segment>.md` | same |
 | OpenSpec proposal | `openspec/changes/<id>/proposal.md` | `uncle-dev-spec-driven-development` (`SKILL.md:213-217, :225-244`) |
 | OpenSpec design | `openspec/changes/<id>/design.md` | same (`SKILL.md:246-268`) |
-| Acknowledge notes | `openspec/acknowledge/<scope>.md` | `uncle-dev-acknowledge` (`SKILL.md:10-11`) |
+| Acknowledge notes | `openspec/acknowledge/<scope>.md` | `uncle-dev-decision-acknowledgment` (`SKILL.md:10-11`) |
 | Idea one-pager | `docs/ideas/[idea-name].md` | `uncle-dev-idea-refine` (`SKILL.md:32-38, :112-136`) |
 
 ### Layer 2 — Current existing behavior
 
 | Artifact | Path (hardcoded) | Owning skill |
 | --- | --- | --- |
-| `@spec` annotations in code | walks `src/`, `tests/`, `test/`, `app/`, `lib/`, `pkg/`, `cmd/`, `internal/`, `templates/` (`scan-spec-coherence.py:85`) | `uncle-dev-spec-annotations` |
-| Reverse-engineered feature catalog | `.uncle-dev/feature-maps/YYYY-MM-DD-*.md` | `uncle-dev-feature-map` (`SKILL.md:9-11, :87-89`) |
-| Documentarian map | `.uncle-dev/research/*.md` | `uncle-dev-research` |
+| `@spec` annotations in code | walks `src/`, `tests/`, `test/`, `app/`, `lib/`, `pkg/`, `cmd/`, `internal/`, `templates/` (`scan-spec-coherence.py:85`) | `uncle-dev-spec-traceability` |
+| Reverse-engineered feature catalog | `.uncle-dev/feature-maps/YYYY-MM-DD-*.md` | `uncle-dev-feature-discovery` (`SKILL.md:9-11, :87-89`) |
+| Documentarian map | `.uncle-dev/research/*.md` | `uncle-dev-codebase-research` |
 | Tracker rollup | `openspec/tracker/changes.yaml` | `uncle-dev-spec-driven-development` (`generate-tracker.py:1-22, :296-342`) |
 | Graphify graph (when ON) | `graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md` | `uncle-dev-graphify-aware-analysis` (`SKILL.md:10-12, :18-22`) |
 
@@ -471,7 +471,7 @@ Densest layer. Multiple overlapping artifact classes feed it; all paths are hard
 - `uncle-dev-shipping-and-launch/SKILL.md:236-247` "Post-Launch Verification" — 1-hour window checks
 - `uncle-dev-ci-cd-and-automation/SKILL.md:12-14, :230-245` — preventive (CI gates) and staged rollout described as sequence; no observation artifact
 - `uncle-dev-browser-testing-with-devtools/SKILL.md:9-10, :42-54, :58-66` — Chrome DevTools MCP brings runtime data into working memory; per-session, not persisted; explicit rule that this data is *"untrusted, not durable spec material"*
-- `.uncle-dev/learns/runtime-errors/`, `.uncle-dev/learns/performance-issues/`, `.uncle-dev/learns/security-issues/`, `.uncle-dev/learns/ui-bugs/`, `.uncle-dev/learns/integration-issues/`, `.uncle-dev/learns/database-issues/` (`uncle-dev-knowledge-capture/SKILL.md:201-216`) — after-the-fact incident records, not a live platform model
+- `.uncle-dev/learns/runtime-errors/`, `.uncle-dev/learns/performance-issues/`, `.uncle-dev/learns/security-issues/`, `.uncle-dev/learns/ui-bugs/`, `.uncle-dev/learns/integration-issues/`, `.uncle-dev/learns/database-issues/` (`uncle-dev-learning-capture/SKILL.md:201-216`) — after-the-fact incident records, not a live platform model
 
 **There is no file in this repo today that is canonically the "platform truth" target** — no analogue to `docs/specs/<segment>-specs.md` for runtime.
 
@@ -479,11 +479,11 @@ Densest layer. Multiple overlapping artifact classes feed it; all paths are hard
 
 Three signal-to-artifact routers exist:
 
-### 16.1 Acknowledge inference (regex routing table) — `skills/uncle-dev-acknowledge/inference-rules.md:13-24`
+### 16.1 Acknowledge inference (regex routing table) — `skills/uncle-dev-decision-acknowledgment/inference-rules.md:13-24`
 
 Quoted from §3.3.2. This is **the** deterministic, auditable, signal-based artifact router in the codebase. Routes a free-text note → one-or-more `openspec/acknowledge/<scope>.md` files via word-boundary regex over endpoint paths, schema keywords, JSX/React tokens, type tokens, monorepo path tokens, negation patterns, and cross-cutting keywords. Explicit anti-pattern at `:90-94`: *"LLM-based routing. Don't. Two agents must agree byte-for-byte on the scope set. A regex table is auditable; an LLM call isn't."*
 
-### 16.2 Knowledge-capture category mapping — `skills/uncle-dev-knowledge-capture/SKILL.md:197-216`
+### 16.2 Knowledge-capture category mapping — `skills/uncle-dev-learning-capture/SKILL.md:197-216`
 
 1:1 enum router: `problem_type` value → directory under `.uncle-dev/learns/<category>/`. Categories: `build_error → build-errors/`, `test_failure → test-failures/`, `runtime_error → runtime-errors/`, `performance_issue → performance-issues/`, `database_issue → database-issues/`, `security_issue → security-issues/`, `ui_bug → ui-bugs/`, `integration_issue → integration-issues/`, `logic_error → logic-errors/`, `developer_experience → developer-experience/`, `workflow_issue → workflow-issues/`, `best_practice → best-practices/`, `documentation_gap → documentation-gaps/`.
 
@@ -534,7 +534,7 @@ Cascade-rules contract (`skills/uncle-dev-design-architecture-docs/SKILL.md:155-
 
 | Pillar / Concept | Exists today | Missing today |
 | --- | --- | --- |
-| **Uncle Domain — pre-spec product framing** | `uncle-dev-idea-refine` (ideation one-pager); `uncle-dev-feature-map` (reverse catalog, PM-named) | Skill that reframes bug/feature request as expected-vs-current behavior; business-rules registry; behavior-map artifact |
+| **Uncle Domain — pre-spec product framing** | `uncle-dev-idea-refine` (ideation one-pager); `uncle-dev-feature-discovery` (reverse catalog, PM-named) | Skill that reframes bug/feature request as expected-vs-current behavior; business-rules registry; behavior-map artifact |
 | **Uncle Domain — per-domain "flavors"** | Per-skill overrides; phase-keyed companion path registry; boolean preferences/hooks toggles | Flavor-bundle concept; activation mechanism; flavor-aware skill resolution |
 | **Uncle Domain — Graphify JSON paths configurable** | Fixed `graphify-out/graph.json`; boolean `preferences.graphify` toggle; one-way spec-edges.json projection | Configurable graphify path(s); multi-graph registry; per-named-graph query routing |
 | **Uncle Domain — annotation vocabulary beyond @spec** | `@spec` only with AST scanner, commit-time enforcement, ORPHAN/MISSING/HELPER/MALFORMED classification | `@feature`, `@rule`, `@api`, `@test`, `@behavior`, `@adr` and the catalogs they would index |
@@ -547,7 +547,7 @@ Cascade-rules contract (`skills/uncle-dev-design-architecture-docs/SKILL.md:155-
 | **Uncle Framework — reviewer consultation** | Five-axis review; no framework axis | Framework-conformance axis; framework-rule-aware reviewer persona |
 | **Uncle Framework — anti-pattern catalogs as data** | Anti-pattern prose tables inside multiple SKILL.md files | Structured anti-pattern rules an agent can iterate or a hook can enforce |
 | **Product Mode Agent — non-technical-audience persona** | None — all 6 personas in `agents/` are engineering-audience | PM / designer / business-stakeholder persona file |
-| **Product Mode Agent — product-language output enforcement** | `uncle-dev-feature-map/SKILL.md:55, :143, :152` enforces product language in one catalog | Generalized formatter that wraps existing engineering outputs in stakeholder language |
+| **Product Mode Agent — product-language output enforcement** | `uncle-dev-feature-discovery/SKILL.md:55, :143, :152` enforces product language in one catalog | Generalized formatter that wraps existing engineering outputs in stakeholder language |
 | **Product Mode Agent — drift report in stakeholder language** | `SPEC_GRAPH_REPORT.md` (engineering-coded vocabulary); `changes.yaml` (YAML); scanner text output | PM-readable rendering of the same drift signals |
 | **Product Mode Agent — visualization** | Mermaid `spec-graph.mmd`; markdown tables; rollout-decision traffic-light table (`shipping-and-launch/SKILL.md:158-163`) | Dashboard / status-card rendering keyed to product behaviors |
 | **Product Mode Agent — release-notes / launch comms** | `shipping-and-launch` has no PM-readable release-notes template | Template, producer |
@@ -575,18 +575,18 @@ Repeats from prior doc are not relisted (see `2026-05-17-uncle-domain-companion-
 - `skills/uncle-dev-context-engineering/SKILL.md:42-72, :74-78, :256-264`
 - `skills/uncle-dev-code-context/SKILL.md:22-30`
 - `skills/uncle-dev-incremental-implementation/SKILL.md:38`
-- `skills/uncle-dev-acknowledge/inference-rules.md:9-11, :13-24, :28-36, :88, :90-94`
-- `skills/uncle-dev-next-task/acknowledge-gate.md:3, :14, :50, :57-59`
-- `skills/uncle-dev-next-task/SKILL.md:19-20, :79, :162, :200, :279-281`
-- `skills/uncle-dev-feature-map/SKILL.md:9-11, :22-24, :27-33, :55, :87-89, :90-121, :143, :152`
+- `skills/uncle-dev-decision-acknowledgment/inference-rules.md:9-11, :13-24, :28-36, :88, :90-94`
+- `skills/uncle-dev-task-selection/acknowledge-gate.md:3, :14, :50, :57-59`
+- `skills/uncle-dev-task-selection/SKILL.md:19-20, :79, :162, :200, :279-281`
+- `skills/uncle-dev-feature-discovery/SKILL.md:9-11, :22-24, :27-33, :55, :87-89, :90-121, :143, :152`
 - `skills/uncle-dev-idea-refine/SKILL.md:32-38, :62-69, :112-136`
 - `skills/uncle-dev-shipping-and-launch/SKILL.md:84, :86, :108-114, :125-152, :155-162, :158-163, :175-198, :230-247, :253-276`
 - `skills/uncle-dev-browser-testing-with-devtools/SKILL.md:9-10, :42-54, :58-66`
 - `skills/uncle-dev-documentation-and-adrs/SKILL.md:10, :26-36, :55-96, :240-263`
-- `skills/uncle-dev-knowledge-capture/SKILL.md:32-46, :43, :172-216, :225-300, :343`
-- `skills/uncle-dev-knowledge-maintenance/SKILL.md:30, :177`
+- `skills/uncle-dev-learning-capture/SKILL.md:32-46, :43, :172-216, :225-300, :343`
+- `skills/uncle-dev-learning-maintenance/SKILL.md:30, :177`
 - `skills/uncle-dev-ci-cd-and-automation/SKILL.md:12-14, :26-54, :230-245, :384-386`
-- `skills/uncle-dev-research/SKILL.md:89, :176`
+- `skills/uncle-dev-codebase-research/SKILL.md:89, :176`
 - `skills/uncle-dev-code-review-and-quality/SKILL.md:28-103, :286-326, :497`
 - `skills/uncle-dev-graphify-aware-analysis/SKILL.md:18-22, :32-67, :84-101, :104-112, :116-118, :132-149, :175-179`
 - `skills/uncle-dev-test-driven-development/SKILL.md:331, :347`
@@ -594,16 +594,16 @@ Repeats from prior doc are not relisted (see `2026-05-17-uncle-domain-companion-
 - `skills/uncle-dev-design-architecture-docs/resources/segment-examples.md:9, :36, :155`
 - `skills/uncle-dev-design-architecture-docs/resources/hld-template.md:23-27`
 - `skills/uncle-dev-design-architecture-docs/resources/lld-template.md:41-46, :52-56, :85`
-- `skills/uncle-dev-spec-annotations/SKILL.md:31-66, :69-87, :98-148, :210-217, :220-254, :299`
-- `skills/uncle-dev-spec-annotations/scan-spec-coherence.py:8-11, :39-41, :85, :91-96, :117-204, :207-251, :302-307`
-- `skills/uncle-dev-spec-annotations/build-spec-graph.py:1-23, :186-304, :249-255, :260-275, :357-421, :426-500, :518-549`
-- `skills/uncle-dev-spec-annotations/resources/templates/arrows/index.yaml:10, :27`
-- `skills/uncle-dev-spec-annotations/resources/templates/specs/SEGMENT-specs.md:24`
-- `skills/uncle-dev-spec-annotations/resources/templates/arrows/SEGMENT.md:46`
-- `skills/uncle-dev-spec-annotations/resources/annotation-examples.md:244`
+- `skills/uncle-dev-spec-traceability/SKILL.md:31-66, :69-87, :98-148, :210-217, :220-254, :299`
+- `skills/uncle-dev-spec-traceability/scan-spec-coherence.py:8-11, :39-41, :85, :91-96, :117-204, :207-251, :302-307`
+- `skills/uncle-dev-spec-traceability/build-spec-graph.py:1-23, :186-304, :249-255, :260-275, :357-421, :426-500, :518-549`
+- `skills/uncle-dev-spec-traceability/resources/templates/arrows/index.yaml:10, :27`
+- `skills/uncle-dev-spec-traceability/resources/templates/specs/SEGMENT-specs.md:24`
+- `skills/uncle-dev-spec-traceability/resources/templates/arrows/SEGMENT.md:46`
+- `skills/uncle-dev-spec-traceability/resources/annotation-examples.md:244`
 - `skills/uncle-dev-spec-driven-development/SKILL.md:40-345, :213-268, :336-345`
 - `skills/uncle-dev-spec-driven-development/generate-tracker.py:1-22, :13-19, :71-79, :82-90, :239-342`
-- `skills/uncle-dev-acknowledge/SKILL.md:10-11, :18, :23-25`
+- `skills/uncle-dev-decision-acknowledgment/SKILL.md:10-11, :18, :23-25`
 - `skills/uncle-dev-using-agent-skills/SKILL.md:16-39, :136-152`
 - `agents/uncle-dev-ag-repo-research-analyst.md:3, :10, :113-199, :247-271`
 - `agents/uncle-dev-ag-graph-analyst.md:3, :46-48, :66-93, :119-123`

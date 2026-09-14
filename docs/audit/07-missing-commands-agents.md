@@ -14,8 +14,8 @@ All five have a backing **skill**, so the capability exists; the literal
 | Missing command | Referenced by |
 |---|---|
 | `/uncle-dev-pre-mortem` | `commands/uncle-dev-spec.md:162` (mandatory lid-ears Step 4.5); `skills/uncle-dev-spec-driven-development/SKILL.md:140,179` |
-| `/uncle-dev-documentation-and-adrs` | `commands/uncle-dev-acknowledge.md:35` (entire lid-ears Path A); `skills/uncle-dev-acknowledge/SKILL.md:18`; `skills/uncle-dev-knowledge-capture/SKILL.md:39`; `skills/uncle-dev-initiative-map/README.md:113` |
-| `/uncle-dev-feature-map` | `commands/uncle-dev-brownfield.md:2,25,201` ("stop and offer to run it first"); `skills/uncle-dev-brownfield/SKILL.md:22`; root `CLAUDE.md:11`; `README.md:43` |
+| `/uncle-dev-documentation-and-adrs` | `commands/uncle-dev-acknowledge.md:35` (entire lid-ears Path A); `skills/uncle-dev-decision-acknowledgment/SKILL.md:18`; `skills/uncle-dev-learning-capture/SKILL.md:39`; `skills/uncle-dev-initiative-map/README.md:113` |
+| `/uncle-dev-feature-map` | `commands/uncle-dev-brownfield.md:2,25,201` ("stop and offer to run it first"); `skills/uncle-dev-brownfield-reverse-engineering/SKILL.md:22`; root `CLAUDE.md:11`; `README.md:43` |
 | `/uncle-dev-using-agent-skills` | `commands/uncle-dev-custom-me.md:65` |
 | `/uncle-dev-grill` | `skills/uncle-dev-initiative-map/README.md:114` |
 
@@ -78,8 +78,8 @@ paste-the-file — two contradictory spawn patterns coexist.
 1. **Create the two workflow-critical commands** (thin wrappers that load the
    existing skill, following the pattern of e.g.
    `commands/uncle-dev-changelog.md`):
-   - `commands/uncle-dev-pre-mortem.md` → loads `uncle-dev-pre-mortem`
-   - `commands/uncle-dev-feature-map.md` → loads `uncle-dev-feature-map`
+   - `commands/uncle-dev-pre-mortem.md` → loads `uncle-dev-pre-mortem-analysis`
+   - `commands/uncle-dev-feature-map.md` → loads `uncle-dev-feature-discovery`
    These two are invoked as mandatory/first steps by other commands, so a
    command file is warranted. Remember: update `.claude-plugin` command
    count-sensitive docs and regenerate the plugin fork (audit file 03).

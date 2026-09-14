@@ -9,7 +9,7 @@ both claim to be the source of truth but never intersect.
 ### Finding A — plan output is unparseable by next-task (P0)
 
 The next-task picker's parser requires
-(`skills/uncle-dev-next-task/parsing-and-annotations.md:15,33`):
+(`skills/uncle-dev-task-selection/parsing-and-annotations.md:15,33`):
 
 - story IDs matching `^[0-9]+(\.[0-9]+)*$`
 - `### Story 1.1:` **h3** headers
@@ -28,7 +28,7 @@ The plan skill's Step 4 template (`SKILL.md:194-211`) has no Annotations
 line. The parser's backward-compat fallback
 (`parsing-and-annotations.md:112-118`) then serializes everything to document
 order — **silently defeating the entire parallelism/mutex machinery** the
-picker exists for. `uncle-dev-next-task/SKILL.md:363` says the planning skill
+picker exists for. `uncle-dev-task-selection/SKILL.md:363` says the planning skill
 "emits the annotations this skill consumes"; it never instructs writing them.
 
 ### Finding C — orphan `handoff.md` (P1)
@@ -42,7 +42,7 @@ handoff concept.
 ### Finding D — change-ID format contradiction (P1)
 
 `commands/uncle-dev-spec.md:216` and `hooks/openspec-guard.sh` require
-`NNN-slug` (`^[0-9]{3}-`), but `skills/uncle-dev-next-task/SKILL.md:27` uses
+`NNN-slug` (`^[0-9]{3}-`), but `skills/uncle-dev-task-selection/SKILL.md:27` uses
 example ID `PF-001-foundations-cross-cutting` (fails the regex), and the
 repo's own live change `openspec/changes/companion-modes-foundation/` also
 fails it.
@@ -88,12 +88,12 @@ Consequences:
    enumeration), OR give it a consumer (e.g. `/uncle-dev-wrap` in openspec
    mode reads/updates it). Recommendation: remove — `.devlocal/handoffs/` is
    the working convention; also rename mentions to avoid the collision.
-4. **Fix the change-ID example**: `skills/uncle-dev-next-task/SKILL.md:27` →
+4. **Fix the change-ID example**: `skills/uncle-dev-task-selection/SKILL.md:27` →
    a compliant example like `001-foundations-cross-cutting`. Fix or archive
    the repo's own non-compliant change (see audit file 05, Finding G).
 5. **Bridge or separate the spec universes** (explicit decision required):
    - **Option 1 — bridge (recommended long-term)**: extend the scanner
-     (`skills/uncle-dev-spec-annotations/scanner/`) to also load
+     (`skills/uncle-dev-spec-traceability/scanner/`) to also load
      `docs/ears/*.md` and accept `R-\d+\.\d+` IDs; then ship's coverage check
      has a mechanism (`scan-spec-coherence.py` can report untested R-IDs).
    - **Option 2 — separate (smaller)**: update CLAUDE.md and the ship command
@@ -123,6 +123,6 @@ Consequences:
 grep -n '## Story STORY-' skills/uncle-dev-planning-and-task-breakdown/SKILL.md   # expect: none
 grep -n 'Annotations:' skills/uncle-dev-planning-and-task-breakdown/SKILL.md      # expect: present in template
 grep -rn 'handoff\.md' commands/ skills/ | grep -v devlocal                        # expect: none or consumer pair
-grep -n 'PF-001' skills/uncle-dev-next-task/SKILL.md                               # expect: none
+grep -n 'PF-001' skills/uncle-dev-task-selection/SKILL.md                               # expect: none
 bash scripts/tests/run-all.sh                                                      # incl. new round-trip test — green
 ```

@@ -24,7 +24,7 @@ Evidence (`grep -rilE 'observability|measurement plan|metric.necessity|business-
 | `uncle-dev-source-driven-development/SKILL.md` | **No** (zero matches) |
 | `commands/uncle-dev-build.md` | **No** (zero matches) |
 | `uncle-dev-incremental-implementation/SKILL.md` | **No** (zero matches) |
-| `uncle-dev-acknowledge`, `uncle-dev-shipping-and-launch`, `uncle-dev-deprecation-and-migration` | Yes — but only as passing list-mentions of the word "observability/metrics", **not** a wired hand-off to the skill |
+| `uncle-dev-decision-acknowledgment`, `uncle-dev-shipping-and-launch`, `uncle-dev-deprecation-and-migration` | Yes — but only as passing list-mentions of the word "observability/metrics", **not** a wired hand-off to the skill |
 
 So the "gentle inclusion" the user asks about is not just possible — it's the missing return edge that would make the observability skill's stated lifecycle real.
 

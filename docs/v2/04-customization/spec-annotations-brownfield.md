@@ -153,8 +153,8 @@ Exit code 0 = clean. Exit code 1 = broken links.
 
 | File                                                                                                                                     | Purpose                               |
 | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| [skills/uncle-dev-spec-annotations/SKILL.md](skills/uncle-dev-spec-annotations/SKILL.md)                                                 | Full @spec annotation reference       |
-| [skills/uncle-dev-spec-annotations/resources/annotation-examples.md](skills/uncle-dev-spec-annotations/resources/annotation-examples.md) | Per-language syntax examples          |
+| [skills/uncle-dev-spec-traceability/SKILL.md](skills/uncle-dev-spec-traceability/SKILL.md)                                                 | Full @spec annotation reference       |
+| [skills/uncle-dev-spec-traceability/resources/annotation-examples.md](skills/uncle-dev-spec-traceability/resources/annotation-examples.md) | Per-language syntax examples          |
 | [skills/uncle-dev-spec-driven-development/SKILL.md](skills/uncle-dev-spec-driven-development/SKILL.md)                                   | Full spec-driven development workflow |
 | [Spec annotations, explained](../02-user-guide/spec-annotations.md)                                         | Simplified LID explanation            |
 | [Implement spec annotations](implement-spec-annotations.md)                         | Step-by-step implementation guide     |
@@ -329,5 +329,5 @@ After all five return, review their outputs and run `/uncle-dev-spec-scan` to va
 Confirm your annotations are coherent:
 
 1. Run `/uncle-dev-spec-scan` (or `python3 scan-spec-coherence.py --root "$(pwd)"`) on a project with `docs/specs/`. A clean run exits with code 0 and reports no ORPHAN or MISSING TEST lines.
-2. Open [skills/uncle-dev-spec-annotations/SKILL.md](skills/uncle-dev-spec-annotations/SKILL.md) and confirm your annotations match the canonical reference.
+2. Open [skills/uncle-dev-spec-traceability/SKILL.md](skills/uncle-dev-spec-traceability/SKILL.md) and confirm your annotations match the canonical reference.
 3. Check [Spec annotations, explained](../02-user-guide/spec-annotations.md) for a beginner-friendly walkthrough.
