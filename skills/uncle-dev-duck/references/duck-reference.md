@@ -1,6 +1,6 @@
 # Duck Mode Reference
 
-Full question bank and smell detection for uncle-senior Duck mode. Load this when you need to go deeper than the ladder summary in SKILL.md.
+Full question bank and smell detection for the uncle-dev-duck skill. Load this when you need to go deeper than the ladder summary in SKILL.md.
 
 ## Contents
 

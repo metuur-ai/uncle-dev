@@ -243,7 +243,7 @@ The commands above are the entry points. Under the hood, they activate these 47 
 
 | Skill | What It Does | Use When |
 | ----- | ------------ | -------- |
-| [uncle-senior](skills/uncle-senior/SKILL.md) | Senior principal engineer in Challenge (verdict) or Duck (rubber-duck) mode | A design feels heavier than the problem, or you're stuck |
+| [duck](skills/uncle-dev-duck/SKILL.md) | Rubber duck conversation — one paraphrase, one question, no verdicts | You're stuck, or not sure yet what you want to build |
 | [pre-mortem](skills/uncle-dev-pre-mortem/SKILL.md) | Imagine the plan has failed, then work backward to surface hidden risks and preventions | Before launches, major decisions, or risky initiatives |
 | [graphify-aware-analysis](skills/uncle-dev-graphify-aware-analysis/SKILL.md) | Shared protocol for querying the graphify semantic graph (`explain`/`path`/`query`), confidence rules | Referenced automatically by research, spec, planning, debug, review when `graphify-out/graph.json` exists |
 | [setup](skills/uncle-dev-setup-local/SKILL.md) | Wire uncle-dev into a project across Claude Code, Codex, and OpenCode — hooks, dirs, config, rules | Setting up uncle-dev, or when hooks aren't firing |
@@ -263,7 +263,7 @@ Pre-configured specialist personas for targeted reviews and decisions. All are *
 | [review-synthesizer](agents/uncle-dev-ag-review-synthesizer.md) | Review Synthesizer | Merges parallel review findings into one verdict, deduped issue list, and PR summary |
 | [uncle-lead](agents/uncle-lead.md) | Technical Lead | Architecture decisions, API contracts, migration safety, rollback-aware design reviews |
 | [uncle-po](agents/uncle-po.md) | Product Owner | Requirements clarity, proposal quality, scope boundaries, Given/When/Then acceptance criteria |
-| [uncle-senior](agents/uncle-senior.md) | Senior Principal Engineer | Challenge/Duck modes for design decisions not yet committed to code |
+| [uncle-senior](agents/uncle-senior.md) | Senior Principal Engineer | Challenge verdict on a design not yet committed to code |
 | [graph-analyst](agents/uncle-dev-ag-graph-analyst.md) | Graph Traversal Specialist | Multi-hop semantic graph analysis — spawned when `graphify-out/graph.json` exists |
 | [repo-research-analyst](agents/uncle-dev-ag-repo-research-analyst.md) | Repository Analyst | Structured repo exploration producing a handoff document — spawned by the research skill |
 

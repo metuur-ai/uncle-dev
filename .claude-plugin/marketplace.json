@@ -30,6 +30,7 @@
         "./skills/uncle-dev-design-architecture-docs",
         "./skills/uncle-dev-dev-code-simplification",
         "./skills/uncle-dev-documentation-and-adrs",
+        "./skills/uncle-dev-duck",
         "./skills/uncle-dev-feature-map",
         "./skills/uncle-dev-frontend-ui-engineering",
         "./skills/uncle-dev-git-workflow-and-versioning",
@@ -59,8 +60,7 @@
         "./skills/uncle-dev-ubiquitous-language",
         "./skills/uncle-dev-using-agent-skills",
         "./skills/uncle-dev-verbalized-sampling",
-        "./skills/uncle-dev-wrap",
-        "./skills/uncle-senior"
+        "./skills/uncle-dev-wrap"
       ],
       "agents": [
         "./agents/uncle-dev-ag-code-reviewer.md",

@@ -1,5 +1,5 @@
 ---
-description: Capture and manage design-decision notes — openspec/acknowledge/ in openspec mode, docs/decisions/ ADRs in lid-ears mode
+description: "Capture and manage design-decision notes — openspec/acknowledge/ in openspec mode, docs/decisions/ ADRs in lid-ears mode"
 ---
 
 ## Step 0 — Read SDD mode (do this first)

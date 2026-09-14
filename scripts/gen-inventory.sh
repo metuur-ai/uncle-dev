@@ -72,6 +72,7 @@ uncle-dev-deprecation-and-migration Ship
 uncle-dev-design-architecture-docs Define
 uncle-dev-dev-code-simplification Review
 uncle-dev-documentation-and-adrs Ship
+uncle-dev-duck Evaluate
 uncle-dev-feature-map Brownfield
 uncle-dev-frontend-ui-engineering Build
 uncle-dev-git-workflow-and-versioning Ship
@@ -100,8 +101,7 @@ uncle-dev-test-driven-development Build
 uncle-dev-ubiquitous-language Define
 uncle-dev-using-agent-skills Support
 uncle-dev-verbalized-sampling Define
-uncle-dev-wrap Handoff
-uncle-senior Evaluate"
+uncle-dev-wrap Handoff"
 
   # Collect skills per phase using indexed arrays (bash 3.2 safe).
   local phases

@@ -20,7 +20,7 @@ scripts/      → Install scripts for Claude Code, Codex, and OpenCode
 <!-- BEGIN GENERATED: skills-by-phase -->
 **Define:** uncle-dev-acknowledge, uncle-dev-design-architecture-docs, uncle-dev-grill, uncle-dev-idea-refine, uncle-dev-research, uncle-dev-spec-driven-development, uncle-dev-ubiquitous-language, uncle-dev-verbalized-sampling
 **Brownfield:** uncle-dev-brownfield, uncle-dev-feature-map
-**Evaluate:** uncle-senior
+**Evaluate:** uncle-dev-duck
 **Plan:** uncle-dev-planning-and-task-breakdown
 **Build:** uncle-dev-api-and-interface-design, uncle-dev-context-engineering, uncle-dev-frontend-ui-engineering, uncle-dev-incremental-implementation, uncle-dev-source-driven-development, uncle-dev-spec-annotations, uncle-dev-test-driven-development
 **Verify:** uncle-dev-browser-testing-with-devtools, uncle-dev-debug-error, uncle-dev-mutation-testing
@@ -172,6 +172,6 @@ When the user types any `/uncle-dev-*` command, invoke the corresponding skill i
 | /uncle-dev-spec-scan | uncle-dev-spec-annotations |
 | /uncle-dev-test | uncle-dev-test-driven-development |
 | /uncle-dev-wrap | uncle-dev-wrap |
-| /uncle-senior | uncle-senior |
+| /uncle-senior | uncle-senior (agent) · uncle-dev-duck (--duck) |
 <!-- END GENERATED: commands-table -->
 <!-- /uncle-dev -->

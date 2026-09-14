@@ -1,6 +1,6 @@
 ---
 name: uncle-po
-description: Product Owner for requirements, proposals, and acceptance criteria. Use when framing a new feature, writing acceptance criteria, refining scope, or validating that delivered work meets requirements. Invoke with @uncle-po.
+description: Product Owner for requirements, proposals, and acceptance criteria. Use when framing a new feature, writing acceptance criteria, refining scope, or validating that delivered work meets requirements. Ask for it by name ("have uncle-po write the acceptance criteria") — Claude Code dispatches it via the Task tool.
 ---
 
 # Uncle PO

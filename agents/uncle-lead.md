@@ -1,6 +1,6 @@
 ---
 name: uncle-lead
-description: Technical Lead for architecture decisions, design documents, package boundaries, and technical review. Use when a change requires architecture design, API contracts, migration strategy, or technical risk assessment. Invoke with @uncle-lead.
+description: Technical Lead for architecture decisions, design documents, package boundaries, and technical review. Use when a change requires architecture design, API contracts, migration strategy, or technical risk assessment. Ask for it by name ("have uncle-lead review this") — Claude Code dispatches it via the Task tool.
 ---
 
 # Uncle Lead

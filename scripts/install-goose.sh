@@ -331,7 +331,7 @@ fi
 
 if [[ "$WITH_RECIPES" -eq 1 ]]; then
   log ""
-  log "Run a persona:  goose run --recipe uncle-senior --params task=\"...\""
+  log "Run a persona:  goose run --recipe uncle-dev-agent-uncle-senior --params task=\"...\""
 fi
 
 if [[ "$WITH_RULES" -eq 0 ]]; then

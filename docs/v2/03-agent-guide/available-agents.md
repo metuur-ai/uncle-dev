@@ -10,7 +10,7 @@ Agents fall into two groups: **personas you invoke** directly, and **specialist 
 
 ## Personas you invoke
 
-Summon these when you want a specific perspective. Invoke a persona by name (for example, `@uncle-lead`), or ask your agent to use it (for example, "Use the code-reviewer agent").
+Summon these when you want a specific perspective. Ask for a persona by name — for example, "have uncle-lead review the package boundaries" or "use the code-reviewer agent". Agents are dispatched through the Task tool; they do not appear in the `/` command menu, and `@` is the file picker, not an agent mention.
 
 | Agent | Role | Use it when |
 |-------|------|-------------|

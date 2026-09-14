@@ -30,6 +30,7 @@
         "uncle-dev-design-architecture-docs",
         "uncle-dev-dev-code-simplification",
         "uncle-dev-documentation-and-adrs",
+        "uncle-dev-duck",
         "uncle-dev-feature-map",
         "uncle-dev-frontend-ui-engineering",
         "uncle-dev-git-workflow-and-versioning",
@@ -55,8 +56,7 @@
         "uncle-dev-test-driven-development",
         "uncle-dev-ubiquitous-language",
         "uncle-dev-using-agent-skills",
-        "uncle-dev-wrap",
-        "uncle-senior"
+        "uncle-dev-wrap"
       ],
       "agents": [
         "uncle-dev-ag-code-reviewer",
